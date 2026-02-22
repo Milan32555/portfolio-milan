@@ -4,11 +4,26 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <span className="font-semibold tracking-tight">Milan</span>
 
-        <div className="flex gap-6 text-sm text-zinc-400">
-          <a href="#projects" className="hover:text-white transition">Projects</a>
-          <a href="#about" className="hover:text-white transition">About</a>
-          <a href="#contact" className="hover:text-white transition">Contact</a>
-        </div>
+        <div className="flex gap-6 text-sm">
+            <a
+              href="#projects"
+              className="text-zinc-400 no-underline hover:text-white transition"
+            >
+              Projects
+            </a>
+            <a
+              href="#about"
+              className="text-zinc-400 no-underline hover:text-white transition"
+            >
+              About
+            </a>
+            <a
+              href="#contact"
+              className="text-zinc-400 no-underline hover:text-white transition"
+            >
+              Contact
+            </a>
+          </div>
       </div>
     </nav>
   );

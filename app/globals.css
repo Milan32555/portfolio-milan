@@ -11,6 +11,10 @@ body {
   color: #f4f4f5;
 }
 
+a {
+  text-decoration: none;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

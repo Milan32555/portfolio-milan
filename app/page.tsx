@@ -13,7 +13,7 @@ export default function Home() {
 
           <a
             href="#projects"
-            className="inline-block px-6 py-3 rounded-xl bg-white text-black font-medium hover:opacity-80 transition"
+            className="inline-block px-6 py-3 rounded-xl bg-white text-black font-medium hover:opacity-80 transition no-underline"
           >
             View Projects
           </a>
