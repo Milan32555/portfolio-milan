@@ -1,19 +1,28 @@
 export default function Home() {
   return (
-    <main className="min-h-screen flex items-center justify-center px-6 pt-20">
-      <div className="text-center space-y-6">
-        <h1 className="text-5xl font-bold tracking-tight">
-          Misael
-        </h1>
+    <>
+      <main className="min-h-screen flex items-center justify-center px-6 pt-20">
+        <div className="text-center space-y-6">
+          <h1 className="text-5xl font-bold tracking-tight">
+            Misael
+          </h1>
 
-        <p className="text-zinc-400 max-w-xl mx-auto">
-          Frontend Developer building clean, modern and high-performance web experiences.
-        </p>
+          <p className="text-zinc-400 max-w-xl mx-auto">
+            Frontend Developer building clean, modern and high-performance web experiences.
+          </p>
 
-        <button className="px-6 py-3 rounded-xl bg-white text-black font-medium hover:opacity-80 transition">
-          View Projects
-        </button>
-      </div>
-    </main>
+          <button className="px-6 py-3 rounded-xl bg-white text-black font-medium hover:opacity-80 transition">
+            View Projects
+          </button>
+        </div>
+      </main>
+
+      <section
+        id="projects"
+        className="min-h-screen flex items-center justify-center border-t border-zinc-800"
+      >
+        <h2 className="text-3xl font-semibold">Projects Section</h2>
+      </section>
+    </>
   );
 }
