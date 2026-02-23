@@ -21,8 +21,8 @@ export default function Loader() {
       });
     }, 160);
 
-    // Dot appears 300ms after last letter
-    const dotTimer = setTimeout(() => setShowDot(true), NAME.length * 160 + 300);
+    // Dot appears 600ms after last letter
+    const dotTimer = setTimeout(() => setShowDot(true), NAME.length * 160 + 600);
 
     // Hold a moment after dot, then exit
     const exitTimer = setTimeout(() => setPhase("exit"), NAME.length * 160 + 1100);
@@ -109,7 +109,7 @@ export default function Loader() {
               style={{
                 color: "#4f8ef7",
                 display: "inline-block",
-                animation: "dotReveal 0.6s cubic-bezier(0.22,1,0.36,1) both",
+                animation: "dotReveal 0.75s cubic-bezier(0.22,1,0.36,1) both",
               }}
             >
               .
@@ -148,12 +148,17 @@ export default function Loader() {
           50%       { opacity: 0; }
         }
         @keyframes dotReveal {
-          from {
+          0%   {
             opacity: 0;
-            transform: translateY(8px) scale(0.6);
-            filter: blur(4px);
+            transform: translateY(6px) scale(0.4);
+            filter: blur(3px);
           }
-          to {
+          55%  {
+            opacity: 1;
+            transform: translateY(-3px) scale(1.45);
+            filter: blur(0px);
+          }
+          100% {
             opacity: 1;
             transform: translateY(0) scale(1);
             filter: blur(0px);
