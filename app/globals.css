@@ -4,6 +4,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── GLOBAL RESETS ───────────────────────────────────────── */
+a, a:hover, a:visited, a:active, a:focus {
+  text-decoration: none !important;
+  color: inherit;
+}
+
+*, *::before, *::after, a, button, input, textarea {
+  cursor: none !important;
+}
+
+/* Prevent browser from restoring scroll position on reload */
+html {
+  overflow-anchor: none;
+}
+
 /* ─── TOKENS ─────────────────────────────────────────────── */
 :root {
   --bg:        #0c0c0e;
@@ -43,9 +58,15 @@ body {
   overflow-x: hidden;
 }
 
-a { text-decoration: none; color: inherit; }
+/* Prevent black flash between loader curtain and hero */
+html, body {
+  background-color: #0c0c0e;
+}
 
-/* ─── SELECTION ───────────────────────────────────────────── */
+/* Custom cursor — hide native on everything */
+*, *::before, *::after, a, button, input, textarea {
+  cursor: none !important;
+}
 ::selection { background: var(--accent); color: #fff; }
 
 /* ─── SCROLLBAR ───────────────────────────────────────────── */

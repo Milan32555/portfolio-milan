@@ -2,8 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import HeroVideo from "@/components/HeroVideo";
+import { useLoader } from "@/components/LoaderContext";
 
-/* ─── DATA ──────────────────────────────────────────────────── */
 const projects = [
   {
     num: "01",
@@ -22,31 +22,18 @@ const projects = [
 ];
 
 const skills = [
-  "React",
-  "Next.js",
-  "TypeScript",
-  "JavaScript",
-  "Java",
-  "Android Studio",
-  "Tailwind CSS",
-  "Git & GitHub",
-  "REST APIs",
-  "Figma",
+  "React", "Next.js", "TypeScript", "JavaScript",
+  "Java", "Android Studio", "Tailwind CSS",
+  "Git & GitHub", "REST APIs", "Figma",
 ];
 
-/* ─── SCROLL REVEAL HOOK ────────────────────────────────────── */
 function useFadeIn() {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.classList.add("visible");
-          obs.disconnect();
-        }
-      },
+      ([entry]) => { if (entry.isIntersecting) { el.classList.add("visible"); obs.disconnect(); } },
       { threshold: 0.15 }
     );
     obs.observe(el);
@@ -55,7 +42,60 @@ function useFadeIn() {
   return ref;
 }
 
-/* ─── SECTIONS ──────────────────────────────────────────────── */
+function HeroSection() {
+  const { loaderDone } = useLoader();
+
+  // staggered fade-up for everything EXCEPT the title
+  const fadeStyle = (delay: string) => ({
+    opacity: 0 as const,
+    animation: loaderDone ? `heroFadeUp 0.7s ${delay} ease-out forwards` : "none",
+  });
+
+  return (
+    <section className="hero">
+      <HeroVideo />
+      <div className="hero-overlay" />
+
+      <div className="hero-content">
+        <span className="hero-eyebrow" style={fadeStyle("0.15s")}>
+          Frontend Developer · 2026
+        </span>
+
+        {/* Title — fades in at same moment loader name fades out = seamless handoff */}
+        <h1
+          className="hero-title"
+          style={{
+            opacity: 0,
+            animation: loaderDone ? "heroFadeUp 0.6s 0.05s ease-out forwards" : "none",
+          }}
+        >
+          Misael<em>.</em>
+        </h1>
+
+        <p className="hero-sub" style={fadeStyle("0.35s")}>
+          Construyo experiencias web limpias, modernas y de alto rendimiento que marcan la diferencia.
+        </p>
+
+        <div className="hero-actions" style={fadeStyle("0.5s")}>
+          <a href="#projects" className="btn-primary">
+            Ver proyectos
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </a>
+          <a href="#contact" className="btn-ghost">Contacto</a>
+        </div>
+      </div>
+
+      <div className="scroll-hint" style={fadeStyle("0.8s")}>
+        <span>scroll</span>
+        <div className="scroll-line" />
+      </div>
+    </section>
+  );
+}
+
 function ProjectsSection() {
   const ref = useFadeIn();
   return (
@@ -63,15 +103,12 @@ function ProjectsSection() {
       <div className="section" ref={ref} style={{ opacity: 1 }}>
         <p className="section-label">Proyectos</p>
         <h2 className="section-title">Lo que he construido</h2>
-
         <div className="projects-grid">
           {projects.map((p) => (
             <a key={p.num} href={p.href} className="project-card fade-in-section visible">
               <p className="card-number">{p.num} — Proyecto</p>
               <div className="card-tags">
-                {p.tags.map((t) => (
-                  <span key={t} className="tag">{t}</span>
-                ))}
+                {p.tags.map((t) => <span key={t} className="tag">{t}</span>)}
               </div>
               <h3 className="card-title">{p.title}</h3>
               <p className="card-desc">{p.desc}</p>
@@ -104,19 +141,17 @@ function AboutSection() {
             <div className="skills-list" style={{ marginTop: "2rem" }}>
               {skills.map((s) => (
                 <span key={s} className="skill-pill">
-                  <span className="skill-dot" />
-                  {s}
+                  <span className="skill-dot" />{s}
                 </span>
               ))}
             </div>
           </div>
-
           <div className="about-body">
             <p style={{ marginBottom: "1.2rem" }}>
               Soy <strong style={{ color: "var(--text)", fontWeight: 500 }}>Misael</strong>, desarrollador frontend con pasión por crear interfaces que no solo funcionen — sino que se sientan bien al usarlas.
             </p>
             <p style={{ marginBottom: "1.2rem" }}>
-              Me especializo en el ecosistema de <strong style={{ color: "var(--text)", fontWeight: 500 }}>React y Next.js</strong> para web, y en <strong style={{ color: "var(--text)", fontWeight: 500 }}>Java con Android</strong> para aplicaciones móviles nativas. Me interesa la intersección entre diseño y código: cuando los dos trabajan juntos, el resultado es algo especial.
+              Me especializo en el ecosistema de <strong style={{ color: "var(--text)", fontWeight: 500 }}>React y Next.js</strong> para web, y en <strong style={{ color: "var(--text)", fontWeight: 500 }}>Java con Android</strong> para aplicaciones móviles nativas.
             </p>
             <p>
               Actualmente buscando oportunidades donde pueda contribuir con código de calidad y seguir creciendo junto a un equipo con altos estándares.
@@ -135,16 +170,11 @@ function ContactSection() {
       <div className="section">
         <p className="section-label">Contacto</p>
         <h2 className="section-title">Hablemos</h2>
-
         <div className="contact-wrap fade-in-section" ref={ref}>
           <p style={{ color: "var(--muted)", fontSize: "0.9rem", lineHeight: 1.7, marginBottom: "2.5rem", fontWeight: 300 }}>
             ¿Tienes un proyecto en mente o quieres conectar? Escríbeme — normalmente respondo en menos de 24 horas.
           </p>
-
-          <form
-            onSubmit={(e) => e.preventDefault()}
-            style={{ display: "flex", flexDirection: "column", gap: 0 }}
-          >
+          <form onSubmit={(e) => e.preventDefault()} style={{ display: "flex", flexDirection: "column" }}>
             <div className="form-group">
               <label className="form-label" htmlFor="name">Nombre</label>
               <input id="name" type="text" className="form-input" placeholder="Tu nombre" />
@@ -157,7 +187,6 @@ function ContactSection() {
               <label className="form-label" htmlFor="message">Mensaje</label>
               <textarea id="message" className="form-textarea" placeholder="Cuéntame sobre tu proyecto..." />
             </div>
-
             <div style={{ marginTop: "0.5rem" }}>
               <button type="submit" className="btn-primary">
                 Enviar mensaje
@@ -174,48 +203,13 @@ function ContactSection() {
   );
 }
 
-/* ─── PAGE ──────────────────────────────────────────────────── */
 export default function Home() {
   return (
     <>
-      {/* HERO */}
-      <section className="hero">
-        <HeroVideo />
-        <div className="hero-overlay" />
-
-        <div className="hero-content">
-          <span className="hero-eyebrow">Frontend Developer · 2026</span>
-          <h1 className="hero-title">
-            Misael<em>.</em>
-          </h1>
-          <p className="hero-sub">
-            Construyo experiencias web limpias, modernas y de alto rendimiento que marcan la diferencia.
-          </p>
-          <div className="hero-actions">
-            <a href="#projects" className="btn-primary">
-              Ver proyectos
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"/>
-                <polyline points="12 5 19 12 12 19"/>
-              </svg>
-            </a>
-            <a href="#contact" className="btn-ghost">
-              Contacto
-            </a>
-          </div>
-        </div>
-
-        {/* Scroll hint */}
-        <div className="scroll-hint">
-          <span>scroll</span>
-          <div className="scroll-line" />
-        </div>
-      </section>
-
+      <HeroSection />
       <ProjectsSection />
       <AboutSection />
       <ContactSection />
-
       <footer className="footer">
         <p style={{ marginBottom: "0.3rem" }}>Portfolio Misael · {new Date().getFullYear()}</p>
         <p style={{ fontSize: "0.72rem" }}>Diseñado y construido con Next.js & Tailwind CSS</p>

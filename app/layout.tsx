@@ -3,6 +3,8 @@ import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Loader from "@/components/Loader";
+import CustomCursor from "@/components/CustomCursor";
+import { LoaderProvider } from "@/components/LoaderContext";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -12,20 +14,19 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   title: "Portfolio Misael",
-  description: "Frontend Developer — React, Next.js, Android. Construyendo experiencias web limpias y de alto rendimiento.",
+  description: "Frontend Developer — React, Next.js, Android.",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" className="h-full">
       <body className={`${dmSans.className} antialiased h-full`}>
-        <Loader />
-        <Navbar />
-        {children}
+        <LoaderProvider>
+          <CustomCursor />
+          <Loader />
+          <Navbar />
+          {children}
+        </LoaderProvider>
       </body>
     </html>
   );
