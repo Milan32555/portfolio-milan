@@ -28,12 +28,14 @@ export default function HeroVideo() {
         muted
         loop
         playsInline
+        aria-hidden="true"
         style={{ transition: "transform 0.12s ease-out, opacity 1s ease" }}
       >
         <source src="/video/bg.mp4" type="video/mp4" />
       </video>
 
       <div
+        aria-hidden="true"
         style={{
           position: "absolute",
           inset: 0,

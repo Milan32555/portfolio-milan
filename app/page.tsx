@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import HeroVideo from "@/components/HeroVideo";
 import { useLoader } from "@/components/LoaderContext";
 
+// ─── DATOS ────────────────────────────────────────────────────────────────────
 const projects = [
   {
     num: "01",
@@ -11,6 +12,7 @@ const projects = [
     tags: ["Java", "Android", "SQLite"],
     desc: "Aplicación móvil nativa para organización de tareas con persistencia local. Arquitectura MVC, notificaciones push y soporte offline completo.",
     href: "#",
+    github: "#",
   },
   {
     num: "02",
@@ -18,6 +20,39 @@ const projects = [
     tags: ["Next.js", "TypeScript", "Tailwind CSS"],
     desc: "Este mismo portfolio — construido con Next.js 16, Tailwind CSS y animaciones CSS puras. Diseño dark/light, totalmente responsivo y optimizado.",
     href: "#",
+    github: "#",
+  },
+  {
+    num: "03",
+    title: "E-Commerce Dashboard",
+    tags: ["React", "Node.js", "MongoDB"],
+    desc: "Panel de administración para tienda online con gestión de productos, pedidos y analíticas en tiempo real. Autenticación JWT y roles de usuario.",
+    href: "#",
+    github: "#",
+  },
+  {
+    num: "04",
+    title: "API REST — Red Social",
+    tags: ["Node.js", "Express", "PostgreSQL"],
+    desc: "Backend completo para una red social: posts, comentarios, likes, seguidores y notificaciones. Documentación con Swagger y tests con Jest.",
+    href: "#",
+    github: "#",
+  },
+  {
+    num: "05",
+    title: "App de Clima — React Native",
+    tags: ["React Native", "Expo", "OpenWeather API"],
+    desc: "Aplicación móvil multiplataforma que muestra el clima actual y pronóstico de 7 días usando geolocalización. UI minimalista con animaciones fluidas.",
+    href: "#",
+    github: "#",
+  },
+  {
+    num: "06",
+    title: "Sistema de Reservas",
+    tags: ["Next.js", "Prisma", "Stripe"],
+    desc: "Plataforma web para reserva de turnos con calendario interactivo, pagos integrados con Stripe y notificaciones por email con Resend.",
+    href: "#",
+    github: "#",
   },
 ];
 
@@ -27,14 +62,17 @@ const skills = [
   "Git & GitHub", "REST APIs", "Figma",
 ];
 
+// ─── HOOKS ────────────────────────────────────────────────────────────────────
 function useFadeIn() {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { el.classList.add("visible"); obs.disconnect(); } },
-      { threshold: 0.15 }
+      ([entry]) => {
+        if (entry.isIntersecting) { el.classList.add("visible"); obs.disconnect(); }
+      },
+      { threshold: 0.1 }
     );
     obs.observe(el);
     return () => obs.disconnect();
@@ -42,11 +80,37 @@ function useFadeIn() {
   return ref;
 }
 
+// ─── ÍCONOS ───────────────────────────────────────────────────────────────────
+function ArrowIcon() {
+  return (
+    <svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+    </svg>
+  );
+}
+
+function GitHubIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/>
+    </svg>
+  );
+}
+
+function SendIcon() {
+  return (
+    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+    </svg>
+  );
+}
+
+// ─── HERO ─────────────────────────────────────────────────────────────────────
 function HeroSection() {
   const { loaderDone } = useLoader();
-
-  // staggered fade-up for everything EXCEPT the title
-  const fadeStyle = (delay: string) => ({
+  const fade = (delay: string) => ({
     opacity: 0 as const,
     animation: loaderDone ? `heroFadeUp 0.7s ${delay} ease-out forwards` : "none",
   });
@@ -55,40 +119,24 @@ function HeroSection() {
     <section className="hero">
       <HeroVideo />
       <div className="hero-overlay" />
-
       <div className="hero-content">
-        <span className="hero-eyebrow" style={fadeStyle("0.15s")}>
+        <span className="hero-eyebrow" style={fade("0.15s")}>
           Frontend Developer · 2026
         </span>
-
-        {/* Title — fades in at same moment loader name fades out = seamless handoff */}
-        <h1
-          className="hero-title"
-          style={{
-            opacity: 0,
-            animation: loaderDone ? "heroFadeUp 0.6s 0.05s ease-out forwards" : "none",
-          }}
-        >
+        <h1 className="hero-title" style={{ opacity: 0, animation: loaderDone ? "heroFadeUp 0.6s 0.05s ease-out forwards" : "none" }}>
           Misael<em>.</em>
         </h1>
-
-        <p className="hero-sub" style={fadeStyle("0.35s")}>
+        <p className="hero-sub" style={fade("0.35s")}>
           Construyo experiencias web limpias, modernas y de alto rendimiento que marcan la diferencia.
         </p>
-
-        <div className="hero-actions" style={fadeStyle("0.5s")}>
+        <div className="hero-actions" style={fade("0.5s")}>
           <a href="#projects" className="btn-primary">
-            Ver proyectos
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"/>
-              <polyline points="12 5 19 12 12 19"/>
-            </svg>
+            Ver proyectos <ArrowIcon />
           </a>
           <a href="#contact" className="btn-ghost">Contacto</a>
         </div>
       </div>
-
-      <div className="scroll-hint" style={fadeStyle("0.8s")}>
+      <div className="scroll-hint" style={fade("0.8s")} aria-hidden="true">
         <span>scroll</span>
         <div className="scroll-line" />
       </div>
@@ -96,30 +144,46 @@ function HeroSection() {
   );
 }
 
+// ─── PROJECTS ─────────────────────────────────────────────────────────────────
 function ProjectsSection() {
   const ref = useFadeIn();
   return (
     <section id="projects" style={{ borderTop: "1px solid var(--border)" }}>
-      <div className="section" ref={ref} style={{ opacity: 1 }}>
+      <div className="section fade-in-section" ref={ref}>
         <p className="section-label">Proyectos</p>
         <h2 className="section-title">Lo que he construido</h2>
         <div className="projects-grid">
           {projects.map((p) => (
-            <a key={p.num} href={p.href} className="project-card fade-in-section visible">
+            <div key={p.num} className="project-card">
+              {/* Número */}
               <p className="card-number">{p.num} — Proyecto</p>
+
+              {/* Tags */}
               <div className="card-tags">
                 {p.tags.map((t) => <span key={t} className="tag">{t}</span>)}
               </div>
+
+              {/* Título */}
               <h3 className="card-title">{p.title}</h3>
+
+              {/* Descripción — flex:1 lo empuja hacia abajo */}
               <p className="card-desc">{p.desc}</p>
-              <span className="card-arrow">
-                Ver proyecto
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="5" y1="12" x2="19" y2="12"/>
-                  <polyline points="12 5 19 12 12 19"/>
-                </svg>
-              </span>
-            </a>
+
+              {/* Footer de la card */}
+              <div className="card-footer">
+                <a href={p.href} className="card-arrow" aria-label={`Ver proyecto ${p.title}`}>
+                  Ver proyecto <ArrowIcon />
+                </a>
+                <a
+                  href={p.github}
+                  className="card-github"
+                  aria-label={`GitHub de ${p.title}`}
+                  title="Ver código en GitHub"
+                >
+                  <GitHubIcon size={15} />
+                </a>
+              </div>
+            </div>
           ))}
         </div>
       </div>
@@ -127,6 +191,7 @@ function ProjectsSection() {
   );
 }
 
+// ─── ABOUT ────────────────────────────────────────────────────────────────────
 function AboutSection() {
   const ref = useFadeIn();
   return (
@@ -134,27 +199,50 @@ function AboutSection() {
       <div className="section">
         <p className="section-label">Sobre mí</p>
         <div className="about-grid fade-in-section" ref={ref}>
+          {/* Columna izquierda */}
           <div>
             <p className="about-big-text">
               Construyo experiencias web <em>limpias, rápidas</em> y con atención a cada detalle.
             </p>
+
+            {/* Skills */}
             <div className="skills-list" style={{ marginTop: "2rem" }}>
               {skills.map((s) => (
                 <span key={s} className="skill-pill">
-                  <span className="skill-dot" />{s}
+                  <span className="skill-dot" aria-hidden="true" />{s}
                 </span>
               ))}
             </div>
+
+            {/* GitHub link */}
+            <a
+              href="https://github.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="github-link"
+              aria-label="Ver perfil de GitHub"
+            >
+              <GitHubIcon size={17} />
+              Ver mi GitHub
+              <ArrowIcon />
+            </a>
           </div>
+
+          {/* Columna derecha */}
           <div className="about-body">
             <p style={{ marginBottom: "1.2rem" }}>
-              Soy <strong style={{ color: "var(--text)", fontWeight: 500 }}>Misael</strong>, desarrollador frontend con pasión por crear interfaces que no solo funcionen — sino que se sientan bien al usarlas.
+              Soy <strong style={{ color: "var(--text)", fontWeight: 500 }}>Misael</strong>, desarrollador
+              frontend con pasión por crear interfaces que no solo funcionen — sino que se sientan bien al usarlas.
             </p>
             <p style={{ marginBottom: "1.2rem" }}>
-              Me especializo en el ecosistema de <strong style={{ color: "var(--text)", fontWeight: 500 }}>React y Next.js</strong> para web, y en <strong style={{ color: "var(--text)", fontWeight: 500 }}>Java con Android</strong> para aplicaciones móviles nativas.
+              Me especializo en el ecosistema de{" "}
+              <strong style={{ color: "var(--text)", fontWeight: 500 }}>React y Next.js</strong> para web,
+              y en <strong style={{ color: "var(--text)", fontWeight: 500 }}>Java con Android</strong> para
+              aplicaciones móviles nativas.
             </p>
             <p>
-              Actualmente buscando oportunidades donde pueda contribuir con código de calidad y seguir creciendo junto a un equipo con altos estándares.
+              Actualmente buscando oportunidades donde pueda contribuir con código de calidad y seguir
+              creciendo junto a un equipo con altos estándares.
             </p>
           </div>
         </div>
@@ -163,6 +251,7 @@ function AboutSection() {
   );
 }
 
+// ─── CONTACT ──────────────────────────────────────────────────────────────────
 function ContactSection() {
   const ref = useFadeIn();
   return (
@@ -189,11 +278,7 @@ function ContactSection() {
             </div>
             <div style={{ marginTop: "0.5rem" }}>
               <button type="submit" className="btn-primary">
-                Enviar mensaje
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="22" y1="2" x2="11" y2="13"/>
-                  <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                </svg>
+                Enviar mensaje <SendIcon />
               </button>
             </div>
           </form>
@@ -203,17 +288,18 @@ function ContactSection() {
   );
 }
 
+// ─── HOME ─────────────────────────────────────────────────────────────────────
 export default function Home() {
   return (
-    <>
+    <main id="main-content">
       <HeroSection />
       <ProjectsSection />
       <AboutSection />
       <ContactSection />
       <footer className="footer">
         <p style={{ marginBottom: "0.3rem" }}>Portfolio Misael · {new Date().getFullYear()}</p>
-        <p style={{ fontSize: "0.72rem" }}>Diseñado y construido con Next.js & Tailwind CSS</p>
+        <p style={{ fontSize: "0.72rem" }}>Diseñado y construido con Next.js &amp; Tailwind CSS</p>
       </footer>
-    </>
+    </main>
   );
 }
