@@ -8,58 +8,58 @@ import { useLoader } from "@/components/LoaderContext";
 const projects = [
   {
     num: "01",
-    title: "App Android — Gestión de Tareas",
-    tags: ["Java", "Android", "SQLite"],
-    desc: "Aplicación móvil nativa para organización de tareas con persistencia local. Arquitectura MVC, notificaciones push y soporte offline completo.",
-    href: "#",
-    github: "#",
+    title: "AnimalVision — Clasificación de Imágenes con IA",
+    tags: ["Python", "MobileNetV2", "Flask", "Deep Learning"],
+    desc: "Aplicación web full-stack que clasifica imágenes de animales usando un modelo de deep learning basado en MobileNetV2. Entrenado con Kaggle, desplegado en Render.",
+    href: "https://animal-cnn-classifier.onrender.com",
+    github: "https://github.com/Milan32555/AnimalVision-AI-Image-Classification-System",
   },
   {
     num: "02",
-    title: "Portfolio Personal",
-    tags: ["Next.js", "TypeScript", "Tailwind CSS"],
-    desc: "Este mismo portfolio — construido con Next.js 16, Tailwind CSS y animaciones CSS puras. Diseño dark/light, totalmente responsivo y optimizado.",
+    title: "Chat en Tiempo Real — Socket.io",
+    tags: ["Node.js", "Express", "Socket.io", "MongoDB"],
+    desc: "Aplicación de chat en tiempo real con persistencia de mensajes en MongoDB Atlas. Arquitectura event-driven con Socket.io y servidor Express.",
     href: "#",
-    github: "#",
+    github: "https://github.com/Milan32555/Chat-socket-mongodb",
   },
   {
     num: "03",
-    title: "E-Commerce Dashboard",
-    tags: ["React", "Node.js", "MongoDB"],
-    desc: "Panel de administración para tienda online con gestión de productos, pedidos y analíticas en tiempo real. Autenticación JWT y roles de usuario.",
+    title: "Sistema de Gestión de Librería — Full Stack",
+    tags: ["Vue.js", "Node.js", "Netlify", "Railway"],
+    desc: "Sistema completo para gestionar librerías con arquitectura limpia: CRUD de libros, búsqueda y filtrado por género. Frontend en Vue.js (Netlify) y backend en Node.js (Railway).",
     href: "#",
-    github: "#",
+    github: "https://github.com/Milan32555/Full-stack-library-management-system-with-Vue.js-frontend-and-Node.js-backend",
   },
   {
     num: "04",
-    title: "API REST — Red Social",
-    tags: ["Node.js", "Express", "PostgreSQL"],
-    desc: "Backend completo para una red social: posts, comentarios, likes, seguidores y notificaciones. Documentación con Swagger y tests con Jest.",
+    title: "KardexAPP — Gestión de Inventario",
+    tags: ["Vue 3", "Vuetify", "Pinia", "ApexCharts"],
+    desc: "App web para control de stock con movimientos de entrada/salida, cálculo automático de costo promedio ponderado, gráficas interactivas y exportación a CSV y PDF.",
     href: "#",
-    github: "#",
+    github: "https://github.com/Milan32555/VUE-KardexAPP",
   },
   {
     num: "05",
-    title: "App de Clima — React Native",
-    tags: ["React Native", "Expo", "OpenWeather API"],
-    desc: "Aplicación móvil multiplataforma que muestra el clima actual y pronóstico de 7 días usando geolocalización. UI minimalista con animaciones fluidas.",
+    title: "SafeTransfer AI — Transferencias Seguras",
+    tags: ["HTML", "CSS", "JavaScript", "AI"],
+    desc: "Plataforma de transferencias con enfoque en seguridad e inteligencia artificial. Diseño orientado a velocidad, confiabilidad y protección de datos sensibles.",
     href: "#",
-    github: "#",
+    github: "https://github.com/Milan32555/safe-transfer-ai",
   },
   {
     num: "06",
-    title: "Sistema de Reservas",
-    tags: ["Next.js", "Prisma", "Stripe"],
-    desc: "Plataforma web para reserva de turnos con calendario interactivo, pagos integrados con Stripe y notificaciones por email con Resend.",
+    title: "Portfolio Personal",
+    tags: ["Next.js", "TypeScript", "Tailwind CSS"],
+    desc: "Este mismo portfolio — construido con Next.js 16, Tailwind CSS y animaciones CSS puras. Diseño dark/light, accesibilidad WCAG, totalmente responsivo y optimizado.",
     href: "#",
-    github: "#",
+    github: "https://github.com/Milan32555/portfolio-milan",
   },
 ];
 
 const skills = [
-  "React", "Next.js", "TypeScript", "JavaScript",
-  "Java", "Android Studio", "Tailwind CSS",
-  "Git & GitHub", "REST APIs", "Figma",
+  "React", "Next.js", "TypeScript", "Vue.js",
+  "Node.js", "Python", "Deep Learning", "Socket.io",
+  "Tailwind CSS", "Git & GitHub", "REST APIs", "Ethical Hacking",
 ];
 
 // ─── HOOKS ────────────────────────────────────────────────────────────────────
@@ -216,7 +216,7 @@ function AboutSection() {
 
             {/* GitHub link */}
             <a
-              href="https://github.com/"
+              href="https://github.com/Milan32555"
               target="_blank"
               rel="noopener noreferrer"
               className="github-link"
@@ -231,18 +231,20 @@ function AboutSection() {
           {/* Columna derecha */}
           <div className="about-body">
             <p style={{ marginBottom: "1.2rem" }}>
-              Soy <strong style={{ color: "var(--text)", fontWeight: 500 }}>Misael</strong>, desarrollador
-              frontend con pasión por crear interfaces que no solo funcionen — sino que se sientan bien al usarlas.
+              Soy <strong style={{ color: "var(--text)", fontWeight: 500 }}>Misael</strong>, Ingeniero en
+              Sistemas y Ethical Hacker con pasión por construir productos digitales que no solo funcionen —
+              sino que se sientan bien al usarlos.
             </p>
             <p style={{ marginBottom: "1.2rem" }}>
               Me especializo en el ecosistema de{" "}
-              <strong style={{ color: "var(--text)", fontWeight: 500 }}>React y Next.js</strong> para web,
-              y en <strong style={{ color: "var(--text)", fontWeight: 500 }}>Java con Android</strong> para
-              aplicaciones móviles nativas.
+              <strong style={{ color: "var(--text)", fontWeight: 500 }}>React, Next.js y Vue.js</strong> para
+              web, <strong style={{ color: "var(--text)", fontWeight: 500 }}>Node.js</strong> para backends, y{" "}
+              <strong style={{ color: "var(--text)", fontWeight: 500 }}>Python con Deep Learning</strong> para
+              soluciones de inteligencia artificial.
             </p>
             <p>
-              Actualmente buscando oportunidades donde pueda contribuir con código de calidad y seguir
-              creciendo junto a un equipo con altos estándares.
+              Actualmente buscando oportunidades donde pueda contribuir con código de calidad, aplicar mis
+              conocimientos en seguridad y seguir creciendo junto a un equipo con altos estándares.
             </p>
           </div>
         </div>
