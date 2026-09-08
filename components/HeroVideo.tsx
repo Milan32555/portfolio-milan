@@ -28,6 +28,8 @@ export default function HeroVideo() {
         muted
         loop
         playsInline
+        preload="auto"
+        poster="/video/bg-poster.jpg"
         aria-hidden="true"
         style={{ transition: "transform 0.12s ease-out, opacity 1s ease" }}
       >
