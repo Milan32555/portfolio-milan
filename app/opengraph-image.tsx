@@ -46,6 +46,22 @@ export default async function OpengraphImage() {
         >
           React · Next.js · Vue.js · Deep Learning
         </div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            marginTop: 56,
+            padding: "16px 36px",
+            borderRadius: 999,
+            border: "2px solid #4f8ef7",
+            fontSize: 28,
+            color: "#f0f0f2",
+          }}
+        >
+          Ver portfolio
+          <span style={{ color: "#7eb3ff" }}>→</span>
+        </div>
       </div>
     ),
     { ...size }

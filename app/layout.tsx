@@ -23,9 +23,9 @@ const dmSerifDisplay = DM_Serif_Display({
 });
 
 const siteUrl = "https://portfolio-milan-omega.vercel.app";
-const title = "Misael — Frontend Developer";
+const title = "Misael — Frontend Developer | React, Next.js & Vue.js";
 const description =
-  "Portfolio de Misael, Ingeniero en Sistemas y Ethical Hacker especializado en React, Next.js, Vue.js y Deep Learning. Proyectos, habilidades y contacto.";
+  "Portfolio de Misael: Ingeniero en Sistemas y Ethical Hacker. Desarrollo web con React, Next.js y Vue.js. Mira mis proyectos.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
