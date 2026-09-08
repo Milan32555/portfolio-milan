@@ -67,7 +67,7 @@ vercel        # deploy de preview
 vercel --prod # deploy a producción
 ```
 
-> Nota: `app/layout.tsx`, `app/robots.ts` y `app/sitemap.ts` usan `https://portfolio-milan.vercel.app` como URL del sitio. Si usas un dominio distinto, actualiza la constante `siteUrl` en esos tres archivos.
+> Nota: `app/layout.tsx`, `app/robots.ts` y `app/sitemap.ts` usan `https://portfolio-milan-omega.vercel.app` como URL del sitio. Si conectas un dominio custom, actualiza la constante `siteUrl` en esos tres archivos.
 
 ## Estructura
 
