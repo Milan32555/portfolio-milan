@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans } from "next/font/google";
+import { DM_Sans, DM_Serif_Display } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Loader from "@/components/Loader";
@@ -11,13 +11,60 @@ const dmSans = DM_Sans({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600"],
   display: "swap",
+  variable: "--font-dm-sans",
 });
 
+const dmSerifDisplay = DM_Serif_Display({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  display: "swap",
+  variable: "--font-dm-serif",
+});
+
+const siteUrl = "https://portfolio-milan.vercel.app";
+const title = "Misael — Frontend Developer";
+const description =
+  "Portfolio de Misael, Ingeniero en Sistemas y Ethical Hacker especializado en React, Next.js, Vue.js y Deep Learning. Proyectos, habilidades y contacto.";
+
 export const metadata: Metadata = {
-  title: "Portfolio Misael — Frontend Developer",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: title,
+    template: "%s — Misael",
+  },
   // WCAG 2.4.2 — título descriptivo y único que identifica el propósito de la página
-  description:
-    "Portfolio de Misael, desarrollador frontend especializado en React, Next.js y Android. Proyectos, habilidades y contacto.",
+  description,
+  keywords: [
+    "Misael",
+    "Frontend Developer",
+    "React",
+    "Next.js",
+    "Vue.js",
+    "TypeScript",
+    "Ethical Hacking",
+    "Portfolio",
+  ],
+  authors: [{ name: "Misael", url: "https://github.com/Milan32555" }],
+  creator: "Misael",
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    locale: "es_ES",
+    url: siteUrl,
+    siteName: title,
+    title,
+    description,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -25,7 +72,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     // WCAG 3.1.1 — lang="es" permite a los lectores de pantalla
     // usar la pronunciación y gramática correcta del idioma
     <html lang="es" className="h-full">
-      <body className={`${dmSans.className} antialiased h-full`}>
+      <body className={`${dmSans.className} ${dmSans.variable} ${dmSerifDisplay.variable} antialiased h-full`}>
         <LoaderProvider>
 
           {/*
