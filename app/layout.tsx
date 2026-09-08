@@ -22,7 +22,7 @@ const dmSerifDisplay = DM_Serif_Display({
   variable: "--font-dm-serif",
 });
 
-const siteUrl = "https://portfolio-milan.vercel.app";
+const siteUrl = "https://portfolio-milan-omega.vercel.app";
 const title = "Misael — Frontend Developer";
 const description =
   "Portfolio de Misael, Ingeniero en Sistemas y Ethical Hacker especializado en React, Next.js, Vue.js y Deep Learning. Proyectos, habilidades y contacto.";
