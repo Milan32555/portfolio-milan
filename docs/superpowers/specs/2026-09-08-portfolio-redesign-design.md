@@ -95,13 +95,9 @@ Formulario tipo "mad-libs": una sola oración en serif grande con blancos (`<inp
 
 Mockup de referencia completo: `.superpowers/brainstorm/1444-1788908977/content/page-contacto-v2.html` (puede haberse limpiado por retention; si no existe, reconstruir desde este spec).
 
-## Pendiente (sesión se pausó aquí)
+## Pendiente
 
-1. **`/servicios`** — mockup no llegó a hacerse (el companion visual se cayó dos veces: timeout de inactividad, luego memoria del sistema casi agotada — 0.5GB libres de 15.7GB). Diseño conceptual ya acordado con el usuario, falta visualizarlo y aprobarlo:
-   - Contenido: servicios freelance que ofrece Misael (desarrollo + auditoría de seguridad/ethical hacking).
-   - Formato: editorial largo, tono conversacional/honesto (como latitude.build/services.html — "no hay lista de precios porque...").
-   - TOC lateral fijo con scroll-spy (indicador de sección activa), estimado de tiempo de lectura arriba.
-   - Debe convivir con el sidebar de nav general (¿el TOC va en vez del sidebar, o además? — **sin resolver, preguntar al usuario**).
+1. ~~`/servicios`~~ — **CERRADO 2026-09-17**, ver `docs/superpowers/specs/2026-09-17-pagina-servicios-design.md`. TOC puro reemplaza al sidebar en esta página (no conviven), estructura editorial con 6 secciones + FAQ acordeón, precios sin montos públicos. Ese spec también documenta 4 correcciones de accesibilidad/mobile sitewide encontradas durante la investigación (ver punto 7 abajo).
 
 2. **`/proyectos`** — página propia, aún no diseñada en absoluto. Hoy solo existe como grid de cards en el home actual (`app/page.tsx` → `ProjectsSection`). Decidir: ¿lista tipo la del mockup de sidebar (filas con número/tags/flecha) o algo distinto? ¿Cada proyecto individual tiene su propia sub-página o solo la lista es nueva?
 
@@ -112,6 +108,16 @@ Mockup de referencia completo: `.superpowers/brainstorm/1444-1788908977/content/
 5. **Grano/textura de fondo** — decidir sí/no definitivamente (ver nota en sección Fondo).
 
 6. Tras cerrar todo lo anterior: **presentar el diseño consolidado, obtener aprobación explícita del usuario**, pasar el spec por el self-review (placeholders, contradicciones, alcance, ambigüedad), y **solo entonces invocar `writing-plans`** para el plan de implementación. Todavía no se ha hecho ningún cambio de código de producción para este rediseño — todo lo anterior son mockups desechables en `.superpowers/brainstorm/`.
+
+7. **Correcciones sitewide encontradas investigando `/servicios`** (no estaban contempladas el 2026-09-08, deben entrar al plan de implementación general, detalle en `docs/superpowers/specs/2026-09-17-pagina-servicios-design.md`):
+   - `--muted` (`#6b6b78`) falla contraste AA contra el nuevo fondo navy `#0B1220` (3.57:1, necesita 4.5:1) — subir a ~`#8a8a96` al implementar `--bg: #0B1220`.
+   - El nuevo cursor "resplandor etéreo" (sección 3) debe gatear por `(hover: hover) and (pointer: fine)` y respetar `prefers-reduced-motion` explícitamente en su loop de `requestAnimationFrame` — el `prefers-reduced-motion` CSS del proyecto no cubre animación JS pura.
+   - El sidebar fijo (sección 1) necesita patrón de colapso a mobile sin definir todavía: panel off-canvas + hamburguesa + backdrop bajo ~768px (`Navbar.tsx` actual no sirve de base).
+   - Falta `:focus-visible` custom en `globals.css` — con `cursor: none` global, el foco por teclado necesita indicador visible propio.
+
+8. **Tercera pasada pendiente para el resto del sitio**: `docs/superpowers/research/2026-09-17-investigacion-mejores-portfolios.md` tiene 5 pasadas de investigación (patrones visuales transversales, código real de GitHub, perspectiva de reclutadores/clientes, mobile/accesibilidad) que aplican más allá de `/servicios` — usarla como insumo cuando se diseñen el Loader (con Three.js, ver más abajo), `/proyectos` (recomienda narrativa problema→resultado en 3-5 proyectos, no grid grande) y `/sobre-mi`/home (testimonios/casos de estudio identificados como el elemento de mayor impacto en conversión, hoy ausente en todo el sitio).
+
+9. **Three.js — nuevo alcance, no estaba en la sesión original del 2026-09-08**: el usuario pidió incorporar Three.js "para algo". Se decidió explícitamente que **NO va en `/servicios`** (compite con la lectura larga) sino en el **Loader** (`components/Loader.tsx`) — pendiente de su propia sesión de brainstorming completa (no diseñado todavía). La investigación (pasada 3, GitHub) recomienda una escena 3D **contenida** (ej. estilo `sunnypatell/react-threejs-portfolio`), no un mundo navegable completo (ej. Bruno Simon / `VinayMatta63/threejs-portfolio`), para no repetir ese patrón fuera de contexto.
 
 ## Notas técnicas para la implementación (cuando llegue el momento)
 
