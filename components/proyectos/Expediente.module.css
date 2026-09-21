@@ -67,7 +67,7 @@
 }
 
 /* Mobile: las pestañas escalonadas pasan a cabeceras de acordeón a ancho completo */
-@media (max-width: 700px) {
+@media (max-width: 860px) {
   .chip {
     position: static;
     width: 100%;
@@ -81,3 +81,10 @@
   .inner { padding: 0 22px 36px; }
   .stack { margin-top: 2.5rem; padding-top: 0; }
 }
+
+@media print {
+  .panel { grid-template-rows: 1fr; }
+  .folder { box-shadow: none; }
+}
+
+.heading { display: contents; margin: 0; font: inherit; }

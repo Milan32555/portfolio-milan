@@ -1,14 +1,28 @@
-import type { Metadata } from "next";
+import type { Metadata, ResolvingMetadata } from "next";
 import ProjectList from "@/components/proyectos/ProjectList";
 import { getCounts } from "@/lib/projects";
 import styles from "./page.module.css";
 
-export const metadata: Metadata = {
-  title: "Proyectos",
-  description:
-    "Cuatro proyectos elegidos por lo que enseñan: MEDI-IA, AnimalVision, un sistema de librería con Clean Architecture y SafeTransfer AI. Cada uno con su problema, decisiones y evidencia.",
-  alternates: { canonical: "/proyectos" },
-};
+export async function generateMetadata(_props: unknown, parent: ResolvingMetadata): Promise<Metadata> {
+  const parentOg = (await parent).openGraph;
+  const description =
+    "Cuatro proyectos elegidos por lo que enseñan: MEDI-IA, AnimalVision, un sistema de librería con Clean Architecture y SafeTransfer AI. Cada uno con su problema, decisiones y evidencia.";
+  return {
+    title: "Proyectos",
+    description,
+    alternates: { canonical: "/proyectos" },
+    openGraph: {
+      title: "Proyectos — Misael",
+      description,
+      url: "/proyectos",
+      type: "website",
+      siteName: parentOg?.siteName,
+      locale: parentOg?.locale,
+      images: parentOg?.images,
+    },
+    twitter: { card: "summary_large_image", title: "Proyectos — Misael", description },
+  };
+}
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -19,7 +33,7 @@ export default function ProyectosPage() {
     <main id="main-content">
       <div className="section">
         <p className="section-label">Proyectos</p>
-        <h1 className="section-title">Lo que he construido</h1>
+        <h1 className={`section-title ${styles.h1}`}>Lo que he construido</h1>
         <p className={styles.lead}>
           Cuatro proyectos, elegidos por lo que enseñan y no por cantidad. Cada uno tiene su expediente con el problema, mis decisiones y la evidencia.
         </p>

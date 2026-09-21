@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, ResolvingMetadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ArchitectureFlow from "@/components/proyectos/ArchitectureFlow";
@@ -19,15 +19,25 @@ export function generateStaticParams() {
 
 type Props = { params: Promise<{ slug: string }> };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata> {
   const { slug } = await params;
   const p = getProject(slug);
   if (!p) return {};
+  const parentOg = (await parent).openGraph;
   return {
     title: p.title,
     description: p.summary,
     alternates: { canonical: `/proyectos/${p.slug}` },
-    openGraph: { title: `${p.title} — Misael`, description: p.summary, url: `/proyectos/${p.slug}`, type: "article" },
+    openGraph: {
+      title: `${p.title} — Misael`,
+      description: p.summary,
+      url: `/proyectos/${p.slug}`,
+      type: "article",
+      siteName: parentOg?.siteName,
+      locale: parentOg?.locale,
+      images: parentOg?.images,
+    },
+    twitter: { card: "summary_large_image", title: `${p.title} — Misael`, description: p.summary },
   };
 }
 
@@ -46,7 +56,7 @@ export default async function ProyectoPage({ params }: Props) {
       contenido: (
         <>
           <p className={styles.text}>{e.problema}</p>
-          <h3 className={styles.sub}>Qué hace</h3>
+          <h4 className={styles.sub}>Qué hace</h4>
           <ul className={styles.list}>{e.queHace.map((x) => <li key={x}>{x}</li>)}</ul>
         </>
       ),
@@ -66,7 +76,7 @@ export default async function ProyectoPage({ params }: Props) {
               <li key={d.titulo}><b>{d.titulo}:</b> {d.texto}</li>
             ))}
           </ul>
-          <h3 className={styles.sub}>Lo que decidí no hacer</h3>
+          <h4 className={styles.sub}>Lo que decidí no hacer</h4>
           <ul className={styles.list}>{e.noHice.map((x) => <li key={x}>{x}</li>)}</ul>
         </>
       ),
@@ -82,7 +92,7 @@ export default async function ProyectoPage({ params }: Props) {
       contenido: (
         <>
           <p className={styles.text}>{e.resultado}</p>
-          <h3 className={styles.sub}>Con más tiempo haría…</h3>
+          <h4 className={styles.sub}>Con más tiempo haría…</h4>
           <ul className={styles.list}>
             {e.conMasTiempo.map((x, i) => (
               <li key={x}>{i === 0 && draft("conMasTiempo")}{x}</li>
@@ -104,7 +114,7 @@ export default async function ProyectoPage({ params }: Props) {
           Expediente {projectNumber(p.slug)} · {p.context === "universitario" ? "Proyecto universitario" : "Proyecto personal"} · {p.periodo} ·{" "}
           {p.estado === "activo" ? "Activo" : "Archivado"}
         </p>
-        <h1 className="section-title">{p.title}</h1>
+        <h1 className={`section-title ${styles.h1}`}>{p.title}</h1>
         <p className={styles.lead}>{p.summary}</p>
 
         <ProjectActions project={p} variant="detail" />
