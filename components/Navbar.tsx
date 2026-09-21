@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const SECTIONS = ["projects", "about", "contact"] as const;
 
@@ -49,9 +50,9 @@ export default function Navbar() {
 
       <div className="navbar-links">
         {SECTIONS.map((id) => (
-          <a key={id} href={`#${id}`} style={linkStyle(id)}>
+          <Link key={id} href={`/#${id}`} style={linkStyle(id)}>
             {id === "projects" ? "Proyectos" : id === "about" ? "Sobre mí" : "Contacto"}
-          </a>
+          </Link>
         ))}
 
         <button

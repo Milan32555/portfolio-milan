@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, FormEvent } from "react";
+import Link from "next/link";
 import HeroVideo from "@/components/HeroVideo";
 import { useLoader } from "@/components/LoaderContext";
 
@@ -185,6 +186,11 @@ function ProjectsSection() {
               </div>
             </div>
           ))}
+        </div>
+        <div style={{ marginTop: "2rem" }}>
+          <Link href="/proyectos" className="btn-ghost">
+            Ver los proyectos con detalle <span aria-hidden="true">→</span>
+          </Link>
         </div>
       </div>
     </section>
