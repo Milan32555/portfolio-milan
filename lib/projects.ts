@@ -1,6 +1,7 @@
 export type Context = "personal" | "universitario";
 export type Estado = "activo" | "archivado";
-export type CampoBorrador = "periodo" | "estado" | "rol" | "conMasTiempo" | "arquitectura" | "aviso";
+export const CAMPOS_BORRADOR = ["periodo", "estado", "rol", "conMasTiempo", "arquitectura", "aviso"] as const;
+export type CampoBorrador = (typeof CAMPOS_BORRADOR)[number];
 
 export interface Stat {
   value: string;

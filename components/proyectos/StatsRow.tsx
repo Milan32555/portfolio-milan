@@ -3,7 +3,7 @@ import styles from "./StatsRow.module.css";
 
 export default function StatsRow({ stats }: { stats: readonly Stat[] }) {
   return (
-    <ul className={styles.stats} aria-label="Cifras destacadas">
+    <ul className={styles.stats} role="list" aria-label="Cifras destacadas">
       {stats.map((s) => (
         <li key={s.label} className={styles.stat}>
           <span className={styles.value}>{s.value}</span>

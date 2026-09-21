@@ -23,7 +23,7 @@ export default function ProjectMedia({ project }: { project: Project }) {
       )}
 
       {project.galeria && project.galeria.length > 0 && (
-        <ul className={styles.gallery} aria-label="Capturas">
+        <ul className={styles.gallery} role="list" aria-label="Capturas">
           {project.galeria.map((g) => (
             <li key={g.src} className={styles.shot}>
               <Image src={g.src} alt={g.alt} width={g.width} height={g.height} sizes="(max-width: 700px) 100vw, 320px" />

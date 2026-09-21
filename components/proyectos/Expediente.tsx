@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useSyncExternalStore, type CSSProperties, type PointerEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type PointerEvent, type ReactNode } from "react";
 import { HOVER_INTENT_MS, isRealMouseMove } from "@/lib/hoverIntent";
 import styles from "./Expediente.module.css";
 
@@ -22,6 +22,7 @@ const noopSubscribe = () => () => {};
 export default function Expediente({ carpetas, label }: { carpetas: Carpeta[]; label: string }) {
   const [open, setOpen] = useState(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
   // false en el servidor y en la hidratación; true después. Evita `inert` en el HTML inicial (sin JS todo se lee).
   const hydrated = useSyncExternalStore(noopSubscribe, () => true, () => false);
 
@@ -48,22 +49,24 @@ export default function Expediente({ carpetas, label }: { carpetas: Carpeta[]; l
         const isOpen = open === i;
         return (
           <section key={c.id} className={styles.folder} style={{ "--i": i } as CSSProperties} data-open={isOpen}>
-            <button
-              type="button"
-              id={`${c.id}-tab`}
-              className={styles.chip}
-              aria-expanded={isOpen}
-              aria-controls={`${c.id}-panel`}
-              onClick={() => {
-                cancel();
-                setOpen(i);
-              }}
-              onPointerMove={(e) => scheduleOpen(i, e)}
-              onPointerLeave={cancel}
-            >
-              <span className={styles.num}>{String(i + 1).padStart(2, "0")}</span>
-              <span>{c.titulo}</span>
-            </button>
+            <h3 className={styles.heading}>
+              <button
+                type="button"
+                id={`${c.id}-tab`}
+                className={styles.chip}
+                aria-expanded={isOpen}
+                aria-controls={`${c.id}-panel`}
+                onClick={() => {
+                  cancel();
+                  setOpen(i);
+                }}
+                onPointerMove={(e) => scheduleOpen(i, e)}
+                onPointerLeave={cancel}
+              >
+                <span className={styles.num}>{String(i + 1).padStart(2, "0")}</span>
+                <span>{c.titulo}</span>
+              </button>
+            </h3>
 
             <div className={styles.strip} aria-hidden="true" onPointerMove={(e) => scheduleOpen(i, e)} onPointerLeave={cancel} />
 

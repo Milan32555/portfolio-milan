@@ -23,3 +23,7 @@
   color: transparent;
 }
 .label { display: block; margin-top: 8px; color: var(--muted); font-size: 0.85rem; line-height: 1.35; }
+
+@media (forced-colors: active) {
+  .value { background: none; color: CanvasText; }
+}

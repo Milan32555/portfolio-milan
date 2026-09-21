@@ -6,7 +6,7 @@ import styles from "./ProjectList.module.css";
 
 export default function ProjectList() {
   return (
-    <ol className={styles.rows}>
+    <ol className={styles.rows} role="list">
       {projects.map((p) => {
         const live = isLive(p);
         return (

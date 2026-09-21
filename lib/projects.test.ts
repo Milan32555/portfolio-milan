@@ -1,8 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { getAdjacent, getCounts, getProject, isLive, projectNumber, projects } from "./projects.ts";
-
-const FIELDS_BORRADOR = ["periodo", "estado", "rol", "conMasTiempo", "arquitectura", "aviso"];
+import { CAMPOS_BORRADOR, getAdjacent, getCounts, getProject, isLive, projectNumber, projects } from "./projects.ts";
 
 describe("integridad de los datos", () => {
   it("hay 4 proyectos con slugs únicos en kebab-case", () => {
@@ -49,7 +47,7 @@ describe("integridad de los datos", () => {
   });
 
   it("los campos marcados como borrador son nombres válidos", () => {
-    for (const p of projects) for (const b of p.borrador) assert.ok(FIELDS_BORRADOR.includes(b), `${p.slug}: ${b}`);
+    for (const p of projects) for (const b of p.borrador) assert.ok((CAMPOS_BORRADOR as readonly string[]).includes(b), `${p.slug}: ${b}`);
   });
 
   it("las reglas de honestidad del spec se cumplen", () => {

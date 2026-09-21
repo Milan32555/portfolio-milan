@@ -8,7 +8,7 @@ export default function ArchitectureFlow({ parts }: { parts: readonly ArchPart[]
       <p className={styles.eyebrow}>Arquitectura</p>
       <h2 id="arquitectura-titulo" className={styles.title}>De la pantalla a los datos</h2>
       <p className={styles.intro}>Las partes del sistema, en el orden en que viaja la información.</p>
-      <ol className={styles.layers} style={{ "--n": parts.length } as CSSProperties}>
+      <ol className={styles.layers} role="list" style={{ "--n": parts.length } as CSSProperties}>
         {parts.map((p, i) => (
           <li key={p.nombre} className={styles.layer}>
             <span className={styles.k}>{String(i + 1).padStart(2, "0")}</span>
