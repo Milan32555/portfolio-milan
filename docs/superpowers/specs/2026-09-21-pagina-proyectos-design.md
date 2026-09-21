@@ -18,7 +18,7 @@ Este spec **asume el layout compartido del master spec** (sidebar fijo en `app/l
   - Identidad: `slug`, `title`, `summary` (1 línea), `context` (`"personal" | "universitario"`), `subtitulo?` (contexto o reconocimiento, p. ej. "Proyecto del curso de Arquitectura de Software"; opcional, patrón de mldangelo), `periodo` (texto, p. ej. "Mar 2026 – presente"), `estado` (`"activo" | "archivado"`, señal de mantenimiento como el `active` de Dillion), `tags[]`. El número `EXP-00N` **se deriva del orden** en el array (no se guarda).
   - Lista: `metric: { value, label }` (una cifra verificable, corta).
   - Enlaces: `repo: { url }` y `demo?: { url, note? }`. **`demo` es opcional**: si falta, el botón no se renderiza y el estado pasa a "Solo código". `note` es el aviso junto al botón (p. ej. arranque en frío).
-  - Portada y medios: `cover?: { src, alt }`; si falta, se genera una portada determinista (semilla por slug). `video?: { src, poster, duracion }` (recorrido corto, ver regla abajo) y `galeria?: [{ src, alt }]` (2-4 capturas de estados reales).
+  - Portada y medios: `cover?: { src, alt }`; si falta, se genera una portada determinista (semilla por slug). `video?: { src, poster, label }` (`label` describe lo que muestra el video) (recorrido corto, ver regla abajo) y `galeria?: [{ src, alt }]` (2-4 capturas de estados reales).
   - Detalle: `stats: [{ value, label }, { value, label }, { value, label }]` (exactamente 3), `arquitectura: [{ nombre, descripcion }]` (3-5 partes, en orden de la pantalla a los datos) y `expediente: { problema, queHace[] (3-5 funciones), rol, decisiones[], noHice[], evidencia[], resultado, conMasTiempo[] }`. Opcional `aviso?: string` para el recuadro informativo (p. ej. MEDI-IA, safe-transfer-ai).
 - **Slug inexistente → 404** (`dynamicParams = false` + `notFound()`). Anterior/siguiente son **circulares** (el siguiente del último es el primero).
 - `generateMetadata` por proyecto: título `"{title} — Misael"`, descripción = `summary`, OG con la portada.
@@ -125,7 +125,7 @@ Coherente con el resto del rediseño (navy `#0B1220` + glow, serif para títulos
 - `lib/projects.ts` — datos y tipos (fuente única).
 - `app/proyectos/page.tsx` — lista (server component).
 - `app/proyectos/[slug]/page.tsx` — detalle (server component; `generateStaticParams`, `generateMetadata`).
-- `components/proyectos/ProjectRow.tsx` — fila de la lista (server; el hover es solo CSS).
+- `components/proyectos/ProjectList.tsx` — la lista con sus cuatro filas (server; el hover es solo CSS).
 - `components/proyectos/ProjectCover.tsx` — portada: imagen real con `next/image` o portada generada determinista en SVG (server, sin JS).
 - `components/proyectos/StatsRow.tsx` y `ArchitectureFlow.tsx` — server components.
 - `components/proyectos/Expediente.tsx` — **el único client component** (estado abierto, hover con intención, teclado).

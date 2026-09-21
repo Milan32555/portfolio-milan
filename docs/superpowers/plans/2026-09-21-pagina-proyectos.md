@@ -2234,17 +2234,17 @@ with sync_playwright() as p:
     pg.wait_for_timeout(7000)
     pg.evaluate("document.querySelector('main section[data-open]').parentElement.scrollIntoView({block: 'center'})")
     pg.wait_for_timeout(500)
-    chip3 = pg.locator("main section[data-open] > button").nth(2).bounding_box()
+    chip3 = pg.locator("main section[data-open] h3 > button").nth(2).bounding_box()
     pg.mouse.move(chip3["x"] - 80, chip3["y"] - 30)
     pg.mouse.move(chip3["x"] + 40, chip3["y"] + 20, steps=10)
     pg.wait_for_timeout(900)
     check(opens(pg) == "00100", f"hover: abre la carpeta 03 ({opens(pg)})")
     pg.wait_for_timeout(1800)
     check(opens(pg) == "00100", f"hover: sin cascada tras quedarse quieto ({opens(pg)})")
-    pg.locator("main section[data-open] > button").nth(2).click()
+    pg.locator("main section[data-open] h3 > button").nth(2).click()
     pg.wait_for_timeout(500)
     check(opens(pg) == "00100", "clic sobre la abierta no la cierra")
-    pg.locator("main section[data-open] > button").nth(4).focus()
+    pg.locator("main section[data-open] h3 > button").nth(4).focus()
     pg.keyboard.press("Enter")
     pg.wait_for_timeout(600)
     check(opens(pg) == "00001", "teclado: Enter abre la carpeta 05")
@@ -2410,3 +2410,27 @@ Abre el PR de `feat/proyectos` hacia la rama principal y despliega por el flujo 
 - `.sr-only` no está definida en `globals.css` (el layout la usa y depende de que Tailwind la genere). Este plan define su propia `.srOnly` en cada módulo para no depender de eso.
 
 **Consistencia de nombres:** `projects`, `getProject`, `getAdjacent`, `getCounts`, `isLive`, `projectNumber`, `Project`, `CampoBorrador` (Task 4) se usan con esos nombres en los Tasks 5-11; `isRealMouseMove`/`HOVER_INTENT_MS` (Task 2) en Task 8; `coverLayers`/`hueFor` (Task 3) en Task 5; clases globales `pj-l0..2` de `ProjectCover` y su selector `:global(.pj-lN)` en `ProjectList.module.css` coinciden.
+
+---
+
+## Estado de la ejecución (2026-09-21)
+
+Tareas 0-12 ejecutadas en la rama `feat/proyectos` con subagentes (un implementador por tarea, verificación independiente de cada entrega y revisión final de toda la rama). Las Tareas 13 (metadatos de repos en GitHub) y 14 (contenido real y puerta de publicación) siguen pendientes por depender del usuario.
+
+**Cambios respecto al plan original, surgidos de la revisión final** (todos ya en la rama):
+- `Expediente.module.css`: el punto de corte del acordeón subió de 700 a **860 px** (a 701-800 px la 5.ª pestaña se recortaba en silencio); se añadió `@media print` con paneles abiertos y **sin transición** (con transición, una impresión podía capturar carpetas a medias); `.heading { display: contents }` porque cada pestaña quedó dentro de un `<h3>`.
+- Los sub-encabezados dentro de las carpetas ("Qué hace", "Lo que decidí no hacer", "Con más tiempo haría…") pasaron de `h3` a `h4` para mantener el esquema h1 → h2 → h3 → h4 sin saltos.
+- Metadatos: `/proyectos` y `/proyectos/[slug]` usan `generateMetadata(_, parent)` y **heredan** `og:image`, `og:site_name` y `og:locale` del layout (un `openGraph` propio reemplaza al del padre en Next); ambos añaden `twitter`. Seguimiento futuro: una `opengraph-image` por proyecto con su portada cuando existan las capturas reales.
+- `lib/projects.ts` exporta `CAMPOS_BORRADOR` y de ahí se deriva `CampoBorrador` (el test ya no repite la lista a mano).
+- `role="list"` en las cuatro listas con `list-style: none`; modo de colores forzados en las cifras; limpieza del temporizador de hover al desmontar; `.h1.h1 { margin-bottom: 0 }` para no heredar el margen de 4 rem de `.section-title`.
+- `verify-proyectos.py`: espera a que se vaya el Loader (~4 s), apunta a `main h1` porque el Loader añade su propio `<h1>`, interpreta `1e-05s` como "sin transición", ignora el error de consola del 404 intencional y usa el selector `main section[data-open] h3 > button`.
+
+**Diferencias deliberadas frente al spec** (los documentos ya coinciden con el código):
+- `video` usa `{ src, poster, label }` (no `duracion`): `label` describe lo que muestra el video.
+- La fila de la lista es `ProjectList.tsx` (renderiza las cuatro filas), no `ProjectRow.tsx`.
+- Sin JavaScript se usa `@media (scripting: none)` en lugar de `<noscript><style>`: equivalente en navegadores modernos (Chrome 120+, Firefox 113+, Safari 17+), pero **no cubre** el caso "JS activado pero el bundle no cargó" (las carpetas 2-5 quedarían cerradas). Riesgo aceptado.
+
+**Comportamiento del Loader (verificado):** el `Loader` vive en `app/layout.tsx`, así que solo se monta en una **carga completa** (abrir la página o F5) y **no** al navegar entre secciones con enlaces `Link` (comprobado con Playwright: volver a Proyectos, abrir una fila y la navbar no lo disparan). Mientras dura (~4 s) añade su propio `<h1>Misael</h1>`; el script de verificación lo tiene en cuenta.
+
+**Deuda conocida, fuera de esta rama:** el botón `.btn-primary` global tiene contraste bajo; `siteUrl` está repetido en tres archivos; `sitemap.ts` marca `lastModified: new Date()` en todas las URLs; `AccessibilityWidget.tsx` y `Loader.tsx` tienen 3 avisos de lint preexistentes; el `<video>` no incluye `<track kind="captions">` (añadirlo al publicar el primer video).
+
