@@ -2166,6 +2166,7 @@ import sys
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
+sys.stdout.reconfigure(encoding="utf-8")  # la consola de Windows (cp1252) no imprime "→"
 BASE = sys.argv[1] if len(sys.argv) > 1 else "http://localhost:3100"
 SLUGS = ["medi-ia", "animalvision", "library-system", "safe-transfer-ai"]
 TITLES = {"medi-ia": "MEDI-IA", "animalvision": "AnimalVision", "library-system": "Sistema de librería", "safe-transfer-ai": "SafeTransfer AI"}
@@ -2178,6 +2179,11 @@ def check(cond: bool, msg: str) -> None:
     print(("OK   " if cond else "FAIL ") + msg)
     if not cond:
         fails.append(msg)
+
+
+def seconds(v: str) -> float:
+    """Convierte "0.45s", "0.01ms" o "1e-05s" (así lo serializa Chrome) a segundos."""
+    return float(v[:-2]) / 1000 if v.endswith("ms") else float(v[:-1])
 
 
 def opens(pg) -> str:
@@ -2195,7 +2201,7 @@ with sync_playwright() as p:
     # ---------- lista ----------
     pg.goto(BASE + "/proyectos")
     pg.wait_for_timeout(7000)  # el Loader del sitio tarda unos segundos en irse
-    check(pg.locator("h1").inner_text().strip() == "Lo que he construido", "lista: h1")
+    check(pg.locator("main h1").inner_text().strip() == "Lo que he construido", "lista: h1")
     rows = pg.locator("main ol > li")
     check(rows.count() == 4, "lista: 4 filas")
     check("04" in pg.locator("main").inner_text() and "02 con demo en vivo" in pg.locator("main").inner_text().lower(), "lista: contadores 04 / 02 con demo en vivo")
@@ -2216,16 +2222,16 @@ with sync_playwright() as p:
     # ---------- detalles ----------
     for slug in SLUGS:
         r = pg.goto(f"{BASE}/proyectos/{slug}")
-        pg.wait_for_timeout(1500)
+        pg.wait_for_timeout(7000)
         check(r is not None and r.status == 200, f"{slug}: 200")
-        check(pg.locator("h1").inner_text().strip() == TITLES[slug], f"{slug}: h1")
+        check(pg.locator("main h1").inner_text().strip() == TITLES[slug], f"{slug}: h1")
         check(pg.locator("main section[data-open]").count() == 5, f"{slug}: 5 carpetas")
         check(opens(pg) == "10000", f"{slug}: solo Problema abierta al cargar ({opens(pg)})")
         check(pg.locator("main ol li").count() >= 3, f"{slug}: arquitectura con 3+ partes")
 
     # ---------- hover del Expediente (MEDI-IA) ----------
     pg.goto(BASE + "/proyectos/medi-ia")
-    pg.wait_for_timeout(1500)
+    pg.wait_for_timeout(7000)
     pg.evaluate("document.querySelector('main section[data-open]').parentElement.scrollIntoView({block: 'center'})")
     pg.wait_for_timeout(500)
     chip3 = pg.locator("main section[data-open] > button").nth(2).bounding_box()
@@ -2249,15 +2255,18 @@ with sync_playwright() as p:
     # ---------- reduced motion ----------
     rm = browser.new_context(viewport={"width": 1440, "height": 900}, reduced_motion="reduce").new_page()
     rm.goto(BASE + "/proyectos/medi-ia")
-    rm.wait_for_timeout(1500)
+    rm.wait_for_timeout(7000)
     dur = rm.eval_on_selector("main [role=region]", "e => getComputedStyle(e).transitionDuration")
-    check(dur in ("0s", "0.01ms"), f"prefers-reduced-motion: sin transición en las carpetas ({dur})")
+    check(seconds(dur) <= 0.001, f"prefers-reduced-motion: sin transición en las carpetas ({dur})")
 
     # ---------- 404 y tema claro ----------
+    n_before = len(errors)
     r404 = pg.goto(BASE + "/proyectos/no-existe")
     check(r404 is not None and r404.status == 404, "slug inexistente → 404")
+    pg.wait_for_timeout(500)
+    del errors[n_before:]  # el navegador registra el 404 intencional como error de consola
     pg.goto(BASE + "/proyectos")
-    pg.wait_for_timeout(1500)
+    pg.wait_for_timeout(7000)
     pg.evaluate("document.documentElement.setAttribute('data-theme','light')")
     pg.wait_for_timeout(300)
     pg.screenshot(path=str(SHOTS / "lista-claro.png"), full_page=True)
@@ -2270,7 +2279,7 @@ with sync_playwright() as p:
         q.wait_for_timeout(7000)
         q.screenshot(path=str(SHOTS / f"lista-{w}.png"), full_page=True)
         q.goto(BASE + "/proyectos/library-system")
-        q.wait_for_timeout(1500)
+        q.wait_for_timeout(7000)
         q.screenshot(path=str(SHOTS / f"detalle-library-{w}.png"), full_page=True)
         overflow = q.evaluate("document.documentElement.scrollWidth > document.documentElement.clientWidth")
         check(not overflow, f"{w}px: sin scroll horizontal")
