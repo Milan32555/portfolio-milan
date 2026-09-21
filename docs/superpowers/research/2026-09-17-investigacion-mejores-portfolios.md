@@ -174,5 +174,24 @@ Tamaño de texto, alto contraste, resaltar enlaces, modo dislexia, cursor grande
 | Scroll-reveal por sección | Sin cambios de lógica — solo respetar `prefers-reduced-motion` si es JS a mano. |
 | Loader (tipeo + stagger) | Ya confirmado que no depende de hover — sin cambios. |
 
+## Pasada 8 (2026-09-21) — Qué información lleva cada proyecto: esquemas de repos de portfolios reales
+
+Método: leer directamente los archivos donde repos conocidos definen sus proyectos (`gh api`), no artículos. **Límite honesto:** no hay portfolios de estudiantes con reconocimiento en GitHub con estrellas suficientes (las búsquedas por "student portfolio" no devuelven nada con más de 40★), así que la muestra es de desarrolladores conocidos o plantillas muy usadas, no de estudiantes. Solo el de Chiang tiene un caso visto en pantalla (pasada 6); los demás son solo del código.
+
+| Repo | Campos por proyecto | Qué enseña |
+|---|---|---|
+| `bchiang7/v4` (sitio de Brittany Chiang) | `title`, `cover`, `github`, `external`, `tech[]`, 1-2 frases de texto | Lo mínimo que sirve: **dos enlaces distintos (código y despliegue)**, tecnologías, una descripción corta. Sin página de detalle. |
+| `dillionverma/portfolio` | `title`, `dates`, `active`, `description`, `technologies[]`, `links[{type,href}]`, `image`, **`video`** | **Video de demo por proyecto**, periodo con fechas, bandera de si sigue activo, y enlaces tipados ("Website", "Source"). Un proyecto puede no tener imagen y depender del video. |
+| `mldangelo/personal-site` | `title`, **`subtitle`** (contexto o reconocimiento: "3rd place at Techcrunch Disrupt SF"), `link?` opcional, `image`, `date`, `desc` (una línea con **una cifra concreta y un final honesto**: "Classified 60,000+ cats across 80 breeds before server costs shut it down"), `tech[]`, `featured` | El **enlace es opcional** y un proyecto ya apagado se cuenta igual, con honestidad. El subtítulo dice en qué contexto nació. |
+| `once-ui-system/magic-portfolio` (plantilla con detalle) | Front matter: `title`, `publishedAt`, `summary`, **`images[]`** (galería), `team[{name, role}]`, `link`; cuerpo MDX: **Overview → Key Features → Technologies Used → Challenges and Learnings → Outcome** (con un resultado medible: "cutting down design-to-development time by 40%") | La estructura de case study que usan las plantillas con detalle: coincide con problema → decisiones → resultado, y añade **"qué hace" (features)** y **galería de imágenes**. |
+| `tbakerx/react-resume-template` (2 142★, muy copiada) | `title`, `description`, `url`, `image` | El esquema **mínimo y genérico** de las plantillas: es lo que hace que muchos portfolios se vean iguales. Sin cifra, sin contexto, sin rol. |
+
+### Conclusiones aplicables
+1. **Lo indispensable en todos**: título, descripción corta, tecnologías, imagen, y **enlaces de código y de despliegue por separado**. Nuestro spec ya lo cubre.
+2. **Lo que separa a los mejores**: (a) **una cifra concreta**, (b) **contexto** (hackathon, curso, personal), (c) **honestidad sobre el final** (proyecto apagado, límites), (d) **video corto** cuando no hay demo o la demo es frágil.
+3. **Huecos de nuestro spec detectados**: falta **video/galería** (crítico para MEDI-IA y safe-transfer-ai, que no tienen demo), falta **periodo/estado** (activo o archivado), y falta un **"qué hace"** con 3-5 funciones (Key Features) antes de entrar a decisiones.
+4. **Lo que NO copiar**: el esquema mínimo de las plantillas (`title/description/url/image`), que es justo el "genérico" que el usuario quiere evitar.
+5. Chiang, Dillion y mldangelo **no usan página de detalle**; solo la plantilla de Magic Portfolio la tiene. La decisión del usuario de hacerlo es válida y diferencia, pero implica que la fila de la lista debe bastar por sí sola (ya lo hace: cifra, estado, dos botones).
+
 ## Nota sobre alcance
 Ninguno de estos hallazgos se aplicó todavía. La decisión de qué traer al portfolio (y a qué página) se toma en conversación, sección por sección, priorizando lo que ya está cerrado en `docs/superpowers/specs/2026-09-08-portfolio-redesign-design.md` y sin comprometer performance ni accesibilidad — ambas ya son prioridades explícitas de este proyecto (ej. optimización de video de 18MB a 2.7MB).

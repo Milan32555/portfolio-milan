@@ -51,15 +51,30 @@ window.addEventListener('mousemove', e=>{ mx=e.clientX; my=e.clientY; });
 })();
 ```
 
-### 4. Footer
-Adaptado del espíritu de Josh Comeau (capas + personalidad + tipografía), **sin copiar literal** las nubes de caricatura (no pega con un dev/ethical hacker):
+### 4. Footer — "Cordilleras" — CERRADO 2026-09-21 ✅
+Adaptado del espíritu de Josh Comeau (capas + personalidad + tipografía), **sin copiar literal** las nubes de caricatura (no pega con un dev/ethical hacker). La versión original de este spec (2 colinas SVG planas en dos tonos navy) se descartó por ser el patrón común; la investigación (`docs/superpowers/research/2026-09-17-investigacion-mejores-portfolios.md`, pasada 7) mostró que lo que hace memorable a un footer por capas es la textura, la tipografía como capa y un elemento con personalidad, no las curvas suaves.
 
-- **Capas ilustradas**: 2 SVG tipo "colinas" superpuestas en tonos navy (`#0f1830`, `#0b1220`) en vez de nubes — dan profundidad sin ser infantiles.
-- **Glow** de fondo consistente con el resto del sitio (`radial-gradient` sutil).
-- **Mark "Misael." grande** en serif + emoji 👋 clickeable como easter egg (cambia de emoji al click: 👋🚀✨😄🤙).
-- Tagline con personalidad, tono profesional-pero-humano.
-- CTA "Hablemos →" hacia `/contacto`.
-- Footer bottom: copyright + ícono GitHub. **Sin columnas de links** — no aplican, el nav ya vive en el sidebar en todas las páginas.
+**Concepto:** una noche en los Andes colombianos (Colombia tiene 3 cordilleras, así que "capas" es literal y personal), con la paleta navy + glow del sitio. Mockup aprobado, versión A: `docs/superpowers/mockups/2026-09-21-footer-cordilleras.html` (copia del mockup de `.superpowers/brainstorm/footer-capas/`, que es gitignored y puede limpiarse).
+
+- **5 crestas** generadas con ruido de valor sembrado (`seed` fijo por capa, determinista), en perspectiva atmosférica: las lejanas más claras/azuladas (`#263a68`), las cercanas casi negras (`#080d1b`). En la implementación real, **precalcular los `path` y guardarlos como constantes** (no generar en el cliente en cada render).
+- **Halftone (puntos) en la cresta** de las capas 1-4, con máscara que se desvanece hacia abajo, más un overlay de **grano** (ruido SVG, `mix-blend-mode: overlay`, ~9% de opacidad) sobre toda la escena. Esto cierra la decisión pendiente "grano sí/no" **solo para el footer**; el fondo del resto del sitio sigue abierto (punto 5 de Pendiente).
+- **"MISAEL." gigante como capa**: entre las crestas 2 y 3, parcialmente tapado por las delanteras (baseline ajustado para que solo se oculte el pie de las letras y siga leyéndose completo). Tipografía serif, relleno con degradado azul translúcido.
+- **Cielo**: degradado navy → azul en el horizonte, glow radial en el horizonte, luna con halo, ~120 estrellas con parpadeo lento.
+- **Niebla**: 3 elipses difuminadas que derivan lento entre capas.
+- **Pueblo lejano + luciérnagas** (reemplaza al "avatar colgando" de Josh como elemento de personalidad): ~22 ventanas cálidas sobre la capa 3 (concentradas en un cluster) y 14 luciérnagas verdes en la capa 4. Reaccionan al cursor "resplandor etéreo": las luces cercanas se avivan.
+- **Profundidad al scroll**: cada capa se desplaza en Y a distinta velocidad según su profundidad (cielo 0.08 … capa frontal 0.95), como cortina que revela el footer.
+- Contenido encima del cielo (legible sobre navy): lockup **"Misael." + emoji 👋 clickeable** (easter egg, cicla 👋🚀✨😄🤙), tagline en serif itálica, CTA **"Hablemos →"** hacia `/contacto`. Footer bottom sobre la capa más oscura: copyright + ícono GitHub. **Sin columnas de links** (el nav ya vive en el sidebar en todas las páginas).
+- Los textos de tagline son de ejemplo en el mockup; el copy final se define al implementar.
+
+**Accesibilidad / mobile (obligatorio al implementar):**
+- Toda la escena SVG es decorativa: `aria-hidden="true"` y `focusable="false"`. La palabra gigante es decoración; el lockup "Misael." real en HTML es el texto accesible.
+- `prefers-reduced-motion`: sin parpadeo, deriva, niebla ni parallax (capas estáticas). Además, el parallax por scroll y el efecto del cursor son JS: deben chequear `matchMedia('(prefers-reduced-motion: reduce)')` explícitamente (ver punto 7 de Pendiente).
+- El efecto de cursor solo se monta con `(hover: hover) and (pointer: fine)`; en touch no hay glow ni reacción de luces.
+- Encuadre adaptable: en pantallas anchas (relación de aspecto del footer ≥ 1.6) `viewBox` recortado con `slice`; en angostas se usa un `viewBox` más ancho con `meet` para que "MISAEL." quepa entera (en mobile la escena queda pequeña abajo con más cielo arriba — **punto a pulir**, el mockup solo lo resuelve a nivel funcional).
+- Áreas táctiles ≥ 44px (CTA, GitHub, emoji). Contraste del texto del bottom verificado sobre `#080d1b`.
+- Fuente serif del mockup (Fraunces) es un placeholder: confirmar contra la tipografía real del sitio al implementar.
+
+**Reservado para otro lugar del sitio:** la variante B del mockup, **"Expediente"** (carpetas apiladas con pestañas escalonadas que funcionan como acordeón: una abierta a la vez, `aria-expanded` + `aria-controls`, en mobile colapsa a cabeceras de acordeón a ancho completo), **no va en el footer** pero el usuario quiere usarla en otra parte. Ver punto 10 de Pendiente para dónde.
 
 ### 5. Loader / transición de entrada
 **Se mantiene la mecánica actual** de `components/Loader.tsx` (tipeo de "Misael" letra por letra + cursor parpadeante + punto que rebota + cortina que sube) — está bien lograda y ya alineada con lo que el usuario describió que le gustó de Era Residence. Cambios:
@@ -99,7 +114,7 @@ Mockup de referencia completo: `.superpowers/brainstorm/1444-1788908977/content/
 
 1. ~~`/servicios`~~ — **CERRADO 2026-09-17**, ver `docs/superpowers/specs/2026-09-17-pagina-servicios-design.md`. TOC puro reemplaza al sidebar en esta página (no conviven), estructura editorial con 6 secciones + FAQ acordeón, precios sin montos públicos. Ese spec también documenta 4 correcciones de accesibilidad/mobile sitewide encontradas durante la investigación (ver punto 7 abajo).
 
-2. **`/proyectos`** — página propia, aún no diseñada en absoluto. Hoy solo existe como grid de cards en el home actual (`app/page.tsx` → `ProjectsSection`). Decidir: ¿lista tipo la del mockup de sidebar (filas con número/tags/flecha) o algo distinto? ¿Cada proyecto individual tiene su propia sub-página o solo la lista es nueva?
+2. **`/proyectos`** — **DISEÑADO 2026-09-21, pendiente de revisión del usuario: ver `docs/superpowers/specs/2026-09-21-pagina-proyectos-design.md`** y el mockup `docs/superpowers/mockups/2026-09-21-proyectos-lista-y-detalle.html`. Resumen de lo decidido: Hoy solo existe como grid de cards en el home actual (`app/page.tsx` → `ProjectsSection`). Decisiones tomadas en la conversación (cada una fundamentada en la investigación, pasadas 6-7): **sí hay sub-página por proyecto** (`/proyectos/[slug]`, datos en `lib/projects.ts`); la lista son 4 filas con miniatura + título + etiqueta de contexto ("Proyecto personal/universitario") + una cifra verificable + tags + dos botones de texto "Ver demo" / "Ver código" (un botón que no aplica se omite, no se deshabilita), y toda la fila lleva al detalle; el detalle es un case study de 1-2 minutos de lectura (problema, mi rol, decisiones, lo que decidí no hacer, evidencia de calidad, resultado, "con más tiempo haría…", anterior/siguiente + CTA a `/contacto`); orden: MEDI-IA, AnimalVision, library-system, safe-transfer-ai; AnimalVision necesita aviso de arranque en frío (Render tardó 78 s en despertar). Falta: escribir el spec `2026-09-21-pagina-proyectos-design.md`, capturas por proyecto (las tiene que aportar el usuario) y decidir el uso de "Expediente" (punto 10).
 
 3. **`/sobre-mi`** — página propia, aún no diseñada. Hoy es una sección del home (`AboutSection`). Decidir contenido/layout.
 
@@ -118,6 +133,8 @@ Mockup de referencia completo: `.superpowers/brainstorm/1444-1788908977/content/
 8. **Tercera pasada pendiente para el resto del sitio**: `docs/superpowers/research/2026-09-17-investigacion-mejores-portfolios.md` tiene 5 pasadas de investigación (patrones visuales transversales, código real de GitHub, perspectiva de reclutadores/clientes, mobile/accesibilidad) que aplican más allá de `/servicios` — usarla como insumo cuando se diseñen el Loader (con Three.js, ver más abajo), `/proyectos` (recomienda narrativa problema→resultado en 3-5 proyectos, no grid grande) y `/sobre-mi`/home (testimonios/casos de estudio identificados como el elemento de mayor impacto en conversión, hoy ausente en todo el sitio).
 
 9. **Three.js — nuevo alcance, no estaba en la sesión original del 2026-09-08**: el usuario pidió incorporar Three.js "para algo". Se decidió explícitamente que **NO va en `/servicios`** (compite con la lectura larga) sino en el **Loader** (`components/Loader.tsx`) — pendiente de su propia sesión de brainstorming completa (no diseñado todavía). La investigación (pasada 3, GitHub) recomienda una escena 3D **contenida** (ej. estilo `sunnypatell/react-threejs-portfolio`), no un mundo navegable completo (ej. Bruno Simon / `VinayMatta63/threejs-portfolio`), para no repetir ese patrón fuera de contexto.
+
+10. **Componente "Expediente" (carpetas apiladas) — DESTINO DECIDIDO 2026-09-21: el detalle de cada proyecto** (el usuario delegó la decisión en la recomendación; ver spec de `/proyectos`). El usuario aprobó la variante B del mockup del footer para usarla en otro lugar. Opciones que se consideraron, en orden de recomendación: (a) **el detalle de cada proyecto** (`/proyectos/[slug]`): cada sección del case study (Problema, Mi rol, Decisiones, Evidencia, Resultado) es una carpeta/pestaña — encaja con el servicio de auditoría de código ("expediente" del proyecto) y evita una página larga; (b) el **FAQ de `/servicios`**, hoy especificado como acordeón simple; (c) un bloque de contacto/estado en `/contacto`. Decidirlo al escribir el spec de `/proyectos`. Nota de riesgo: en (a) hay que cuidar que el contenido clave no quede oculto tras pestañas cerradas para quien escanea 30-90 s (la investigación lo advierte) — abrir por defecto la carpeta "Problema" y mantener visibles arriba el resumen y los botones demo/código.
 
 ## Notas técnicas para la implementación (cuando llegue el momento)
 
