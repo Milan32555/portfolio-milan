@@ -7,9 +7,29 @@
   background: linear-gradient(180deg, #0b1220 0%, #0d1730 45%, #16264b 78%, #1b2f5c 100%);
   /* Transición suave con lo que haya arriba: el borde superior se desvanece y deja
      ver el fondo real de la página (var(--bg), el mismo en cualquier tema) en vez
-     de un corte brusco entre el contenido y la escena nocturna. */
-  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 130px);
-  mask-image: linear-gradient(to bottom, transparent, #000 130px);
+     de un corte brusco entre el contenido y la escena nocturna. Curva en 6 puntos
+     (suavizado tipo "smootherstep") en vez de una rampa lineal de 2 puntos: una
+     línea recta todavía deja ver dónde "empieza" el cambio; esta curva no tiene
+     un punto de inflexión perceptible. 280px de largo, más del doble que antes.
+  */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0,
+    rgba(0, 0, 0, 0.06) 56px,
+    rgba(0, 0, 0, 0.32) 112px,
+    rgba(0, 0, 0, 0.68) 168px,
+    rgba(0, 0, 0, 0.94) 224px,
+    #000 280px
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0,
+    rgba(0, 0, 0, 0.06) 56px,
+    rgba(0, 0, 0, 0.32) 112px,
+    rgba(0, 0, 0, 0.68) 168px,
+    rgba(0, 0, 0, 0.94) 224px,
+    #000 280px
+  );
 }
 
 .scene {
