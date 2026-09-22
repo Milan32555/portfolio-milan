@@ -11,8 +11,11 @@ import { GATE_SEEN_KEY } from "@/lib/prePaint";
 type Phase = "loading" | "ready" | "open" | "gone";
 const OPEN_MS = 1250;
 
+// El `MediaQueryList` se crea una sola vez (no en cada tick) y se reutiliza.
+let motionQuery: MediaQueryList | undefined;
 function reduced() {
-  return motionReduced(document.documentElement, matchMedia);
+  if (!motionQuery) motionQuery = matchMedia("(prefers-reduced-motion: reduce)");
+  return motionReduced(document.documentElement, () => motionQuery!);
 }
 
 /**
@@ -35,6 +38,7 @@ export default function CodeGate() {
   const skipRef = useRef<HTMLButtonElement>(null);
   const inertRef = useRef<HTMLElement[]>([]);
   const prevOverflowRef = useRef("");
+  const lockedRef = useRef(false);
   const openTimeoutRef = useRef<number | undefined>(undefined);
   const lastPctRef = useRef(-1);
 
@@ -46,7 +50,13 @@ export default function CodeGate() {
   const releasePage = useCallback(() => {
     inertRef.current.forEach((el) => (el.inert = false));
     inertRef.current = [];
-    document.documentElement.style.overflow = prevOverflowRef.current;
+    // Solo restaura una vez: se llama tanto desde `open()` como desde la limpieza del
+    // efecto que aplica el bloqueo, y una segunda restauración pisaría cualquier cambio
+    // de `overflow` hecho por otra parte de la página en el medio.
+    if (lockedRef.current) {
+      document.documentElement.style.overflow = prevOverflowRef.current;
+      lockedRef.current = false;
+    }
   }, []);
 
   // Antes de pintar: ¿corresponde mostrar el muro?
@@ -67,6 +77,7 @@ export default function CodeGate() {
     inertRef.current.forEach((el) => (el.inert = true));
     prevOverflowRef.current = root.style.overflow;
     root.style.overflow = "hidden";
+    lockedRef.current = true;
     skipRef.current?.focus({ preventScroll: true });
     return () => {
       releasePage();
@@ -139,6 +150,10 @@ export default function CodeGate() {
     const current = phaseRef.current;
     if (current === "open" || current === "gone") return;
     const fromDoor = current === "ready" && !reduced();
+    // Se decide acá, antes de soltar la página o mover el foco: si al abrir el foco
+    // estaba en el muro (o en el body), al terminar se manda al nombre del hero.
+    const active = document.activeElement;
+    const focusInGate = active === document.body || active === null || rootRef.current?.contains(active) === true;
     try {
       sessionStorage.setItem(GATE_SEEN_KEY, "1");
     } catch {}
@@ -146,7 +161,10 @@ export default function CodeGate() {
     go("open");
     introBus.openGate(fromDoor);
     wallRef.current?.freeze();
-    openTimeoutRef.current = window.setTimeout(() => go("gone"), reduced() ? 0 : OPEN_MS);
+    openTimeoutRef.current = window.setTimeout(() => {
+      go("gone");
+      if (focusInGate) document.getElementById("hero-name")?.focus({ preventScroll: true });
+    }, reduced() ? 0 : OPEN_MS);
   }, [go, releasePage]);
 
   useEffect(() => {

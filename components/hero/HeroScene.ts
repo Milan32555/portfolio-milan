@@ -198,6 +198,13 @@ export class HeroScene {
     let frames = 0;
     let hidden = false;
     let prev = start;
+    // Respaldo del chequeo de hueco de abajo: si la pestaña se oculta durante la
+    // medición, este listener temporal lo marca aunque el hueco entre cuadros no
+    // llegue a superar el umbral.
+    const onVisibility = () => {
+      if (document.hidden) hidden = true;
+    };
+    document.addEventListener("visibilitychange", onVisibility);
     await new Promise<void>((resolve) => {
       const step = (now: number) => {
         if (this.disposed) {
@@ -206,8 +213,9 @@ export class HeroScene {
         }
         // Si pasaron más de 250 ms entre dos cuadros, la pestaña estuvo oculta en el
         // medio (rAF no corre oculto, así que `document.hidden` ya volvió a false):
-        // la medición no es válida.
-        if (now - prev > 250) {
+        // la medición no es válida. Solo aplica desde el segundo cuadro: en equipos
+        // lentos el primer cuadro (compile + primer render) puede tardar de por sí.
+        if (frames > 0 && now - prev > 250) {
           hidden = true;
           resolve();
           return;
@@ -220,6 +228,7 @@ export class HeroScene {
       };
       requestAnimationFrame(step);
     });
+    document.removeEventListener("visibilitychange", onVisibility);
     if (this.disposed) return this.quality;
     if (hidden) {
       this.fps = null;

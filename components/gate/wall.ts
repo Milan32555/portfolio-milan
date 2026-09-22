@@ -45,6 +45,10 @@ export class CodeWall {
     window.clearTimeout(this.resizeTimer);
     this.resizeTimer = window.setTimeout(() => this.layout(), RESIZE_DEBOUNCE_MS);
   };
+  private onMotionChange = () => {
+    this.updateMotion();
+    this.dirty = true;
+  };
 
   constructor(
     private left: HTMLCanvasElement,
@@ -54,6 +58,7 @@ export class CodeWall {
     this.updateMotion();
     this.layout();
     window.addEventListener("resize", this.onResize);
+    this.motionQuery.addEventListener("change", this.onMotionChange);
     this.observer = new MutationObserver(() => {
       this.updateTheme();
       this.updateMotion();
@@ -80,15 +85,20 @@ export class CodeWall {
     this.dirty = true;
   }
 
-  /** Detiene el bucle sin borrar los canvas: para no competir con el arranque del hero. */
+  /**
+   * Detiene el bucle sin borrar los canvas (para no competir con el arranque del hero)
+   * y también el resize: un resize durante la apertura de las puertas no debe volver
+   * a hacer `layout()` y borrar el estado ya congelado.
+   */
   freeze() {
     cancelAnimationFrame(this.raf);
+    window.removeEventListener("resize", this.onResize);
+    window.clearTimeout(this.resizeTimer);
   }
 
   dispose() {
     this.freeze();
-    window.removeEventListener("resize", this.onResize);
-    window.clearTimeout(this.resizeTimer);
+    this.motionQuery.removeEventListener("change", this.onMotionChange);
     this.observer.disconnect();
   }
 
@@ -122,8 +132,10 @@ export class CodeWall {
           this.cells.push({ c, r, g: GLYPHS[Math.floor(Math.random() * GLYPHS.length)], t: Math.random() });
         }
       }
-      this.splitCells();
     }
+    // El ancho de cada mitad cambia con cualquier resize, no solo cuando cambian
+    // filas/columnas: hay que recalcular qué celdas caen en cada canvas siempre.
+    this.splitCells();
     for (const cv of [this.left, this.right]) {
       cv.width = Math.ceil((this.W / 2) * this.dpr);
       cv.height = Math.ceil(this.H * this.dpr);

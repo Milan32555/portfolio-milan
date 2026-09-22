@@ -128,10 +128,10 @@ export default function Hero() {
           cached = parseCachedQuality(sessionStorage.getItem(QUALITY_KEY));
         } catch {}
         const quality = await scene.prepare(cached);
+        if (disposed || gaveUp || !scene) return;
         try {
           if (cached !== null || scene.fps !== null) sessionStorage.setItem(QUALITY_KEY, quality);
         } catch {}
-        if (disposed) return;
         const detail = scene.fps !== null ? ` · ${scene.fps} fps` : cached !== null ? " · guardada" : " · sin medir";
         introBus.report({ stage: "ready", label: `calidad: ${quality === "low" ? "ligera" : "completa"}${detail}` });
 
@@ -220,7 +220,7 @@ export default function Hero() {
         </p>
 
         <div ref={slotRef} className={styles.slot}>
-          <h1 ref={nameRef} id="hero-name" className={`${styles.name} hero-name`}>
+          <h1 ref={nameRef} id="hero-name" className={`${styles.name} hero-name`} tabIndex={-1}>
             Misael<em>.</em>
           </h1>
         </div>
