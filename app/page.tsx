@@ -6,6 +6,9 @@ import { AboutPreview, ContactCta, ProjectsPreview, ServicesPreview } from "@/co
 export default function Home() {
   return (
     <>
+      <noscript>
+        <style>{".fade-in-section{opacity:1!important;transform:none!important}"}</style>
+      </noscript>
       <PrePaintScript />
       <CodeGate />
       <main id="main-content">

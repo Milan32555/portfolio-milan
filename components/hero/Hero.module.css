@@ -46,6 +46,7 @@
   color: var(--soft);
 }
 .eyebrow b { color: var(--accent2); font-weight: 500; }
+:global([data-theme="light"]) .eyebrow b { color: var(--accent); }
 .caret {
   display: inline-block;
   width: 0.55em;

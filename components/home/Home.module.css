@@ -6,6 +6,10 @@
   letter-spacing: 0.06em;
   color: var(--accent2);
 }
+:global([data-theme="light"]) .label,
+:global([data-theme="light"]) .metric,
+:global([data-theme="light"]) .sec .more,
+:global([data-theme="light"]) .big em { color: var(--accent); }
 .title {
   margin: 0 0 2rem;
   font-family: var(--font-dm-serif), serif;
@@ -23,6 +27,7 @@
 }
 .sec .more { color: var(--accent2); }
 .sec .more:hover { border-bottom: 1px solid currentColor; }
+.sec .more:focus-visible { border-bottom: 1px solid currentColor; }
 
 /* qué hago */
 .svc { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }

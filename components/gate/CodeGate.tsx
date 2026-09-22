@@ -183,9 +183,9 @@ export default function CodeGate() {
       <div className={styles.seam} aria-hidden="true" />
 
       <div className={styles.panel}>
-        <h2 id="gate-title" className="sr-only">
+        <p id="gate-title" className="sr-only">
           Cargando el portfolio de Misael
-        </h2>
+        </p>
         <pre className={styles.log} aria-hidden="true">
           <span className={styles.dim}>┌──(</span>
           <span className={styles.user}>misael㉿portfolio</span>
