@@ -3,6 +3,8 @@
   inset: 0;
   z-index: 9000; /* debajo del AccessibilityWidget (9989/9990): sigue usable durante el muro */
   overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
   background: var(--bg);
   perspective: 1400px;
 }
@@ -75,7 +77,7 @@
   border: 0;
   border-radius: 7px;
   background: var(--accent);
-  color: #fff;
+  color: var(--bg);
   font: inherit;
   font-size: 0.85rem;
   opacity: 0;

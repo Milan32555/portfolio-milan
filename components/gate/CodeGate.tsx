@@ -24,6 +24,7 @@ export default function CodeGate() {
   const [phase, setPhase] = useState<Phase>("loading");
   const [lines, setLines] = useState<string[]>([]);
   const phaseRef = useRef<Phase>("loading");
+  const rootRef = useRef<HTMLDivElement>(null);
   const leftRef = useRef<HTMLCanvasElement>(null);
   const rightRef = useRef<HTMLCanvasElement>(null);
   const wallRef = useRef<CodeWall | null>(null);
@@ -31,7 +32,11 @@ export default function CodeGate() {
   const fillRef = useRef<HTMLSpanElement>(null);
   const pctRef = useRef<HTMLSpanElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
+  const skipRef = useRef<HTMLButtonElement>(null);
   const inertRef = useRef<HTMLElement[]>([]);
+  const prevOverflowRef = useRef("");
+  const openTimeoutRef = useRef<number | undefined>(undefined);
+  const lastPctRef = useRef(-1);
 
   const go = useCallback((p: Phase) => {
     phaseRef.current = p;
@@ -41,6 +46,7 @@ export default function CodeGate() {
   const releasePage = useCallback(() => {
     inertRef.current.forEach((el) => (el.inert = false));
     inertRef.current = [];
+    document.documentElement.style.overflow = prevOverflowRef.current;
   }, []);
 
   // Antes de pintar: ¿corresponde mostrar el muro?
@@ -59,7 +65,16 @@ export default function CodeGate() {
     introBus.activateGate();
     inertRef.current = Array.from(document.querySelectorAll<HTMLElement>("main, nav, footer"));
     inertRef.current.forEach((el) => (el.inert = true));
-    return releasePage;
+    prevOverflowRef.current = root.style.overflow;
+    root.style.overflow = "hidden";
+    skipRef.current?.focus({ preventScroll: true });
+    return () => {
+      releasePage();
+      if (openTimeoutRef.current !== undefined) {
+        window.clearTimeout(openTimeoutRef.current);
+        openTimeoutRef.current = undefined;
+      }
+    };
   }, [go, releasePage]);
 
   const alive = phase !== "gone";
@@ -90,7 +105,10 @@ export default function CodeGate() {
       const pct = Math.round(shown);
       if (fillRef.current) fillRef.current.style.width = `${shown.toFixed(1)}%`;
       if (pctRef.current) pctRef.current.textContent = `${pct}%`;
-      barRef.current?.setAttribute("aria-valuenow", String(pct));
+      if (pct !== lastPctRef.current) {
+        lastPctRef.current = pct;
+        barRef.current?.setAttribute("aria-valuenow", String(pct));
+      }
       const due = pending.filter((p) => shown >= GATE_STAGES[p.stage] - 0.5);
       if (due.length) {
         due.forEach((d) => pending.splice(pending.indexOf(d), 1));
@@ -110,7 +128,11 @@ export default function CodeGate() {
   }, [phase, go]);
 
   useEffect(() => {
-    if (phase === "ready") btnRef.current?.focus({ preventScroll: true });
+    if (phase !== "ready") return;
+    const active = document.activeElement;
+    if (active === document.body || active === null || rootRef.current?.contains(active)) {
+      btnRef.current?.focus({ preventScroll: true });
+    }
   }, [phase]);
 
   const open = useCallback(() => {
@@ -123,12 +145,15 @@ export default function CodeGate() {
     releasePage();
     go("open");
     introBus.openGate(fromDoor);
-    window.setTimeout(() => go("gone"), reduced() ? 0 : OPEN_MS);
+    wallRef.current?.freeze();
+    openTimeoutRef.current = window.setTimeout(() => go("gone"), reduced() ? 0 : OPEN_MS);
   }, [go, releasePage]);
 
   useEffect(() => {
     if (!alive) return;
     const onKey = (e: KeyboardEvent) => {
+      const t = e.target as Node | null;
+      if (t && t !== document.body && t !== document.documentElement && !rootRef.current?.contains(t)) return;
       if (e.key === "Escape") open();
       else if (e.key === "Enter" && phaseRef.current === "ready" && e.target !== btnRef.current) open();
     };
@@ -140,10 +165,10 @@ export default function CodeGate() {
 
   return (
     <div
+      ref={rootRef}
       className={`${styles.gate} code-gate`}
       data-phase={phase}
       role="dialog"
-      aria-modal="true"
       aria-labelledby="gate-title"
       onClick={() => {
         if (phaseRef.current === "ready") open();
@@ -211,6 +236,7 @@ export default function CodeGate() {
       </div>
 
       <button
+        ref={skipRef}
         type="button"
         className={styles.skip}
         onClick={(e) => {
