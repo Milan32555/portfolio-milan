@@ -1,0 +1,66 @@
+.arch { margin-top: 4rem; }
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.title {
+  font-family: var(--font-dm-serif), serif;
+  font-weight: 400;
+  font-size: clamp(1.5rem, 2.8vw, 2rem);
+  margin: 8px 0 6px;
+}
+.intro { color: var(--soft); max-width: 60ch; margin-bottom: 1.6rem; }
+
+.layers {
+  display: grid;
+  grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+  gap: 30px;
+  list-style: none;
+  padding: 0;
+}
+.layer {
+  position: relative;
+  padding: 18px 18px 20px;
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  background: var(--surface);
+  /* borde apilado: sugiere capas sin animación */
+  box-shadow: 6px 6px 0 -1px var(--bg2), 6px 6px 0 0 var(--line);
+}
+.layer:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: -24px;
+  top: 34px;
+  width: 18px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--line-strong), var(--accent2));
+}
+.layer:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  right: -25px;
+  top: 31px;
+  border-left: 5px solid var(--accent2);
+  border-top: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+}
+.k { font-family: var(--mono); font-size: 0.68rem; font-weight: 500; letter-spacing: 0.14em; color: var(--accent2); }
+.name { font-family: var(--font-dm-serif), serif; font-weight: 400; font-size: 1.2rem; margin: 6px 0; }
+.desc { color: var(--soft); font-size: 0.88rem; line-height: 1.5; }
+
+@media (max-width: 900px) {
+  .layers { grid-template-columns: 1fr; gap: 26px; }
+  .layer:not(:last-child)::after {
+    right: auto; left: 30px; top: auto; bottom: -22px; width: 1px; height: 16px;
+    background: linear-gradient(180deg, var(--line-strong), var(--accent2));
+  }
+  .layer:not(:last-child)::before {
+    right: auto; left: 27px; top: auto; bottom: -24px;
+    border-left: 3px solid transparent; border-right: 3px solid transparent;
+    border-top: 5px solid var(--accent2); border-bottom: 0;
+  }
+}

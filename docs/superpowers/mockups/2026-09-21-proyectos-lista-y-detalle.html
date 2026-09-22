@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup /proyectos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B1220; --text:#f0f0f2; --muted:#8a8a96; --soft:#b3b3c0; --line:#1e2a48;
+    --accent:#4f8ef7; --accent2:#7eb3ff;
+    --serif:"Fraunces",Georgia,serif; --sans:"Inter",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.55;
+    background-image:radial-gradient(900px 500px at 15% -5%,rgba(79,142,247,.13),transparent 60%)}
+  a{color:inherit}
+  :focus-visible{outline:2px solid var(--accent2);outline-offset:3px;border-radius:6px}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+  /* barra del mockup */
+  .mock-bar{position:sticky;top:0;z-index:100;display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 16px;
+    background:rgba(11,18,32,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);font-size:.8rem}
+  .mock-bar strong{color:var(--accent2);margin-right:4px}
+  .mock-bar button{font:inherit;color:var(--text);background:#16223f;border:1px solid #2a3b66;border-radius:999px;padding:6px 13px;cursor:pointer}
+  .mock-bar button[aria-pressed="true"]{background:var(--accent);color:#0B1220;border-color:var(--accent);font-weight:600}
+
+  /* layout con sidebar fijo (simplificado) */
+  .shell{display:grid;grid-template-columns:230px minmax(0,1fr);max-width:1180px;margin:0 auto}
+  .side{position:sticky;top:46px;align-self:start;height:calc(100vh - 46px);padding:56px 24px;display:flex;flex-direction:column;gap:6px}
+  .side .mark{font-family:var(--serif);font-size:1.4rem;font-weight:600;margin-bottom:22px}
+  .side a{text-decoration:none;color:var(--muted);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;padding:9px 0;min-height:44px;display:flex;align-items:center;gap:12px}
+  .side a::before{content:"";width:22px;height:1px;background:currentColor;opacity:.5;transition:width .2s}
+  .side a[aria-current="page"]{color:var(--text)}
+  .side a[aria-current="page"]::before{width:44px;opacity:1}
+  .side a:hover{color:var(--text)}
+  main{padding:56px clamp(20px,4vw,48px) 96px;min-width:0}
+  @media (max-width:860px){
+    .shell{display:block}
+    .side{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;padding:14px 20px 0;gap:0 18px}
+    .side .mark{margin:0 auto 0 0}
+    .side a::before{display:none}
+    main{padding-top:24px}
+  }
+
+  .eyebrow{font:500 .74rem var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--accent2)}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(2rem,4.4vw,3.1rem);line-height:1.1;margin:10px 0 12px}
+  .lead{color:var(--soft);max-width:56ch}
+
+  /* ---------- LISTA (sutil) ---------- */
+  .counts{margin-top:18px;font:500 .74rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .counts b{color:var(--text);font-weight:500}
+  .counts .live{color:#9cf0c6}
+  .rows{margin-top:56px}
+  .row{position:relative;display:grid;grid-template-columns:230px minmax(0,1fr);gap:0 30px;padding:34px 12px;border-top:1px solid var(--line)}
+  .row:last-child{border-bottom:1px solid var(--line)}
+  .row .tab{position:absolute;left:274px;top:-25px;height:25px;padding:0 14px;display:flex;align-items:center;gap:8px;
+    font:500 .7rem var(--mono);letter-spacing:.14em;color:var(--accent2);background:var(--bg);
+    border:1px solid var(--line);border-bottom:0;border-radius:9px 9px 0 0}
+  .row .tab i{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.7}
+  .row::before{content:"";position:absolute;left:0;top:34px;bottom:34px;width:2px;border-radius:2px;background:var(--accent);
+    transform:scaleY(0);transform-origin:top;transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+  .row .cover{border-radius:12px;overflow:hidden;border:1px solid #223258;aspect-ratio:16/10;align-self:start;transition:border-color .3s}
+  .row .cover svg{display:block;width:100%;height:100%}
+  .cover .l0,.cover .l1,.cover .l2{transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+  .row h2{font-family:var(--serif);font-weight:600;font-size:clamp(1.3rem,2.4vw,1.75rem);margin:0 0 6px;line-height:1.2}
+  .row h2 a{text-decoration:none}
+  .row h2 a::after{content:"";position:absolute;inset:0;z-index:1}  /* enlace estirado: toda la fila */
+  .row h2 a .arr{display:inline-block;margin-left:8px;transition:transform .25s;color:var(--accent2)}
+  .row p.sum{color:var(--soft);max-width:60ch}
+  .meta{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin:12px 0 4px;font-size:.84rem;color:var(--muted)}
+  .metric{display:inline-flex;align-items:baseline;gap:8px;color:var(--text)}
+  .metric b{font:500 1.05rem var(--mono);color:#9cf0c6}
+  .metric span{color:var(--muted);font-size:.82rem}
+  .status{display:inline-flex;align-items:center;gap:7px;font:500 .7rem var(--mono);letter-spacing:.1em;text-transform:uppercase}
+  .status i{width:7px;height:7px;border-radius:50%}
+  .status.live{color:#9cf0c6}.status.live i{background:#5fd18b}
+  .status.code{color:#a4a4b3}.status.code i{border:1.5px solid currentColor}
+  .ctx{border:1px solid #2a3b66;border-radius:999px;padding:2px 10px;font-size:.76rem;color:var(--soft)}
+  .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .tag{background:rgba(79,142,247,.12);color:var(--accent2);border-radius:999px;padding:3px 12px;font-size:.78rem}
+  .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;position:relative;z-index:2}
+  .btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 20px;white-space:nowrap;border-radius:999px;font-weight:600;font-size:.9rem;text-decoration:none;transition:transform .2s,box-shadow .2s,background .2s}
+  .btn.primary{background:var(--accent);color:#0B1220}
+  .btn.primary:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(79,142,247,.4)}
+  .btn.ghost{border:1px solid #33486f;color:var(--text)}
+  .btn.ghost:hover{background:#16223f;transform:translateY(-2px)}
+  .btn svg{flex:none}
+  .archive{display:inline-flex;margin-top:28px;color:var(--soft);text-decoration:none;min-height:44px;align-items:center;gap:8px}
+  .archive:hover{color:var(--text)}
+  @media (hover:hover) and (pointer:fine){
+    .rows .row{transition:opacity .35s}
+    .rows:has(.row:hover) .row:not(:hover){opacity:.6}      /* atenúa las demás filas */
+    .row:hover::before{transform:scaleY(1)}                  /* línea de acento */
+    .row:hover .cover{border-color:#3b558f}
+    .row:hover h2 .arr{transform:translateX(5px)}
+    .row:hover .cover .l0{transform:translateX(-5px)}        /* las capas de la portada se separan apenas */
+    .row:hover .cover .l1{transform:translateX(-12px)}
+    .row:hover .cover .l2{transform:translateX(-20px)}
+  }
+  @media (max-width:700px){
+    .row{grid-template-columns:1fr;gap:16px;padding:30px 0 28px}
+    .row .tab{left:0}
+    .btn{flex:1 1 150px;justify-content:center}
+  }
+
+  /* ---------- DETALLE ---------- */
+  .back{display:inline-flex;align-items:center;gap:8px;color:var(--soft);text-decoration:none;min-height:44px;font-size:.9rem}
+  .back:hover{color:var(--text)}
+  .d-cover{margin:30px 0 8px;border-radius:16px;overflow:hidden;border:1px solid #223258;aspect-ratio:21/9}
+  .d-cover svg{display:block;width:100%;height:100%}
+  .note{display:flex;gap:10px;align-items:flex-start;margin-top:14px;padding:12px 16px;border-radius:12px;background:rgba(255,210,138,.07);border:1px solid rgba(255,210,138,.25);color:#f1dcb6;font-size:.88rem;max-width:64ch}
+  .note.info{background:rgba(126,179,255,.07);border-color:rgba(126,179,255,.25);color:#cfe1ff}
+  .stack{margin-top:72px;display:flex;flex-direction:column}
+  .stack-title{font:500 .74rem var(--mono);letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:46px}
+  .folder{position:relative;z-index:calc(var(--i) + 1);margin-top:-14px;background:var(--c);border-radius:26px 26px 0 0;
+    border-top:1px solid rgba(126,179,255,.28);box-shadow:0 -14px 34px rgba(0,0,0,.4)}
+  .folder:first-of-type{margin-top:0}
+  .chip{position:absolute;top:-30px;left:calc(24px + var(--i) * 150px);height:46px;padding:0 20px;display:flex;align-items:center;gap:10px;
+    background:var(--c);color:var(--text);font:600 .92rem var(--sans);border:1px solid rgba(126,179,255,.28);border-bottom:0;
+    border-radius:16px 16px 0 0;cursor:pointer;min-height:44px}
+  .chip .num{font-family:var(--mono);color:var(--accent2);font-size:.8rem}
+  .folder[data-open="true"] .chip{box-shadow:inset 0 2px 0 var(--accent)}
+  .head{height:58px}
+  .panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s cubic-bezier(.2,.8,.2,1)}
+  .folder[data-open="true"] .panel{grid-template-rows:1fr}
+  .panel>div{overflow:hidden}
+  .inner{padding:0 28px 46px;max-width:78ch}
+  .inner p{color:var(--soft);margin-bottom:12px}
+  .inner ul{padding-left:1.2em;color:var(--soft);display:grid;gap:10px}
+  .inner li b{color:var(--text)}
+  .inner h4{font:500 .74rem var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);margin:22px 0 10px}
+  .draft{display:inline-block;font:500 .68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;border:1px dashed #6b6b78;color:#a8a8b6;border-radius:6px;padding:1px 7px;margin-right:8px;vertical-align:1px}
+
+  @media (prefers-reduced-motion:reduce){.panel,.btn,.row,.row::before,.cover path{transition:none!important}}
+  @media (max-width:700px){
+    .chip{position:static;width:100%;height:60px;border:0;background:transparent;border-radius:26px 26px 0 0;padding:0 22px}
+    .folder[data-open="true"] .chip{box-shadow:inset 0 2px 0 var(--accent)}
+    .head{display:none}
+    .inner{padding:0 22px 36px}
+    .stack{margin-top:40px}.stack-title{margin-bottom:22px}
+  }
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-top:34px}
+  .stat{padding:18px 20px;border:1px solid #223258;border-radius:16px;background:linear-gradient(180deg,rgba(24,38,74,.55),rgba(15,26,49,.55))}
+  .stat b{display:block;font:600 2.1rem/1.05 var(--serif);background:linear-gradient(180deg,#e8f1ff,#7eb3ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat span{display:block;margin-top:8px;color:var(--muted);font-size:.85rem;line-height:1.35}
+  .arch{margin-top:64px}
+  .sec-eyebrow{font:500 .74rem var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .arch h2{font-family:var(--serif);font-weight:600;font-size:clamp(1.4rem,2.6vw,1.9rem);margin:8px 0 6px}
+  .arch>p{color:var(--soft);max-width:60ch;margin-bottom:26px}
+  .layers{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:30px;list-style:none;padding:0}
+  .layer{position:relative;padding:18px 18px 20px;border:1px solid #2a3b66;border-radius:14px;background:#101a33;
+    box-shadow:6px 6px 0 -1px #0d1730,6px 6px 0 0 #223258}
+  .layer:not(:last-child)::after{content:"";position:absolute;right:-24px;top:34px;width:18px;height:1px;background:linear-gradient(90deg,#3b558f,#7eb3ff)}
+  .layer:not(:last-child)::before{content:"";position:absolute;right:-25px;top:31px;border-left:5px solid #7eb3ff;border-top:3px solid transparent;border-bottom:3px solid transparent}
+  .layer .k{font:500 .68rem var(--mono);letter-spacing:.14em;color:var(--accent2)}
+  .layer h3{font-family:var(--serif);font-size:1.12rem;font-weight:600;margin:6px 0 6px}
+  .layer p{color:var(--soft);font-size:.88rem;line-height:1.5}
+  @media (max-width:900px){
+    .layers{grid-template-columns:1fr;gap:26px}
+    .layer:not(:last-child)::after{right:auto;left:30px;top:auto;bottom:-22px;width:1px;height:16px;background:linear-gradient(180deg,#3b558f,#7eb3ff)}
+    .layer:not(:last-child)::before{right:auto;left:27px;top:auto;bottom:-24px;border-left:3px solid transparent;border-right:3px solid transparent;border-top:5px solid #7eb3ff;border-bottom:0}
+  }
+  .pager{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:0;border-top:1px solid var(--line);padding-top:26px}
+  .pager a{text-decoration:none;display:block;padding:14px 4px;min-height:44px}
+  .pager small{display:block;color:var(--muted);font:500 .72rem var(--mono);letter-spacing:.12em;text-transform:uppercase}
+  .pager span{font-family:var(--serif);font-size:1.15rem}
+  .pager a:hover span{color:var(--accent2)}
+  .pager .next{text-align:right}
+  .cta-block{margin-top:44px;padding:30px;border-radius:20px;background:linear-gradient(135deg,#132039,#0f1a31);border:1px solid #223258;display:flex;flex-wrap:wrap;gap:18px 28px;align-items:center;justify-content:space-between}
+  .cta-block h3{font-family:var(--serif);font-size:1.4rem;font-weight:600}
+  .cta-block p{color:var(--soft);margin-top:4px}
+</style>
+</head>
+<body>
+
+<div class="mock-bar" role="group" aria-label="Vista del mockup">
+  <strong>Mockup /proyectos</strong><span style="color:#8a8a96">prueba el hover en filas y carpetas</span>
+  <button data-v="lista" aria-pressed="true">Lista</button>
+  <button data-v="medi-ia" aria-pressed="false">Detalle · MEDI-IA</button>
+  <button data-v="animalvision" aria-pressed="false">Detalle · AnimalVision</button>
+  <button data-v="library-system" aria-pressed="false">Detalle · library-system</button>
+  <button data-v="safe-transfer-ai" aria-pressed="false">Detalle · safe-transfer-ai</button>
+</div>
+
+<div class="shell">
+  <nav class="side" aria-label="Principal">
+    <div class="mark">Misael.</div>
+    <a href="#">Sobre mí</a>
+    <a href="#lista" aria-current="page">Proyectos</a>
+    <a href="#">Servicios</a>
+    <a href="#">Contacto</a>
+  </nav>
+  <main id="app"></main>
+</div>
+
+<script>
+/* ---------- datos (en producción: lib/projects.ts) ---------- */
+const P=[
+{slug:'medi-ia',n:'001',title:'MEDI-IA',hue:212,
+ sum:'Asistente de diagnóstico diferencial que responde a partir de 14 libros médicos reales, con recuperación híbrida y un agente ReAct.',
+ ctx:'Proyecto personal',year:2026,metric:['97.1%','Recall@1 · 40 consultas'],
+ tags:['Python','Flask','RAG','FAISS','BM25','ReAct'],demo:null,repo:'https://github.com/Milan32555/medi-ia-medical-agent',
+ note:{cls:'info',t:'No hay demo pública: depende de un corpus de 14 libros y de un token de HuggingFace. Proyecto educativo, no sustituye el criterio médico. (Redacción por confirmar)'},
+ exp:{
+  problema:['Un modelo de lenguaje solo, respondiendo preguntas clínicas, puede inventar. El reto era que cada respuesta parta de fuentes médicas reales y que se pueda medir qué tan bien se recupera la información.'],
+  rol:['Diseño y desarrollo completo: ingesta de los libros, recuperación, agente, API y frontend.'],
+  decisiones:['<b>Recuperación híbrida:</b> BM25 + FAISS fusionados con Reciprocal Rank Fusion, más un reranker cross-encoder multilingüe.','<b>Un cambio con dato:</b> pasar de MiniLM a <code>multilingual-e5-base</code> subió Recall@1 de 74.3% a 91.4%; ampliar de 4 a 14 libros lo llevó a 97.1%.','<b>Guardrails antes del LLM:</b> un filtro por regex separa consultas médicas de las que no lo son.'],
+  noHice:['No publiqué una demo: exige el corpus de libros y un token de HuggingFace.'],
+  evidencia:['<b>185 funciones de test</b> (guardrails, herramientas, memoria, API, métricas, feedback, evaluación, pipeline).','CI en GitHub Actions (Python 3.13) y despliegue con Docker + nginx.','Evaluación con 40 consultas anotadas: Recall@3 100%, MRR 0.9857. Es un dataset pequeño: hay que leerlo con cautela.'],
+  resultado:['Un agente con respuestas en streaming, voz, mapa corporal de 24 zonas y panel de métricas.'],
+  mas:['Ampliar el dataset de evaluación y validarlo con criterio clínico externo.']}},
+{slug:'animalvision',n:'002',title:'AnimalVision',hue:190,
+ sum:'Clasificador web de imágenes de animales con transfer learning sobre MobileNetV2, desplegado en producción.',
+ ctx:'Proyecto personal',year:2026,metric:['93.4%','accuracy · 5 clases'],
+ tags:['MobileNetV2','Flask','Gunicorn','Render'],demo:'https://animal-cnn-classifier.onrender.com',repo:'https://github.com/Milan32555/AnimalVision-AI-Image-Classification-System',
+ note:{cls:'',t:'Plan gratuito de Render: la primera carga puede tardar cerca de 1 minuto mientras el servicio despierta.'},
+ exp:{
+  problema:['Llevar un modelo entrenado en un notebook a una aplicación que cualquiera pueda usar desde el navegador, con respuesta en tiempo real.'],
+  rol:['Entrenamiento del modelo, API de inferencia, interfaz web y despliegue.'],
+  decisiones:['<b>Transfer learning</b> sobre MobileNetV2 (ImageNet) en lugar de entrenar desde cero.','<b>Arquitectura modular:</b> Factory Pattern y separación de responsabilidades entre rutas, inferencia y configuración.','<b>Gunicorn en Render</b> para servir en producción.'],
+  noHice:['Solo reconoce 5 clases de animales: no es un clasificador general.'],
+  evidencia:['Accuracy en test 93.4%, top-3 98.7%, latencia media ~0.8 s por imagen (cifras del README).','Pipeline completo y reproducible: dataset → entrenamiento → API → UI.'],
+  resultado:['Demo en producción con las 5 predicciones más probables y sus porcentajes.'],
+  mas:['Ampliar las clases y publicar el análisis de errores por clase.']}},
+{slug:'library-system',n:'003',title:'Sistema de librería',hue:225,
+ sum:'Gestión de catálogo con Clean Architecture: CRUD, búsqueda, filtro por género y panel de administración.',
+ ctx:'Proyecto universitario',year:2026,metric:['1 archivo','reescrito al cambiar de base de datos'],
+ tags:['Vue 3','Node.js','Express','Neon','Vercel'],demo:'https://full-stack-library-management-syste-eight.vercel.app',repo:'https://github.com/Milan32555/Full-stack-library-management-system-with-Vue.js-frontend-and-Node.js-backend',
+ note:null,
+ exp:{
+  problema:['Un CRUD de tutorial se rompe cuando cambian la base de datos o el hosting. El objetivo fue separar dominio, casos de uso e infraestructura para que esos cambios no toquen la lógica.'],
+  rol:['Diseño de la arquitectura, backend, frontend y despliegue. Empezó como trabajo universitario; las mejoras posteriores son propias.'],
+  decisiones:['<b>Repositorio intercambiable:</b> los casos de uso dependen de una interfaz, no de la base de datos.','<b>Supabase → Neon:</b> el plan gratuito limita a 2 proyectos activos; migrar reescribió un solo archivo.','<b>Railway → Vercel Services:</b> venció la prueba gratuita; frontend y backend ahora viven en un mismo dominio y despliegue.'],
+  noHice:['No usé un ORM: consulto Neon con su driver serverless directamente.'],
+  evidencia:['La migración de base de datos no tocó casos de uso ni frontend.','Producción verificada: <code>/api/books</code> devuelve el catálogo y <code>/health</code> responde.'],
+  resultado:['Una demo en vivo con catálogo, búsqueda, filtro por género y panel de administración.'],
+  mas:['Añadir tests de los casos de uso y autenticación para el panel.']}},
+{slug:'safe-transfer-ai',n:'004',title:'SafeTransfer AI',hue:200,
+ sum:'Simulador de riesgo de fraude en transferencias: un motor de reglas que explica por qué llegó a cada resultado.',
+ ctx:'Proyecto personal',year:2026,metric:['8 tests','unitarios del motor de riesgo'],
+ tags:['Kotlin','Jetpack Compose','JUnit'],demo:null,repo:'https://github.com/Milan32555/safe-transfer-ai',
+ note:{cls:'info',t:'App Android nativa: no hay demo web. Pese al nombre, es un motor de reglas determinístico, no machine learning.'},
+ exp:{
+  problema:['Muchos sistemas antifraude son cajas negras. Quise un motor cuyo puntaje se pueda explicar regla por regla.'],
+  rol:['Diseño del motor de reglas, la interfaz en Compose y los tests.'],
+  decisiones:['<b>Reglas ponderadas y determinísticas:</b> score de 0 a 100 con niveles Bajo (&lt;40), Medio (40–69) y Alto (≥70).','<b>Lógica pura separada de la UI:</b> <code>FraudEngine</code> no depende de Compose, así se prueba sin emulador.','<b>Explicación incluida:</b> cada resultado devuelve las razones y las recomendaciones que lo produjeron.'],
+  noHice:['No es un modelo de machine learning, aunque el nombre lo sugiera. Prefiero un proyecto bien descrito.'],
+  evidencia:['8 tests unitarios de <code>FraudEngine</code> (JUnit).'],
+  resultado:['Una app Android nativa que evalúa una transferencia y justifica el riesgo.'],
+  mas:['Calibrar los pesos con datos reales y añadir reglas por historial del usuario.']}}
+];
+
+const STATS={
+ 'medi-ia':[['97.1%','Recall@1 en 40 consultas anotadas'],['185','funciones de test'],['14','libros indexados (~136 000 fragmentos)']],
+ 'animalvision':[['93.4%','accuracy en test (5 clases)'],['98.7%','top-3 accuracy'],['~0.8 s','por imagen, latencia media']],
+ 'library-system':[['1','archivo reescrito al cambiar de base de datos'],['2 en 1','frontend y backend en un solo despliegue'],['4','capas: pantalla, lógica, repositorio y datos']],
+ 'safe-transfer-ai':[['8','tests unitarios del motor'],['7','señales de riesgo ponderadas'],['0–100','puntaje con razones legibles']]};
+const ARCH={
+ 'medi-ia':[['Guardrails','Filtra con reglas las consultas que no son médicas, antes de llegar al modelo.'],['BM25 + FAISS','Busca en los 14 libros por palabras y por significado, y fusiona los resultados (RRF).'],['Reranker','Reordena los fragmentos con un cross-encoder multilingüe para quedarse con los más relevantes.'],['Agente ReAct','Un modelo (Qwen2.5-7B) razona con 4 herramientas y arma la respuesta.']],
+ 'animalvision':[['Interfaz Flask','La página donde subes la imagen y ves el resultado.'],['Inferencia','Carga el modelo entrenado y prepara la imagen para analizarla.'],['MobileNetV2','Red pre-entrenada con ImageNet, ajustada (transfer learning) a 5 animales.'],['Top-5','Devuelve las 5 predicciones más probables con su porcentaje.']],
+ 'library-system':[['Vue 3','Las pantallas: catálogo, búsqueda, filtro por género y panel de administración.'],['Casos de uso','Las reglas de la aplicación (crear, buscar, actualizar libros) sin saber qué base de datos hay detrás.'],['Repositorio','Traduce esas operaciones a consultas SQL. Es la pieza que se cambió al migrar de Supabase a Neon.'],['Neon','La base de datos Postgres en la nube donde quedan guardados los libros.']],
+ 'safe-transfer-ai':[['Pantalla Compose','El formulario de la transferencia y las señales de alerta que marcas.'],['FraudEngine','Aplica reglas ponderadas. Es lógica pura, separada de la interfaz y probada con 8 tests.'],['Puntaje 0–100','Un nivel Bajo, Medio o Alto, con las razones y recomendaciones que lo produjeron.']]};
+
+const HACE={
+ 'medi-ia':['Responde consultas clínicas apoyándose en 14 libros médicos, con el razonamiento en streaming.','Un agente con 4 herramientas: síntomas, urgencia, fármacos y secciones del libro.','Mapa corporal de 24 zonas, perfil clínico, voz y exportación a PDF.','Panel de métricas y de evaluación (Recall@k, MRR).'],
+ 'animalvision':['Sube una imagen y clasifica el animal (5 clases).','Muestra las 5 predicciones más probables con su porcentaje.','Responde en menos de un segundo por imagen (~0.8 s en el README).'],
+ 'library-system':['Catálogo con alta, edición y baja de libros.','Búsqueda y filtro por género.','Panel de administración con estadísticas.'],
+ 'safe-transfer-ai':['Formulario con monto, país destino y canal, más las señales de alerta.','Calcula un puntaje de riesgo de 0 a 100 (Bajo, Medio o Alto).','Explica qué reglas sumaron y qué recomendaciones aplicar.']};
+
+/* ---------- portadas generadas en capas (fallback sin captura) ---------- */
+function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function noise(seed){const r=rng(seed),n=Array.from({length:256},r);return x=>{const i=Math.floor(x),f=x-i,a=n[i&255],b=n[(i+1)&255],t=f*f*(3-2*f);return a+(b-a)*t}}
+function cover(p,wide){
+  const W=wide?840:480,H=wide?360:300,seed=p.hue*7;
+  const n=noise(seed);let s=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Portada generada de ${p.title}"><defs><linearGradient id="g${p.slug}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="hsl(${p.hue} 55% 14%)"/><stop offset="1" stop-color="hsl(${p.hue} 60% 30%)"/></linearGradient><pattern id="d${p.slug}" width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1" fill="hsl(${p.hue} 90% 75%)" opacity=".5"/></pattern></defs><rect width="${W}" height="${H}" fill="url(#g${p.slug})"/>`;
+  const layers=[[.55,.32,'hsl('+p.hue+' 45% 30%)'],[.68,.28,'hsl('+p.hue+' 45% 21%)'],[.8,.24,'hsl('+p.hue+' 45% 13%)']];
+  layers.forEach(([b,a,c],li)=>{
+    let d=`M-40 ${H+10} L-40 ${H*b}`;
+    for(let x=-40;x<=W+40;x+=6){const y=H*b-(n(x*.006+li*13)*.7+n(x*.014+li*5)*.3)*H*a;d+=` L${x} ${y.toFixed(1)}`}
+    d+=` L${W+40} ${H+10} Z`;s+=`<path class="l${li}" d="${d}" fill="${c}"/>`;
+    if(li<2)s+=`<path class="l${li}" d="${d}" fill="url(#d${p.slug})" opacity=".28"/>`;
+  });
+  s+=`<text x="${wide?36:22}" y="${wide?60:44}" font-family="Fraunces,Georgia,serif" font-weight="600" font-size="${wide?34:24}" fill="#f0f0f2" opacity=".92">${p.title}</text></svg>`;
+  return s;
+}
+const ext='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>';
+const gh='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.200.7-3.900-1.400-3.900-1.400-.5-1.300-1.300-1.700-1.300-1.700-1-.7.1-.7.1-.7 1.100.1 1.700 1.200 1.700 1.200 1 1.700 2.600 1.200 3.200.9.1-.7.4-1.200.7-1.500-2.600-.3-5.300-1.300-5.300-5.700 0-1.300.5-2.300 1.200-3.100-.1-.3-.5-1.500.1-3.100 0 0 1-.3 3.200 1.200a11 11 0 0 1 5.800 0c2.200-1.500 3.200-1.200 3.200-1.200.6 1.600.2 2.800.1 3.100.7.8 1.200 1.800 1.200 3.100 0 4.400-2.700 5.400-5.300 5.700.4.4.8 1.100.8 2.200v3.200c0 .3.2.7.8.6A11.500 11.500 0 0 0 23.500 12C23.500 5.700 18.300.5 12 .5z"/></svg>';
+const buttons=(p,big)=>`<div class="btns">${p.demo?`<a class="btn primary" href="${p.demo}" target="_blank" rel="noopener" aria-label="Ver demo en vivo de ${p.title} (se abre en una pestaña nueva)">${big?'Ver demo en vivo':'Ver demo'} ${ext}</a>`:''}<a class="btn ${p.demo?'ghost':'primary'}" href="${p.repo}" target="_blank" rel="noopener" aria-label="Ver código de ${p.title} en GitHub (se abre en una pestaña nueva)">${gh} Ver código</a></div>`;
+
+/* ---------- vistas ---------- */
+const app=document.getElementById('app');
+function lista(){
+  const live=P.filter(p=>p.demo).length;
+  app.innerHTML=`<p class="eyebrow">Proyectos</p><h1>Lo que he construido</h1>
+  <p class="lead">Cuatro proyectos, elegidos por lo que enseñan y no por cantidad. Cada uno tiene su expediente con el problema, mis decisiones y la evidencia.</p>
+  <p class="counts"><b>0${P.length}</b> expedientes · <span class="live"><b>0${live}</b> con demo en vivo</span> · <b>0${P.length-live}</b> solo código</p>
+  <div class="rows">${P.map(p=>`<article class="row">
+    <span class="tab" aria-hidden="true"><i></i>EXP-${p.n}</span>
+    <div class="cover">${cover(p,false)}</div>
+    <div>
+      <h2><a href="#${p.slug}">${p.title}<span class="arr" aria-hidden="true">→</span></a></h2>
+      <p class="sum">${p.sum}</p>
+      <div class="meta"><span class="metric"><b>${p.metric[0]}</b><span>${p.metric[1]}</span></span><span class="status ${p.demo?'live':'code'}"><i></i>${p.demo?'Demo en vivo':'Solo código'}</span><span class="ctx">${p.ctx}</span></div>
+      <div class="tags">${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      ${buttons(p,false)}
+    </div></article>`).join('')}</div>
+  <a class="archive" href="https://github.com/Milan32555" target="_blank" rel="noopener">Ver todo en GitHub ${ext}</a>`;
+}
+const li=a=>`<ul>${a.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+function detalle(slug){
+  const i=P.findIndex(p=>p.slug===slug),p=P[i],prev=P[(i+P.length-1)%P.length],next=P[(i+1)%P.length],e=p.exp;
+  const cols=['#18264a','#132039','#0f1a31','#0c1528','#0a1123'];
+  const F=[['Problema',`<p>${e.problema[0]}</p><h4>Qué hace</h4>${li(HACE[p.slug])}`],
+    ['Mi rol',`<p><span class="draft">borrador</span>${e.rol[0]}</p>`],
+    ['Decisiones',`${li(e.decisiones)}<h4>Lo que decidí no hacer</h4>${li(e.noHice)}`],
+    ['Evidencia',li(e.evidencia)],
+    ['Resultado',`<p>${e.resultado[0]}</p><h4>Con más tiempo haría…</h4><p><span class="draft">borrador</span>${e.mas[0]}</p>`]];
+  app.innerHTML=`<a class="back" href="#lista"><span aria-hidden="true">←</span> Proyectos</a>
+  <p class="eyebrow" style="margin-top:14px">Expediente ${p.n} · ${p.ctx} · ${p.year}</p>
+  <h1>${p.title}</h1><p class="lead">${p.sum}</p>
+  ${buttons(p,true)}
+  ${p.note?`<div class="note ${p.note.cls}" role="note"><span aria-hidden="true">${p.note.cls?'ℹ️':'⏳'}</span><span>${p.note.t}</span></div>`:''}
+  <div class="d-cover">${cover(p,true)}</div>
+  <p style="color:var(--muted);font-size:.8rem;margin-top:8px">Portada generada de ejemplo: aquí irá tu captura real.</p>
+  <div class="stats">${STATS[p.slug].map(([v,l])=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`).join('')}</div>
+  <section class="arch" aria-labelledby="arch-t"><p class="sec-eyebrow">Arquitectura</p><h2 id="arch-t">De la pantalla a los datos</h2>
+    <p>Las partes del sistema, en el orden en que viaja la información.</p>
+    <ol class="layers" style="--n:${ARCH[p.slug].length}">${ARCH[p.slug].map(([t,d],k)=>`<li class="layer"><span class="k">0${k+1}</span><h3>${t}</h3><p>${d}</p></li>`).join('')}</ol>
+  </section>
+  <section class="stack" aria-label="Expediente del proyecto"><h2 class="stack-title">Expediente EXP-${p.n}</h2>
+  ${F.map(([t,h],k)=>`<section class="folder" style="--i:${k};--c:${cols[k]}" data-open="${k===0}">
+    <button class="chip" aria-expanded="${k===0}" aria-controls="f${k}"><span class="num">0${k+1}</span><span>${t}</span></button>
+    <div class="head"></div>
+    <div class="panel" id="f${k}"><div><div class="inner">${h}</div></div></div></section>`).join('')}
+  </section>
+  <nav class="pager" aria-label="Otros proyectos"><a href="#${prev.slug}"><small>← Anterior</small><span>${prev.title}</span></a><a class="next" href="#${next.slug}"><small>Siguiente →</small><span>${next.title}</span></a></nav>
+  <div class="cta-block"><div><h3>¿Tienes un problema parecido?</h3><p>Cuéntame qué necesitas y vemos si puedo ayudarte.</p></div><a class="btn primary" href="#">Hablemos →</a></div>`;
+  const fs=[...app.querySelectorAll('.folder')];
+  const canHover=matchMedia('(hover:hover) and (pointer:fine)');
+  const openFolder=f=>{ // siempre queda una carpeta abierta
+    fs.forEach(x=>{const on=x===f;x.dataset.open=on;x.querySelector('.chip').setAttribute('aria-expanded',on)});
+  };
+  fs.forEach(f=>{
+    const chip=f.querySelector('.chip');
+    chip.addEventListener('click',()=>openFolder(f)); // teclado (Enter/Espacio), touch y mouse
+    // hover con intención: solo mouse, solo sobre pestaña/franja, solo con movimiento real
+    let t=null;
+    [chip,f.querySelector('.head')].forEach(el=>{
+      el.addEventListener('pointermove',e=>{
+        if(!canHover.matches||e.pointerType!=='mouse')return;
+        if(!e.movementX&&!e.movementY)return;          // ignora eventos sintéticos por cambios de layout
+        if(f.dataset.open==='true'||t)return;
+        t=setTimeout(()=>{t=null;openFolder(f)},140);  // retraso de intención
+      });
+      el.addEventListener('pointerleave',()=>{clearTimeout(t);t=null});
+    });
+  });
+}
+
+function route(){
+  const h=(location.hash||'#lista').slice(1);
+  if(h==='lista'||!P.find(p=>p.slug===h))lista();else detalle(h);
+  document.querySelectorAll('.mock-bar button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===(P.find(p=>p.slug===h)?h:'lista')));
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.mock-bar button').forEach(b=>b.onclick=()=>{location.hash=b.dataset.v});
+addEventListener('hashchange',route);route();
+</script>
+</body>
+</html>

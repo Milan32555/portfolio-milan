@@ -1,0 +1,91 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  margin-top: 4.5rem;
+  padding-top: 30px; /* espacio para la pestaña de la primera carpeta */
+}
+
+.folder {
+  --c: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  position: relative;
+  z-index: calc(var(--i) + 1);
+  margin-top: -14px;
+  background: var(--c);
+  border-radius: 26px 26px 0 0;
+  border-top: 1px solid var(--line-strong);
+  box-shadow: 0 -14px 34px rgba(0, 0, 0, 0.32);
+}
+.folder:first-child { margin-top: 0; }
+.folder:nth-child(1) { --c: color-mix(in srgb, var(--accent) 16%, var(--surface)); }
+.folder:nth-child(2) { --c: color-mix(in srgb, var(--accent) 12%, var(--surface)); }
+.folder:nth-child(3) { --c: color-mix(in srgb, var(--accent) 9%, var(--surface)); }
+.folder:nth-child(4) { --c: color-mix(in srgb, var(--accent) 6%, var(--surface)); }
+.folder:nth-child(5) { --c: color-mix(in srgb, var(--accent) 3%, var(--surface)); }
+
+.chip {
+  position: absolute;
+  top: -30px;
+  left: calc(24px + var(--i) * 150px);
+  height: 46px;
+  min-height: 44px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--c);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  border: 1px solid var(--line-strong);
+  border-bottom: 0;
+  border-radius: 16px 16px 0 0;
+}
+.chip:focus-visible { outline: 2px solid var(--accent2); outline-offset: 2px; }
+.folder[data-open="true"] .chip { box-shadow: inset 0 2px 0 var(--accent); }
+.num { font-family: var(--mono); font-size: 0.8rem; color: var(--accent2); }
+
+/* Franja: la parte visible de una carpeta cerrada; también dispara el hover por intención */
+.strip { height: 58px; }
+
+.panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.folder[data-open="true"] .panel { grid-template-rows: 1fr; }
+.panel > div { overflow: hidden; }
+.inner { padding: 0 28px 46px; max-width: 78ch; }
+
+/* Sin JavaScript: todo el contenido queda abierto y legible */
+@media (scripting: none) {
+  .panel { grid-template-rows: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel { transition: none; }
+}
+
+/* Mobile: las pestañas escalonadas pasan a cabeceras de acordeón a ancho completo */
+@media (max-width: 860px) {
+  .chip {
+    position: static;
+    width: 100%;
+    height: 60px;
+    border: 0;
+    background: transparent;
+    border-radius: 26px 26px 0 0;
+    padding: 0 22px;
+  }
+  .strip { display: none; }
+  .inner { padding: 0 22px 36px; }
+  .stack { margin-top: 2.5rem; padding-top: 0; }
+}
+
+@media print {
+  /* Sin transición: al imprimir todas las carpetas deben salir abiertas de inmediato, no a mitad de animación */
+  .panel { grid-template-rows: 1fr; transition: none; }
+  .folder { box-shadow: none; }
+}
+
+.heading { display: contents; margin: 0; font: inherit; }

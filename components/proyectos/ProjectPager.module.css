@@ -1,0 +1,21 @@
+.pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 3rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--line);
+}
+.link { display: block; padding: 14px 4px; min-height: 44px; }
+.next { text-align: right; }
+.hint {
+  display: block;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.name { font-family: var(--font-dm-serif), serif; font-size: 1.25rem; transition: color 0.2s; }
+.link:hover .name { color: var(--accent2); }
+.link:focus-visible { outline: 2px solid var(--accent2); outline-offset: 2px; border-radius: 6px; }
