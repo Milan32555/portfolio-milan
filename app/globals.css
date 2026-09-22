@@ -540,3 +540,13 @@ body {
   color: var(--accent) !important;
   transform: scale(1.1);
 }
+
+/* ─── HERO DE CÓDIGO + MURO (home) ────────────────────────── */
+/* Mientras se espera la escena 3D, el nombre de texto no se ve (evita el salto
+   "Misael en blanco → Misael de código"). Sigue en el HTML para SEO y lectores. */
+html[data-hero3d="on"] .hero-name { opacity: 0; }
+/* Alto contraste / dislexia: el nombre es texto sólido aunque haya 3D. */
+html[data-a11y-contrast="high"] .hero-name,
+html[data-a11y-dyslexia="on"] .hero-name { opacity: 1 !important; }
+/* El muro ya se vio en esta sesión: oculto antes del primer paint. */
+html[data-gate="skip"] .code-gate { display: none; }
