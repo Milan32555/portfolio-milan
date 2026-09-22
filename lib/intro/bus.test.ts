@@ -48,6 +48,16 @@ describe("createIntroBus", () => {
     assert.deepEqual(calls, []);
   });
 
+  it("un segundo pedido de arranque reemplaza al primero (un solo consumidor)", () => {
+    const bus = createIntroBus();
+    bus.activateGate();
+    const calls: string[] = [];
+    bus.requestStart(() => calls.push("viejo"));
+    bus.requestStart(() => calls.push("nuevo"));
+    bus.openGate(true);
+    assert.deepEqual(calls, ["nuevo"]);
+  });
+
   it("reset olvida etapas y estado", () => {
     const bus = createIntroBus();
     bus.report({ stage: "fonts", label: "a" });

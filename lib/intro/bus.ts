@@ -38,6 +38,10 @@ export function createIntroBus() {
       pending = null;
       fn?.(fromDoor);
     },
+    /**
+     * Un solo consumidor (el hero): un segundo pedido reemplaza al anterior. Es lo que
+     * se quiere cuando React monta el efecto dos veces: el primer montaje ya está muerto.
+     */
     requestStart(fn: StartFn) {
       if (gate === "open") fn(false);
       else pending = fn;
