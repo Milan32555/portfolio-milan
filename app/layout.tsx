@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans, DM_Serif_Display } from "next/font/google";
+import { DM_Sans, DM_Serif_Display, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Loader from "@/components/Loader";
@@ -21,6 +21,13 @@ const dmSerifDisplay = DM_Serif_Display({
   style: ["normal", "italic"],
   display: "swap",
   variable: "--font-dm-serif",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["500"],
+  display: "swap",
+  variable: "--font-mono",
 });
 
 const siteUrl = "https://portfolio-milan-omega.vercel.app";
@@ -72,8 +79,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     // WCAG 3.1.1 — lang="es" permite a los lectores de pantalla
     // usar la pronunciación y gramática correcta del idioma
-    <html lang="es" className="h-full">
-      <body className={`${dmSans.className} ${dmSans.variable} ${dmSerifDisplay.variable} antialiased h-full`}>
+    // suppressHydrationWarning: el script previo al primer paint del home escribe
+    // data-landing / data-gate / data-hero3d en <html> antes de hidratar.
+    <html lang="es" className="h-full" suppressHydrationWarning>
+      <body className={`${dmSans.className} ${dmSans.variable} ${dmSerifDisplay.variable} ${jetbrainsMono.variable} antialiased h-full`}>
         <LoaderProvider>
 
           {/*
