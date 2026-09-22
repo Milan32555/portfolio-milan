@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Home completo v1</title>
+<title>Loader muro de código v2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Serif+Display&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
@@ -144,8 +144,46 @@
   .rv.in{opacity:1;transform:none}
   html[data-a11y-motion="reduced"] .rv{opacity:1;transform:none}
   @media (prefers-reduced-motion: reduce){.rv{opacity:1;transform:none}}
+  /* ================= loader: muro de código ================= */
+  .gate{position:fixed;inset:0;z-index:50;background:var(--bg);perspective:1400px;overflow:hidden;cursor:default}
+  .gate.ready{cursor:pointer}
+  .gate-wall{position:absolute;top:0;height:100%;width:50%;display:block;background:var(--bg);
+    transition:transform 1.15s cubic-bezier(.75,0,.2,1),opacity 1.15s ease;will-change:transform}
+  .gate-l{left:0;transform-origin:left center}.gate-r{right:0;transform-origin:right center}
+  .gate.open .gate-l{transform:translateX(-102%) rotateY(14deg);opacity:.2}
+  .gate.open .gate-r{transform:translateX(102%) rotateY(-14deg);opacity:.2}
+  .gate.open{background:transparent;pointer-events:none}
+  .seam{position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--accent);
+    box-shadow:0 0 18px 3px color-mix(in srgb,var(--accent) 55%,transparent);transform:scaleY(0);transform-origin:center;
+    transition:transform .9s cubic-bezier(.2,.8,.2,1),opacity .6s ease;z-index:2}
+  .gate.ready .seam{transform:scaleY(1);animation:seam 2.2s ease-in-out infinite}
+  .gate.open .seam{opacity:0;animation:none}
+  @keyframes seam{50%{box-shadow:0 0 30px 6px color-mix(in srgb,var(--accent) 70%,transparent)}}
+  .gate-ui{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;width:min(430px,100% - 40px);
+    background:color-mix(in srgb,var(--bg) 88%,transparent);border:1px solid color-mix(in srgb,var(--accent) 22%,transparent);
+    border-radius:10px;padding:1.1rem 1.2rem 1.2rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--soft);
+    box-shadow:0 20px 60px rgba(0,0,0,.35);transition:opacity .35s ease,transform .35s ease}
+  .gate.open .gate-ui{opacity:0;transform:translate(-50%,-46%)}
+  .gate-log{margin:0 0 .9rem;min-height:9.4em;line-height:1.6;white-space:pre-wrap;font:inherit}
+  .gate-log .u{color:#6fd3a4}.gate-log .d{color:var(--muted)}.gate-log .ok{color:#6fd3a4}
+  html[data-theme="light"] .gate-log .u,html[data-theme="light"] .gate-log .ok{color:#146c43}
+  .gate-bar{height:3px;background:color-mix(in srgb,var(--accent) 15%,transparent);border-radius:2px;overflow:hidden}
+  .gate-bar span{display:block;height:100%;width:0;background:var(--accent)}
+  .gate-row{display:flex;justify-content:space-between;align-items:center;margin-top:.9rem;gap:1rem}
+  .gate-pct{color:var(--muted)}
+  .gate-enter{font:inherit;font-size:.85rem;color:var(--bg);background:var(--accent);border:0;border-radius:7px;padding:.55rem 1rem;cursor:pointer;
+    opacity:0;transform:translateY(4px);transition:opacity .4s ease,transform .4s ease}
+  .gate.ready .gate-enter{opacity:1;transform:none}
+  .gate-enter:disabled{cursor:default}
+  .gate-enter:focus-visible,.gate-skip:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .gate-hint{margin:.6rem 0 0;color:var(--muted);font-size:.7rem;text-align:right;opacity:0;transition:opacity .4s ease .2s}
+  .gate.ready .gate-hint{opacity:1}
+  .gate-skip{position:absolute;right:18px;bottom:16px;z-index:3;font:inherit;font-family:'JetBrains Mono',monospace;font-size:.72rem;
+    color:var(--muted);background:none;border:0;cursor:pointer;padding:.4rem;text-decoration:underline;text-underline-offset:3px}
+  .gate.open .gate-skip{opacity:0}
+  html.gate-seen .gate{display:none}
   /* --- panel del mockup (simula tu AccessibilityWidget) --- */
-  .mockpanel{position:fixed;top:12px;right:12px;z-index:7;display:flex;flex-wrap:wrap;gap:6px;align-items:center;max-width:470px;justify-content:flex-end;
+  .mockpanel{position:fixed;top:12px;right:12px;z-index:60;display:flex;flex-wrap:wrap;gap:6px;align-items:center;max-width:470px;justify-content:flex-end;
     padding:.5rem .6rem;border:1px dashed rgba(126,179,255,.5);border-radius:8px;background:rgba(7,11,22,.88);font-size:.7rem;color:#a9b4c9}
   .mockpanel span{width:100%;text-align:right;font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#8b95b0}
   .mockpanel button{font:inherit;color:#dfe5f2;background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:.3rem .55rem;cursor:pointer}
@@ -155,11 +193,35 @@
 </style>
 </head>
 <body>
+<div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+  <canvas class="gate-wall gate-l" id="wallL" aria-hidden="true"></canvas>
+  <canvas class="gate-wall gate-r" id="wallR" aria-hidden="true"></canvas>
+  <div class="seam" aria-hidden="true"></div>
+  <div class="gate-ui">
+    <h2 class="sr-only" id="gateTitle">Cargando el portfolio de Misael</h2>
+    <pre class="gate-log" id="gateLog" aria-hidden="true"></pre>
+    <div class="gate-bar" role="progressbar" aria-label="Carga" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="gateBar"><span id="gateFill"></span></div>
+    <div class="gate-row"><span class="gate-pct" id="gatePct" aria-hidden="true">0%</span><button class="gate-enter" id="gateEnter" type="button" disabled>Entrar →</button></div>
+    <p class="gate-hint" id="gateHint" aria-hidden="true">o pulsa Enter</p>
+  </div>
+  <button class="gate-skip" id="gateSkip" type="button">Saltar intro</button>
+</div>
+<script>
+  /* antes del primer paint: si ya entró en esta sesión, el muro no se muestra */
+  try { if (sessionStorage.getItem('gateSeen') === '1') document.documentElement.classList.add('gate-seen'); } catch (e) {}
+</script>
 <section class="hero" id="hero">
   <canvas id="c3d" aria-hidden="true"></canvas>
   <div class="content" id="content">
     <p class="eyebrow"><span class="sr-only">Desarrollador freelance y auditor de código</span><span id="typed" aria-hidden="true"></span><span class="caret" id="caret" aria-hidden="true"></span></p>
     <div class="name-slot" id="slot"><h1 class="name" id="nameText">Misael<em>.</em></h1></div>
+    <script>
+      /* antes del primer paint: si se espera la versión 3D, el texto queda invisible (sigue en el HTML para SEO y lectores de pantalla) */
+      (function(){ var H = document.documentElement;
+        var st = H.getAttribute('data-a11y-contrast') === 'high' || H.getAttribute('data-a11y-dyslexia') === 'on';
+        var no3d = /nowebgl/.test(location.search) || (navigator.hardwareConcurrency || 4) <= 2;
+        if (!st && !no3d) document.getElementById('nameText').classList.add('dissolved'); })();
+    </script>
     <p class="sub">Construyo interfaces con React y Next.js, y audito código ajeno con la misma cabeza con la que aprendí seguridad: buscando qué se rompe antes de que lo haga otro.</p>
     <div class="actions">
       <a class="btnp" href="#">Ver proyectos →</a>
@@ -221,13 +283,14 @@
 </section>
 </main>
 <div class="footer-ph">(aquí sigue el footer Cordilleras que ya está en producción)</div>
-<div class="note"><b>Mockup home v1.</b> Hero cerrado + el resto del home resumido. Haz scroll: cada sección aparece una vez, y en "Sobre mí" la consola escribe <code>whoami</code> sola. El panel de arriba sigue funcionando para probar tema claro y accesibilidad.</div>
+<div class="note"><b>Mockup loader v1.</b> El muro de código carga de verdad (fuentes, Three.js, escena). Mueve el mouse sobre el muro mientras carga. Al terminar: clic en cualquier parte, el botón o Enter. Solo sale una vez por sesión; para repetirlo usa "Ver el loader otra vez" arriba (solo mockup).</div>
 <div class="mockpanel" role="group" aria-label="Controles del mockup">
   <span>solo mockup · simula tu AccessibilityWidget</span>
   <button type="button" data-attr="data-theme" data-on="light" data-off="dark" aria-pressed="false">Tema claro</button>
   <button type="button" data-attr="data-a11y-contrast" data-on="high" data-off="off" aria-pressed="false">Alto contraste</button>
   <button type="button" data-attr="data-a11y-motion" data-on="reduced" data-off="off" aria-pressed="false">Reducir movimiento</button>
   <button type="button" data-attr="data-a11y-dyslexia" data-on="on" data-off="off" aria-pressed="false">Dislexia</button>
+  <button type="button" id="replayGate">Ver el loader otra vez</button>
 </div>
 <div class="toast" id="toast" aria-live="polite"></div>
 
@@ -236,6 +299,7 @@
 <script>
 function initHero(){
   var H = document.documentElement;
+  window.__gateStage && window.__gateStage('three', typeof THREE !== 'undefined' ? 'three.js listo' : 'three.js no disponible');
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches || H.getAttribute('data-a11y-motion') === 'reduced';
   var finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   var hero = document.getElementById('hero'), slot = document.getElementById('slot'), canvas = document.getElementById('c3d');
@@ -252,7 +316,9 @@ function initHero(){
     // Sin WebGL: el nombre queda como texto real (ya visible desde el primer paint), sin escaneo.
     canvas.style.display = 'none';
     window.__showContentNow();
+    nameText.classList.remove('dissolved');   // sin 3D: el nombre es el texto
     window.__ready = true; window.__fallback = true;
+    window.__gateStage && window.__gateStage('ready', 'modo texto (sin WebGL)');
     return;
   }
   var PR = Math.min(window.devicePixelRatio||1, 1.5);
@@ -283,17 +349,17 @@ function initHero(){
   var uniforms = {
     uTime:{value:0}, uProgress:{value: reduce?1.2:0}, uScan:{value:-100}, uPR:{value:PR}, uSize:{value:10},
     uMouse:{value:new THREE.Vector2(99,99)}, uMouseStr:{value:0}, uAtlas:{value:atlas}, uGrid:{value:new THREE.Vector2(GX,GY)},
-    uDrift:{value: reduce?0:1}, uScanOn:{value:0}, uClick:{value:new THREE.Vector2(99,99)}, uClickT:{value:-100}, uScroll:{value:0}, uN:{value:32}, uMorph:{value:0}, uBase:{value:new THREE.Vector3()}, uAccent:{value:new THREE.Vector3()}, uAmber:{value:new THREE.Vector3()}, uRed:{value:new THREE.Vector3()}, uGreen:{value:new THREE.Vector3()}
+    uDrift:{value: reduce?0:1}, uScanOn:{value:0}, uClick:{value:new THREE.Vector2(99,99)}, uClickT:{value:-100}, uScroll:{value:0}, uN:{value:32}, uMorph:{value:0}, uDoor:{value:0}, uBase:{value:new THREE.Vector3()}, uAccent:{value:new THREE.Vector3()}, uAmber:{value:new THREE.Vector3()}, uRed:{value:new THREE.Vector3()}, uGreen:{value:new THREE.Vector3()}
   };
 
   var vert = [
-    'attribute vec3 aTarget; attribute vec3 aStart; attribute float aGlyph; attribute float aSeed; attribute float aDot; attribute float aBug; attribute vec3 aTarget2;',
-    'uniform float uTime,uProgress,uScan,uPR,uSize,uMouseStr,uDrift,uScanOn,uClickT,uScroll,uN,uMorph; uniform vec2 uMouse,uClick; uniform vec3 uBase,uAccent,uAmber,uRed,uGreen; uniform float uAlphaMul;',
+    'attribute vec3 aDoor; attribute vec3 aTarget; attribute vec3 aStart; attribute float aGlyph; attribute float aSeed; attribute float aDot; attribute float aBug; attribute vec3 aTarget2;',
+    'uniform float uTime,uProgress,uScan,uPR,uSize,uMouseStr,uDrift,uScanOn,uClickT,uScroll,uN,uMorph,uDoor; uniform vec2 uMouse,uClick; uniform vec3 uBase,uAccent,uAmber,uRed,uGreen; uniform float uAlphaMul;',
     'varying float vGlyph; varying vec3 vColor; varying float vAlpha;',
     'void main(){',
     '  float p = clamp((uProgress - aSeed*0.45)/0.55, 0.0, 1.0);',
     '  p = 1.0 - pow(1.0 - p, 3.0);',
-    '  vec3 pos = mix(aStart, aTarget, p);',
+    '  vec3 pos = mix(mix(aStart, aDoor, uDoor), aTarget, p);',
     '  float mm = clamp((uMorph - aSeed*0.35)/0.65, 0.0, 1.0); mm = mm*mm*(3.0-2.0*mm);',
     '  pos = mix(pos, aTarget2, mm); pos.z += sin(mm*3.14159)*(aSeed-0.5)*3.0;',
     '  pos += (aStart - aTarget) * 0.28 * uScroll * uScroll + vec3(0.0, uScroll * (0.6 + aSeed*1.6), 0.0);',
@@ -384,7 +450,7 @@ function initHero(){
     var cy = (slotRect.top + slotRect.height/2 - heroRect.top);
     var centerWorldY = (H/2 - cy) * pxToWorld;
 
-    var tgt=[], st=[], gl=[], sd=[], dt=[], bg=[]; bugYs = []; bugPos = [];
+    var tgt=[], st=[], gl=[], sd=[], dt=[], bg=[], dr=[]; bugYs = []; bugPos = [];
     for (var yy=0; yy<c.height; yy+=gap){
       for (var xx=0; xx<c.width; xx+=gap){
         if (img[(yy*c.width+xx)*4+3] > 128){
@@ -393,6 +459,7 @@ function initHero(){
           tgt.push(sx, sy, (Math.random()-.5)*0.08);
           var r = 6 + Math.random()*8, th = Math.random()*Math.PI*2;
           st.push(Math.cos(th)*r, Math.sin(th)*r*0.6, -8 + Math.random()*14);
+          dr.push((Math.random()-.5)*0.18, (Math.random()-.5)*wa.h*0.95, -1.5 + Math.random()*2.5);
           gl.push(Math.floor(Math.random()*32));
           bg.push(0);
           sd.push(Math.random());
@@ -434,6 +501,7 @@ function initHero(){
     g.setAttribute('aDot', new THREE.Float32BufferAttribute(dt,1));
     g.setAttribute('aBug', new THREE.Float32BufferAttribute(bg,1));
     g.setAttribute('aTarget2', new THREE.Float32BufferAttribute(t2,3));
+    g.setAttribute('aDoor', new THREE.Float32BufferAttribute(dr,3));
     points = new THREE.Points(g, mat); points.frustumCulled = false; group.add(points);
     window.__count = tgt.length/3;
 
@@ -454,6 +522,7 @@ function initHero(){
     g2.setAttribute('aDot', new THREE.Float32BufferAttribute(dd,1));
     g2.setAttribute('aBug', new THREE.Float32BufferAttribute(db,1));
     g2.setAttribute('aTarget2', new THREE.Float32BufferAttribute(dp,3));
+    g2.setAttribute('aDoor', new THREE.Float32BufferAttribute(dp,3));
     dust = new THREE.Points(g2, dustMat); dust.frustumCulled=false; dust.renderOrder=-1; group.add(dust);
 
     // línea de escaneo
@@ -639,17 +708,25 @@ function initHero(){
   ]).catch(function(){}).then(function(){
     drawAtlas(); atlas.needsUpdate = true;
     build(); applyTheme();
+    window.__gateStage && window.__gateStage('scene', 'escena: ' + window.__count.toLocaleString('es-CO') + ' glifos');
     // mide ~0.4s con las partículas aún invisibles (uProgress = 0); si el equipo no llega a 45fps, baja la calidad
-    var bFrames = 0, bStart = performance.now();
+    // en visitas siguientes de la sesión se reutiliza la calidad ya medida (sin esperar 0.4 s)
+    var bFrames = 0, bStart = performance.now(), cachedQ = null;
+    try { cachedQ = sessionStorage.getItem('heroQuality'); } catch (e) {}
     function bench(now){
       renderer.render(scene, camera); bFrames++;
-      if (now - bStart < 400 && !reduce){ requestAnimationFrame(bench); return; }
-      var fps = bFrames / ((now - bStart)/1000); window.__fps = Math.round(fps);
+      if (!cachedQ && now - bStart < 400 && !reduce){ requestAnimationFrame(bench); return; }
+      var fps = cachedQ ? (cachedQ === 'low' ? 0 : 60) : bFrames / ((now - bStart)/1000);
+      window.__fps = cachedQ ? null : Math.round(fps);
       if (!reduce && fps < 45){
         qualityScale = window.innerWidth < 600 ? 1.08 : 1.25; PR = 1; renderer.setPixelRatio(1); uniforms.uPR.value = 1; build(); applyTheme();
         window.__quality = 'low';
       } else window.__quality = 'normal';
-      startIntro();
+      try { sessionStorage.setItem('heroQuality', window.__quality); } catch (e) {}
+      window.__gateStage && window.__gateStage('ready', 'calidad: ' + (window.__quality === 'low' ? 'ligera' : 'completa') + (window.__fps !== null ? ' · ' + window.__fps + ' fps' : ' · guardada'));
+      // si el muro sigue cerrado, la intro espera a que se abra y sale desde la rendija
+      if (window.__gateActive){ window.__startIntroLater = function(fromDoor){ uniforms.uDoor.value = fromDoor ? 1 : 0; startIntro(); }; }
+      else startIntro();
     }
     requestAnimationFrame(bench);
   });
@@ -712,11 +789,110 @@ function initHero(){
   }
   function idle(fn){ if ('requestIdleCallback' in window) requestIdleCallback(fn, {timeout:500}); else setTimeout(fn, 200); }
   // red de seguridad: si Three.js tarda, el contenido igual aparece
-  setTimeout(function(){ window.__showContentNow(); }, 3200);
-  if (a11yStatic()){ window.__showContentNow(); }
-  else idle(boot);
-  // si alguien apaga alto contraste/dislexia y Three.js nunca cargó, cargarlo ahora
-  new MutationObserver(function(){ if (!a11yStatic()) idle(boot); }).observe(H, {attributes:true, attributeFilter:['data-a11y-contrast','data-a11y-dyslexia']});
+  var nameEl = document.getElementById('nameText');
+  setTimeout(function(){ window.__showContentNow(); if (!window.__ready) nameEl.classList.remove('dissolved'); }, 3200);
+  if (a11yStatic()){ window.__showContentNow(); nameEl.classList.remove('dissolved'); }
+  else boot();   // se pide de inmediato: el nombre en texto ya no cubre la espera
+  // alto contraste/dislexia antes de que cargue Three.js: mostrar el texto; al apagarlos, cargar el 3D
+  new MutationObserver(function(){
+    if (window.__ready) return;   // una vez cargado, initHero maneja estos cambios
+    if (a11yStatic()) nameEl.classList.remove('dissolved'); else { nameEl.classList.add('dissolved'); boot(); }
+  }).observe(H, {attributes:true, attributeFilter:['data-a11y-contrast','data-a11y-dyslexia']});
+})();
+</script>
+
+<script>
+/* ---------- loader "muro de código" ---------- */
+(function(){
+  var H = document.documentElement, gate = document.getElementById('gate');
+  document.getElementById('replayGate').addEventListener('click', function(){ try { sessionStorage.removeItem('gateSeen'); } catch (e) {} location.reload(); });
+  if (H.classList.contains('gate-seen')){ gate.remove(); window.__gateActive = false; return; }
+  window.__gateActive = true;
+  var hero = document.getElementById('hero'), main = document.querySelector('main');
+  hero.inert = true; if (main) main.inert = true;
+  function reduced(){ return matchMedia('(prefers-reduced-motion: reduce)').matches || H.getAttribute('data-a11y-motion') === 'reduced'; }
+  var coarse = matchMedia('(pointer: coarse)').matches;
+
+  // --- muro: grilla de glifos en dos mitades (cada canvas dibuja su mitad de la misma grilla) ---
+  var GL = '{}<>/;=()[]$#*&|!?01:+-_%@~^.,';
+  var cL = document.getElementById('wallL'), cR = document.getElementById('wallR'), cells = [], CW = 17, CH = 21, cols, rows, W, Hh, dpr = Math.min(devicePixelRatio || 1, 1.5);
+  var mouse = {x:-999, y:-999}, shown = 0, dirty = true;
+  function layout(){
+    W = innerWidth; Hh = innerHeight; cols = Math.ceil(W/CW); rows = Math.ceil(Hh/CH); cells = [];
+    for (var r=0; r<rows; r++) for (var c=0; c<cols; c++) cells.push({c:c, r:r, g:GL[(Math.random()*GL.length)|0], t:Math.random()});
+    [cL, cR].forEach(function(cv){ cv.width = Math.ceil(W/2*dpr); cv.height = Math.ceil(Hh*dpr); });
+    dirty = true;
+  }
+  function colors(){ var cs = getComputedStyle(H); return {acc: cs.getPropertyValue('--accent').trim() || '#7eb3ff', light: H.getAttribute('data-theme') === 'light'}; }
+  function draw(){
+    var col = colors();
+    [[cL, 0], [cR, W/2]].forEach(function(pair){
+      var cv = pair[0], ox = pair[1], x = cv.getContext('2d');
+      x.setTransform(dpr,0,0,dpr,0,0); x.clearRect(0,0,W/2,Hh);
+      x.font = '500 12px "JetBrains Mono", monospace'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = col.acc;
+      for (var i=0; i<cells.length; i++){
+        var ce = cells[i], px = ce.c*CW + CW/2, py = ce.r*CH + CH/2;
+        if (px < ox - CW || px > ox + W/2 + CW) continue;
+        var lit = ce.t < shown ? 1 : 0;                       // la carga "enciende" el muro
+        var dx = px - mouse.x, dy = py - mouse.y, near = Math.max(0, 1 - Math.sqrt(dx*dx+dy*dy)/140);
+        var a = (col.light ? 0.10 : 0.07) + lit*(col.light ? 0.16 : 0.13) + near*0.55;
+        x.globalAlpha = Math.min(a, 0.85);
+        x.fillText(ce.g, px - ox, py);
+      }
+    });
+
+  }
+  var raf = null;
+  function loop(){
+    if (!gate.isConnected) return;
+    if (Math.random() < 0.5){ var k = (Math.random()*cells.length)|0; cells[k].g = GL[(Math.random()*GL.length)|0]; dirty = true; }  // código vivo
+    if (dirty){ draw(); dirty = false; }
+    raf = requestAnimationFrame(loop);
+  }
+  layout(); addEventListener('resize', layout);
+  gate.addEventListener('pointermove', function(e){ if (reduced() || coarse) return; mouse.x = e.clientX; mouse.y = e.clientY; dirty = true; });
+  gate.addEventListener('pointerleave', function(){ mouse.x = mouse.y = -999; dirty = true; });
+  new MutationObserver(function(){ dirty = true; }).observe(H, {attributes:true, attributeFilter:['data-theme','data-a11y-contrast']});
+
+  // --- progreso real: fuentes -> three.js -> escena -> benchmark ---
+  var log = document.getElementById('gateLog'), fill = document.getElementById('gateFill'), bar = document.getElementById('gateBar'), pct = document.getElementById('gatePct');
+  var btn = document.getElementById('gateEnter'), hint = document.getElementById('gateHint');
+  var STAGES = {fonts:25, three:55, scene:82, ready:100}, target = 4, disp = 0, lines = [], pending = [], t0 = performance.now(), MIN = 1700, isReady = false;
+  var head = '<span class="d">┌──(</span><span class="u">misael㉿portfolio</span><span class="d">)-[~]</span>\n<span class="d">└─$</span> ./entrar.sh\n';
+  function renderLog(){ log.innerHTML = head + lines.map(function(l){ return '<span class="ok">[ ok ]</span> ' + l; }).join('\n') + (isReady ? '\n<span class="d">acceso listo.</span>' : ''); }
+  window.__gateStage = function(stage, label){ pending.push({at: STAGES[stage], label: label}); target = Math.max(target, STAGES[stage]); };
+  renderLog();
+  document.fonts.ready.then(function(){ window.__gateStage('fonts', 'fuentes cargadas'); dirty = true; });
+  if (window.__heroStatic && window.__heroStatic()) setTimeout(function(){ window.__gateStage('ready', 'modo texto (accesibilidad)'); }, 300);
+  function tick(){
+    if (!gate.isConnected) return;
+    var elapsed = performance.now() - t0, cap = reduced() ? 100 : Math.min(100, elapsed / MIN * 100);  // nunca más rápido que MIN, nunca más que lo real
+    disp += (Math.min(target, cap) - disp) * 0.12; if (target - disp < 0.4 && cap >= target) disp = target;
+    shown = disp/100; dirty = true;
+    fill.style.width = disp.toFixed(1) + '%'; pct.textContent = Math.round(disp) + '%'; bar.setAttribute('aria-valuenow', Math.round(disp));
+    pending = pending.filter(function(p){ if (disp >= p.at - 0.5){ lines.push(p.label); renderLog(); return false; } return true; });
+    if (disp >= 100 && !isReady){ becomeReady(); return; }
+    requestAnimationFrame(tick);
+  }
+  function becomeReady(){
+    isReady = true; renderLog(); gate.classList.add('ready'); btn.disabled = false; btn.focus({preventScroll:true});
+    hint.textContent = coarse ? 'o toca en cualquier parte' : 'o pulsa Enter';
+  }
+  function open(){
+    if (!gate.isConnected || gate.classList.contains('open')) return;
+    try { sessionStorage.setItem('gateSeen', '1'); } catch (e) {}
+    var fromDoor = isReady && !reduced();
+    gate.classList.add('open'); window.__gateActive = false;
+    if (fromDoor){ var nt = document.getElementById('nameText'); if (nt) nt.classList.add('dissolved'); }   // el nombre lo forma el código que sale de la rendija
+    hero.inert = false; if (main) main.inert = false;
+    if (window.__startIntroLater){ var f = window.__startIntroLater; window.__startIntroLater = null; setTimeout(function(){ f(fromDoor); }, fromDoor ? 250 : 0); }
+    setTimeout(function(){ cancelAnimationFrame(raf); gate.remove(); }, reduced() ? 0 : 1250);
+  }
+  btn.addEventListener('click', function(e){ e.stopPropagation(); open(); });
+  gate.addEventListener('click', function(e){ if (isReady && !e.target.closest('.gate-skip')) open(); });
+  document.getElementById('gateSkip').addEventListener('click', function(e){ e.stopPropagation(); open(); });
+  addEventListener('keydown', function(e){ if (!gate.isConnected) return; if (e.key === 'Escape') open(); else if (e.key === 'Enter' && isReady && e.target !== btn) open(); });
+  loop(); requestAnimationFrame(tick);
 })();
 </script>
 

@@ -32,7 +32,7 @@ Iteraciones descartadas (para no volver a ellas): arco narrativo de 4 bloques de
 | Comando | Salida |
 |---|---|
 | `whoami` | Ingeniería en Sistemas, freelance (desarrollo + auditoría de código). Empecé en seguridad viendo a **El Pingüino de Mario** y **S4vitar** en YouTube. (ambos nombres son **links reales** a sus canales, `rel="noopener"`) |
-| `stack --list` | `frontend` → React, Next.js, Vue.js · `backend` → Node.js, Python · `ia` → Deep Learning (categorías en `--accent2`) |
+| `stack --list` | `frontend` → React, Next.js, Vue.js · `móvil` → Flutter · `backend` → Node.js, Python · `ia` → Deep Learning (categorías en `--accent2`; `móvil` se agregó al confirmar que Base se construye con Flutter, no estaba en el mockup v15) |
 | `status --current` | **Base** (app móvil, cliente privado) — chip con punto pulsante "en revisión de tiendas". Cliente conforme con el resultado. |
 | `fuera-de-codigo` | gym · inglés |
 
@@ -67,5 +67,4 @@ Barra fija **debajo** del área de texto (no dentro del log), con dos botones qu
 
 ## Pendiente
 
-- Confirmar si el stack de `stack --list` necesita la tecnología móvil con la que se construye Base (ver pregunta abierta en el spec del home).
 - Actualizar `status --current` cuando Base salga publicada en las tiendas.
