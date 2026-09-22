@@ -207,6 +207,7 @@ export class HeroScene {
       };
       requestAnimationFrame(step);
     });
+    if (this.disposed) return this.quality;
     if (hidden) {
       this.fps = null;
       return this.quality;
