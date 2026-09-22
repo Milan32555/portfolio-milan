@@ -4,59 +4,9 @@ import { useEffect, useRef, useState, FormEvent } from "react";
 import Link from "next/link";
 import HeroVideo from "@/components/HeroVideo";
 import { useLoader } from "@/components/LoaderContext";
+import { projectNumber, projects } from "@/lib/projects";
 
 // ─── DATOS ────────────────────────────────────────────────────────────────────
-const projects = [
-  {
-    num: "01",
-    title: "AnimalVision — Clasificación de Imágenes con IA",
-    tags: ["Python", "MobileNetV2", "Flask", "Deep Learning"],
-    desc: "Aplicación web full-stack que clasifica imágenes de animales usando un modelo de deep learning basado en MobileNetV2. Entrenado con Kaggle, desplegado en Render.",
-    href: "https://animal-cnn-classifier.onrender.com",
-    github: "https://github.com/Milan32555/AnimalVision-AI-Image-Classification-System",
-  },
-  {
-    num: "02",
-    title: "Chat en Tiempo Real — Socket.io",
-    tags: ["Node.js", "Express", "Socket.io", "MongoDB"],
-    desc: "Aplicación de chat en tiempo real con persistencia de mensajes en MongoDB Atlas. Arquitectura event-driven con Socket.io y servidor Express.",
-    href: "#",
-    github: "https://github.com/Milan32555/Chat-socket-mongodb",
-  },
-  {
-    num: "03",
-    title: "Sistema de Gestión de Librería — Full Stack",
-    tags: ["Vue.js", "Node.js", "Netlify", "Railway"],
-    desc: "Sistema completo para gestionar librerías con arquitectura limpia: CRUD de libros, búsqueda y filtrado por género. Frontend en Vue.js (Netlify) y backend en Node.js (Railway).",
-    href: "#",
-    github: "https://github.com/Milan32555/Full-stack-library-management-system-with-Vue.js-frontend-and-Node.js-backend",
-  },
-  {
-    num: "04",
-    title: "KardexAPP — Gestión de Inventario",
-    tags: ["Vue 3", "Vuetify", "Pinia", "ApexCharts"],
-    desc: "App web para control de stock con movimientos de entrada/salida, cálculo automático de costo promedio ponderado, gráficas interactivas y exportación a CSV y PDF.",
-    href: "#",
-    github: "https://github.com/Milan32555/VUE-KardexAPP",
-  },
-  {
-    num: "05",
-    title: "SafeTransfer AI — Transferencias Seguras",
-    tags: ["HTML", "CSS", "JavaScript", "AI"],
-    desc: "Plataforma de transferencias con enfoque en seguridad e inteligencia artificial. Diseño orientado a velocidad, confiabilidad y protección de datos sensibles.",
-    href: "#",
-    github: "https://github.com/Milan32555/safe-transfer-ai",
-  },
-  {
-    num: "06",
-    title: "Portfolio Personal",
-    tags: ["Next.js", "TypeScript", "Tailwind CSS"],
-    desc: "Este mismo portfolio — construido con Next.js 16, Tailwind CSS y animaciones CSS puras. Diseño dark/light, accesibilidad WCAG, totalmente responsivo y optimizado.",
-    href: "#",
-    github: "https://github.com/Milan32555/portfolio-milan",
-  },
-];
-
 const skills = [
   "React", "Next.js", "TypeScript", "Vue.js",
   "Node.js", "Python", "Deep Learning", "Socket.io",
@@ -155,9 +105,9 @@ function ProjectsSection() {
         <h2 className="section-title">Lo que he construido</h2>
         <div className="projects-grid">
           {projects.map((p) => (
-            <div key={p.num} className="project-card">
+            <div key={p.slug} className="project-card">
               {/* Número */}
-              <p className="card-number">{p.num} — Proyecto</p>
+              <p className="card-number">{projectNumber(p.slug)} — Proyecto</p>
 
               {/* Tags */}
               <div className="card-tags">
@@ -167,18 +117,20 @@ function ProjectsSection() {
               {/* Título */}
               <h3 className="card-title">{p.title}</h3>
 
-              {/* Descripción — flex:1 lo empuja hacia abajo */}
-              <p className="card-desc">{p.desc}</p>
+              {/* Resumen — flex:1 lo empuja hacia abajo */}
+              <p className="card-desc">{p.summary}</p>
 
               {/* Footer de la card */}
               <div className="card-footer">
-                <a href={p.href} className="card-arrow" aria-label={`Ver proyecto ${p.title}`}>
-                  Ver proyecto <ArrowIcon />
-                </a>
+                <Link href={`/proyectos/${p.slug}`} className="card-arrow" aria-label={`Ver el expediente de ${p.title}`}>
+                  Ver detalle <ArrowIcon />
+                </Link>
                 <a
-                  href={p.github}
+                  href={p.repo.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="card-github"
-                  aria-label={`GitHub de ${p.title}`}
+                  aria-label={`Código de ${p.title} en GitHub (se abre en una pestaña nueva)`}
                   title="Ver código en GitHub"
                 >
                   <GitHubIcon size={15} />
@@ -189,7 +141,7 @@ function ProjectsSection() {
         </div>
         <div style={{ marginTop: "2rem" }}>
           <Link href="/proyectos" className="btn-ghost">
-            Ver los proyectos con detalle <span aria-hidden="true">→</span>
+            Ver todos los proyectos <span aria-hidden="true">→</span>
           </Link>
         </div>
       </div>
