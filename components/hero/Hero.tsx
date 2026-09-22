@@ -23,6 +23,10 @@ const A11Y_ATTRS = ["data-theme", "data-a11y-motion", "data-a11y-contrast", "dat
 
 export default function Hero() {
   const router = useRouter();
+  const routerRef = useRef(router);
+  useEffect(() => {
+    routerRef.current = router;
+  });
   const hostRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const slotRef = useRef<HTMLDivElement>(null);
@@ -41,8 +45,11 @@ export default function Hero() {
   // así que se decide aquí, antes de pintar, si el <h1> de texto debe esperar al 3D.
   useLayoutEffect(() => {
     const root = document.documentElement;
-    if (!root.hasAttribute("data-hero3d")) {
+    // Sin atributo (primera visita a este montaje) o marcado "slow" (una visita anterior
+    // en la misma sesión cayó a texto por lentitud, no por falta de WebGL): recalcular.
+    if (!root.hasAttribute("data-hero3d") || root.getAttribute("data-hero3d-reason") === "slow") {
       root.setAttribute("data-hero3d", hero3dAllowed("WebGLRenderingContext" in window, navigator.hardwareConcurrency) ? "on" : "off");
+      root.removeAttribute("data-hero3d-reason");
     }
     if (window.innerWidth < 600) setEyebrow(EYEBROW_SHORT);
   }, []);
@@ -59,17 +66,19 @@ export default function Hero() {
       setContentReady(true);
     };
     let gaveUp = false;
-    const fallBackToText = (label: string) => {
+    const fallBackToText = (label: string, reason?: string) => {
       gaveUp = true;
       root.setAttribute("data-hero3d", "off");
+      if (reason) root.setAttribute("data-hero3d-reason", reason);
       showEverything();
       introBus.report({ stage: "ready", label });
     };
 
     // Si la escena no existe a los 3.2 s (red lenta, CDN caído), el hero queda de texto
-    // para esta visita y el muro termina igual.
+    // para esta visita; se marca "slow" para que una futura visita al home en la misma
+    // sesión (navegación del lado del cliente) vuelva a intentar el 3D.
     const safety = window.setTimeout(() => {
-      if (!scene && !disposed) fallBackToText("modo texto (carga lenta)");
+      if (!scene && !disposed && !gaveUp) fallBackToText("modo texto (carga lenta)", "slow");
     }, SAFETY_MS);
 
     if (root.getAttribute("data-hero3d") !== "on") {
@@ -104,7 +113,13 @@ export default function Hero() {
           reduced: motionReduced(root, matchMedia),
           onAudit: setAudit,
           onEgg: setEgg,
-          onEggNavigate: () => router.push("/sobre-mi"),
+          onEggNavigate: () => routerRef.current.push("/sobre-mi"),
+          onContextLost: () => {
+            if (disposed) return;
+            fallBackToText("modo texto (contexto WebGL perdido)");
+            scene?.dispose();
+            scene = null;
+          },
         });
         introBus.report({ stage: "scene", label: `escena: ${scene.count.toLocaleString("es-CO")} glifos` });
 
@@ -127,25 +142,33 @@ export default function Hero() {
           setIntroStarted(true);
         });
       } catch {
-        if (!disposed && !gaveUp) fallBackToText("modo texto (sin WebGL)");
+        if (!disposed && !gaveUp) {
+          scene?.dispose();
+          scene = null;
+          fallBackToText("modo texto (sin WebGL)");
+        }
       }
     })();
 
-    const observer = new MutationObserver(() => {
+    const onA11yChange = () => {
       if (!scene) return;
       scene.setTheme(themeOf(root));
       scene.setReduced(motionReduced(root, matchMedia));
       scene.setStatic(heroStaticMode(root));
-    });
+    };
+    const observer = new MutationObserver(onA11yChange);
     observer.observe(root, { attributes: true, attributeFilter: A11Y_ATTRS });
+    const mq = matchMedia("(prefers-reduced-motion: reduce)");
+    mq.addEventListener("change", onA11yChange);
 
     return () => {
       disposed = true;
       window.clearTimeout(safety);
       observer.disconnect();
+      mq.removeEventListener("change", onA11yChange);
       scene?.dispose();
     };
-  }, [router]);
+  }, []);
 
   // Eyebrow letra por letra; subtítulo y botones después.
   useEffect(() => {
@@ -159,13 +182,14 @@ export default function Hero() {
     }
     let n = 0;
     let interval = 0;
+    let caretTimer = 0;
     const start = window.setTimeout(() => {
       interval = window.setInterval(() => {
         n++;
         setTyped(n);
         if (n >= total) {
           window.clearInterval(interval);
-          window.setTimeout(() => setCaretOff(true), CARET_OFF_MS);
+          caretTimer = window.setTimeout(() => setCaretOff(true), CARET_OFF_MS);
         }
       }, TYPE_MS);
     }, TYPE_DELAY_MS);
@@ -174,6 +198,7 @@ export default function Hero() {
       window.clearTimeout(start);
       window.clearInterval(interval);
       window.clearTimeout(ready);
+      window.clearTimeout(caretTimer);
     };
     // `typed` se lee solo para saber si ya se mostró todo; no debe reiniciar el tipeo.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -200,8 +225,8 @@ export default function Hero() {
           </h1>
         </div>
 
-        <p className={styles.sub}>{HERO_SUBTITLE}</p>
-        <div className={styles.actions}>
+        <p className={`${styles.sub} hero-noscript-show`}>{HERO_SUBTITLE}</p>
+        <div className={`${styles.actions} hero-noscript-show`}>
           <Link href="/proyectos" className="btn-primary">
             Ver proyectos <span aria-hidden="true">→</span>
           </Link>
@@ -210,6 +235,11 @@ export default function Hero() {
           </Link>
         </div>
       </div>
+
+      {/* Sin JS, `contentReady` nunca llega: fuerza lo visible/enfocable en .sub y .actions. */}
+      <noscript>
+        <style>{".hero-noscript-show{opacity:1!important;visibility:visible!important;transform:none!important}"}</style>
+      </noscript>
 
       <div className={styles.scroll} aria-hidden="true">
         scroll ↓

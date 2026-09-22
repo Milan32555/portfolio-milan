@@ -80,8 +80,9 @@
 .sub,
 .actions {
   opacity: 0;
+  visibility: hidden;
   transform: translateY(8px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
+  transition: opacity 0.8s ease, transform 0.8s ease, visibility 0s linear 0.8s;
 }
 .sub {
   max-width: 52ch;
@@ -100,8 +101,18 @@
   pointer-events: auto;
   transition-delay: 0.3s;
 }
-.content[data-ready] .sub,
-.content[data-ready] .actions { opacity: 1; transform: none; }
+.content[data-ready] .sub {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  transition-delay: 0.15s, 0.15s, 0s;
+}
+.content[data-ready] .actions {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  transition-delay: 0.3s, 0.3s, 0s;
+}
 
 .scroll {
   position: absolute;

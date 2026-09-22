@@ -38,6 +38,8 @@ export interface HeroSceneOptions {
   onAudit: (view: AuditView) => void;
   onEgg: (active: boolean) => void;
   onEggNavigate: () => void;
+  /** El contexto WebGL se perdió (p. ej. iOS al pasar la app a segundo plano). */
+  onContextLost?: () => void;
 }
 
 const CAMERA_Z = 10;
@@ -184,22 +186,33 @@ export class HeroScene {
       return cached;
     }
     if (this.reduced) return this.quality;
+    // rAF no corre con la pestaña oculta: hay que esperar a que vuelva a estar visible
+    // antes de medir, si no la primera vuelta del bucle mide un hueco enorme.
+    while (document.hidden) {
+      await new Promise<void>((r) => document.addEventListener("visibilitychange", () => r(), { once: true }));
+    }
+    if (this.disposed) return this.quality;
     this.renderer.compile(this.scene, this.camera);
     this.renderer.render(this.scene, this.camera);
     const start = performance.now();
     let frames = 0;
     let hidden = false;
+    let prev = start;
     await new Promise<void>((resolve) => {
       const step = (now: number) => {
         if (this.disposed) {
           resolve();
           return;
         }
-        if (document.hidden) {
+        // Si pasaron más de 250 ms entre dos cuadros, la pestaña estuvo oculta en el
+        // medio (rAF no corre oculto, así que `document.hidden` ya volvió a false):
+        // la medición no es válida.
+        if (now - prev > 250) {
           hidden = true;
           resolve();
           return;
         }
+        prev = now;
         this.renderer.render(this.scene, this.camera);
         frames++;
         if (now - start < BENCH_MS) requestAnimationFrame(step);
@@ -292,7 +305,6 @@ export class HeroScene {
     this.scanLine.material.dispose();
     this.atlas.dispose();
     this.renderer.dispose();
-    this.renderer.forceContextLoss();
   }
 
   // ─── Construcción ───────────────────────────────────────────────────────────
@@ -524,6 +536,8 @@ export class HeroScene {
     this.cleanups.push(() => io.disconnect());
 
     this.listen(document, "visibilitychange", () => (document.hidden ? this.pause() : this.resume()));
+
+    this.listen(this.opts.canvas, "webglcontextlost", () => this.opts.onContextLost?.());
   }
 
   private onKey(e: KeyboardEvent) {
@@ -653,7 +667,8 @@ export class HeroScene {
       const state = findingState(b[1], y, active);
       if (state !== "off") {
         this.v.set(b[0], b[1], b[2]).applyMatrix4(this.group.matrixWorld).project(this.camera);
-        const left = ((this.v.x + 1) / 2) * this.view.w + 10;
+        let left = ((this.v.x + 1) / 2) * this.view.w + 10;
+        left = Math.max(8, Math.min(left, this.view.w - el.offsetWidth - 8));
         const top = ((1 - this.v.y) / 2) * this.view.h - 26;
         el.style.transform = `translate(${left.toFixed(1)}px, ${top.toFixed(1)}px)`;
       }
