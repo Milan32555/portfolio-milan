@@ -1,3 +1,5 @@
 .wrap { padding-top: 9rem; }
-.lead { max-width: 52ch; margin: -2.5rem 0 2.5rem; color: var(--soft); line-height: 1.7; }
+.lead { max-width: 52ch; margin: 0 0 2.5rem; color: var(--soft); line-height: 1.7; }
 .form { max-width: 560px; }
+
+.h1.h1 { margin-bottom: 1.5rem; }
