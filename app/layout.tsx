@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Loader from "@/components/Loader";
 import CustomCursor from "@/components/CustomCursor";
+import Footer from "@/components/Footer";
 import { LoaderProvider } from "@/components/LoaderContext";
 import AccessibilityWidget from "@/components/AccessibilityWidget";
 
@@ -102,6 +103,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Loader />
           <Navbar />
           {children}
+          <Footer />
           <AccessibilityWidget />
         </LoaderProvider>
       </body>

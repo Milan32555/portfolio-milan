@@ -332,10 +332,6 @@ export default function Home() {
       <ProjectsSection />
       <AboutSection />
       <ContactSection />
-      <footer className="footer">
-        <p style={{ marginBottom: "0.3rem" }}>Portfolio Misael · {new Date().getFullYear()}</p>
-        <p style={{ fontSize: "0.72rem" }}>Diseñado y construido con Next.js &amp; Tailwind CSS</p>
-      </footer>
     </main>
   );
 }
