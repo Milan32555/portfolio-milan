@@ -114,10 +114,10 @@ export default function Hero() {
         } catch {}
         const quality = await scene.prepare(cached);
         try {
-          sessionStorage.setItem(QUALITY_KEY, quality);
+          if (cached !== null || scene.fps !== null) sessionStorage.setItem(QUALITY_KEY, quality);
         } catch {}
         if (disposed) return;
-        const detail = scene.fps !== null ? ` · ${scene.fps} fps` : " · guardada";
+        const detail = scene.fps !== null ? ` · ${scene.fps} fps` : cached !== null ? " · guardada" : " · sin medir";
         introBus.report({ stage: "ready", label: `calidad: ${quality === "low" ? "ligera" : "completa"}${detail}` });
 
         scene.setStatic(heroStaticMode(root));

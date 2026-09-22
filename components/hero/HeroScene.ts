@@ -66,9 +66,10 @@ function emptyAttrs(): Attrs {
 
 function geometryFrom(a: Attrs): BufferGeometry {
   const g = new BufferGeometry();
-  g.setAttribute("position", new Float32BufferAttribute(a.aTarget, 3));
+  const aTargetAttr = new Float32BufferAttribute(a.aTarget, 3);
+  g.setAttribute("position", aTargetAttr);
   for (const key of Object.keys(a) as Array<keyof Attrs>) {
-    g.setAttribute(key, new Float32BufferAttribute(a[key], VEC3_ATTRS.includes(key) ? 3 : 1));
+    g.setAttribute(key, key === "aTarget" ? aTargetAttr : new Float32BufferAttribute(a[key], VEC3_ATTRS.includes(key) ? 3 : 1));
   }
   return g;
 }
@@ -136,6 +137,7 @@ export class HeroScene {
   private visible = true;
   private dirty = true;
   private introStart: number | null = null;
+  private disposed = false;
   private t0 = performance.now();
   private last = performance.now();
   private raf = 0;
@@ -182,10 +184,22 @@ export class HeroScene {
       return cached;
     }
     if (this.reduced) return this.quality;
+    this.renderer.compile(this.scene, this.camera);
+    this.renderer.render(this.scene, this.camera);
     const start = performance.now();
     let frames = 0;
+    let hidden = false;
     await new Promise<void>((resolve) => {
       const step = (now: number) => {
+        if (this.disposed) {
+          resolve();
+          return;
+        }
+        if (document.hidden) {
+          hidden = true;
+          resolve();
+          return;
+        }
         this.renderer.render(this.scene, this.camera);
         frames++;
         if (now - start < BENCH_MS) requestAnimationFrame(step);
@@ -193,6 +207,10 @@ export class HeroScene {
       };
       requestAnimationFrame(step);
     });
+    if (hidden) {
+      this.fps = null;
+      return this.quality;
+    }
     const fps = frames / ((performance.now() - start) / 1000);
     this.fps = Math.round(fps);
     const q = decideQuality(fps);
@@ -261,6 +279,7 @@ export class HeroScene {
   }
 
   dispose() {
+    this.disposed = true;
     this.pause();
     window.clearTimeout(this.eggTimer);
     this.cleanups.forEach((fn) => fn());
@@ -272,6 +291,7 @@ export class HeroScene {
     this.scanLine.material.dispose();
     this.atlas.dispose();
     this.renderer.dispose();
+    this.renderer.forceContextLoss();
   }
 
   // ─── Construcción ───────────────────────────────────────────────────────────
@@ -486,10 +506,15 @@ export class HeroScene {
     let resizeTimer = 0;
     this.listen(window, "resize", () => {
       window.clearTimeout(resizeTimer);
-      resizeTimer = window.setTimeout(() => this.build(), 150);
+      resizeTimer = window.setTimeout(() => {
+        if (host.clientWidth === this.view.w && host.clientHeight === this.view.h) return;
+        this.build();
+      }, 150);
     });
+    this.cleanups.push(() => window.clearTimeout(resizeTimer));
 
-    const io = new IntersectionObserver(([entry]) => {
+    const io = new IntersectionObserver((entries) => {
+      const entry = entries[entries.length - 1];
       this.visible = entry.isIntersecting;
       if (this.visible) this.resume();
       else this.pause();
@@ -505,12 +530,20 @@ export class HeroScene {
     const t = e.target as HTMLElement | null;
     if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
     if (e.key === "Enter" && this.morphTarget === 1) {
+      if (t?.closest('a,button,summary,[role="button"],[role="link"]')) return;
+      e.preventDefault();
       this.opts.onEggNavigate();
       return;
     }
     if (e.key.length !== 1) return;
     this.keyBuffer = (this.keyBuffer + e.key.toLowerCase()).slice(-EGG_WORD.length);
-    if (this.keyBuffer === EGG_WORD && !this.staticMode && window.scrollY < this.opts.host.clientHeight * 0.5) this.triggerEgg();
+    if (
+      this.keyBuffer === EGG_WORD &&
+      this.introStart !== null &&
+      !this.staticMode &&
+      window.scrollY < this.opts.host.clientHeight * 0.5
+    )
+      this.triggerEgg();
   }
 
   private triggerEgg() {

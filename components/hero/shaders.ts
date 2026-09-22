@@ -44,11 +44,13 @@ void main() {
 
   float age = uTime - uClickT;
   vec2 cd = pos.xy - uClick;
-  float ring = exp(-pow((length(cd) - age * 4.5) * 2.6, 2.0)) * exp(-age * 1.4) * step(0.0, age);
+  float rd = (length(cd) - age * 4.5) * 2.6;
+  float ring = exp(-rd * rd) * exp(-age * 1.4) * step(0.0, age);
   pos.xy += normalize(cd + 0.0001) * ring * 0.22;
   pos.z += ring * 0.9;
 
-  float s = exp(-pow((pos.y - uScan) * 5.0, 2.0));
+  float sd = (pos.y - uScan) * 5.0;
+  float s = exp(-sd * sd);
   vec3 col = mix(uBase, uAccent, step(0.86, fract(aSeed * 7.13)));
   col = mix(col, uAccent * 1.15, aDot);
   col = mix(col, uAmber, s * 0.95);
@@ -67,7 +69,7 @@ void main() {
   float tick = floor(uTime * rate * uDrift + aSeed * 17.0);
   float h = fract(sin(tick * 12.9898 + aSeed * 78.233) * 43758.5453);
   vColor = col;
-  vGlyph = mix(mod(aGlyph + floor(h * uN), uN), uBugGlyph, aBug * behind);
+  vGlyph = mix(mod(aGlyph + floor(h * uN), uN), uBugGlyph, step(0.5, aBug * behind));
   vAlpha = p * (0.9 + 0.3 * s + 0.2 * aDot + 0.8 * (isBug + fixd)) * (1.0 - 0.85 * uScroll) * uAlphaMul;
 
   vec4 mv = modelViewMatrix * vec4(pos, 1.0);
