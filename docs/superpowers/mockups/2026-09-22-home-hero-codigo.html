@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Home completo v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Serif+Display&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0B1220;--text:#f5f6fa;--soft:#c7cfe0;--muted:#8a8a96;--accent:#7eb3ff;--btn:#4f8ef7}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans-serif}
+  .hero{position:relative;min-height:100svh;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .hero::after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(ellipse 70% 55% at 50% 45%,rgba(79,142,247,.10),transparent 70%)}
+  #c3d{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .content{position:relative;z-index:2;width:min(1100px,100% - 32px);text-align:center;pointer-events:none}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:.74rem;letter-spacing:.08em;color:var(--soft);margin:0;
+    opacity:0;transform:translateY(8px);transition:opacity .8s ease,transform .8s ease}
+  .eyebrow b{color:var(--accent);font-weight:500}
+  .eyebrow{min-height:1.2em}
+  .caret{display:inline-block;width:.55em;height:1em;margin-left:2px;vertical-align:-2px;background:var(--accent);animation:blink 1s steps(1) infinite}
+  .caret.off{visibility:hidden;animation:none}
+  @keyframes blink{50%{opacity:0}}
+  .audit{position:absolute;right:22px;bottom:20px;z-index:2;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:#8b95b0;
+    letter-spacing:.02em;opacity:0;transition:opacity .8s ease}
+  .audit.on{opacity:1}
+  .audit .ok{color:#6fd3a4}.audit .warn{color:#f8b653}.audit .bug{color:#ff7a7a}
+  @media (max-width:600px){.audit{right:auto;left:50%;transform:translateX(-50%);bottom:48px;white-space:nowrap}}
+  .name-slot{height:clamp(120px,26vw,300px);margin:.9rem 0 1.1rem}
+  .eb-long{display:inline} @media (max-width:600px){.eb-long{display:none}}
+  .name-slot{display:flex;align-items:center;justify-content:center}
+  .name{margin:0;font-family:'DM Serif Display',serif;font-weight:400;line-height:1;color:var(--text);
+    font-size:min(19vw,215px);letter-spacing:0;transition:opacity .7s ease;white-space:nowrap}
+  .name em{font-style:normal;color:var(--accent)}
+  .name.dissolved{opacity:0}
+  .finding{position:absolute;left:0;top:0;z-index:3;font-family:'JetBrains Mono',monospace;font-size:.64rem;line-height:1.3;
+    padding:1px 6px;border-radius:4px;pointer-events:none;white-space:nowrap;opacity:0;
+    color:#ff8f8f;background:rgba(40,12,18,.85);border:1px solid rgba(255,110,110,.45);
+    transition:opacity .25s ease,color .3s ease,border-color .3s ease}
+  .finding::before{content:"";position:absolute;left:-7px;bottom:-5px;width:7px;height:7px;border-left:1px solid currentColor;border-bottom:1px solid currentColor;opacity:.7}
+  .finding.on{opacity:1}
+  .finding.fixed{color:#7fe0b2;background:rgba(10,34,26,.85);border-color:rgba(111,211,164,.45)}
+  .hero.egg{cursor:pointer}
+  .toast{position:fixed;left:50%;bottom:70px;transform:translate(-50%,10px);z-index:6;font-family:'JetBrains Mono',monospace;font-size:.75rem;
+    color:var(--text);background:rgba(7,11,22,.92);border:1px solid rgba(126,179,255,.4);border-radius:8px;padding:.5rem .8rem;
+    opacity:0;transition:opacity .3s ease,transform .3s ease;pointer-events:none}
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .sub{max-width:52ch;margin:0 auto;color:var(--soft);line-height:1.65;font-size:clamp(.95rem,1.4vw,1.05rem);
+    opacity:0;transform:translateY(8px);transition:opacity .8s ease .15s,transform .8s ease .15s}
+  .actions{display:flex;gap:.8rem;justify-content:center;margin-top:1.6rem;pointer-events:auto;
+    opacity:0;transform:translateY(8px);transition:opacity .8s ease .3s,transform .8s ease .3s}
+  .content .eyebrow{opacity:1;transform:none}
+  .ready .eyebrow,.ready .sub,.ready .actions{opacity:1;transform:none}
+  .btnp{background:var(--btn);color:#0B1220;font-weight:500;font-size:.9rem;text-decoration:none;padding:.7rem 1.25rem;border-radius:8px}
+  .btng{color:var(--soft);font-size:.9rem;text-decoration:none;padding:.7rem 1.25rem;border:1px solid rgba(255,255,255,.16);border-radius:8px}
+  .btnp:focus-visible,.btng:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .scroll{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:2;font-family:'JetBrains Mono',monospace;
+    font-size:.7rem;color:var(--muted);letter-spacing:.1em}
+  .next{min-height:40vh;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.85rem;border-top:1px solid rgba(255,255,255,.06)}
+  .note{position:fixed;left:12px;bottom:12px;z-index:5;max-width:340px;background:rgba(7,11,22,.85);border:1px solid rgba(255,255,255,.1);
+    border-radius:8px;padding:.6rem .8rem;font-size:.72rem;color:#a9b4c9;line-height:1.5}
+  .note b{color:var(--text)}
+  @media (max-width:600px){.note{display:none}}
+  #c3d{transition:opacity .5s ease}
+  .audit{color:var(--muted)}
+  /* --- tema claro (mismos tokens que globals.css) --- */
+  html[data-theme="light"]{--bg:#f5f5f7;--text:#0d0d10;--soft:#3d3d4a;--muted:#5f5f6d;--accent:#1a5df5;--btn:#1a5df5}
+  html[data-theme="light"] .btnp{color:#fff}
+  html[data-theme="light"] .btng{border-color:rgba(0,0,0,.2)}
+  html[data-theme="light"] .hero::after{background:radial-gradient(ellipse 70% 55% at 50% 45%,rgba(26,93,245,.07),transparent 70%)}
+  html[data-theme="light"] .audit .ok{color:#146c43} html[data-theme="light"] .audit .warn{color:#8a5200} html[data-theme="light"] .audit .bug{color:#b3261e}
+  html[data-theme="light"] .finding{color:#b3261e;background:#fdeceb;border-color:rgba(179,38,30,.45)}
+  html[data-theme="light"] .finding.fixed{color:#146c43;background:#e3f3ea;border-color:rgba(20,108,67,.45)}
+  html[data-theme="light"] .note,html[data-theme="light"] .toast{background:rgba(255,255,255,.94);color:#3d3d4a;border-color:rgba(0,0,0,.12)}
+  html[data-theme="light"] .note b{color:#0d0d10}
+  html[data-theme="light"] .next{border-top-color:rgba(0,0,0,.08)}
+  /* --- alto contraste (mismos valores que el widget) --- */
+  html[data-a11y-contrast="high"]{--bg:#000;--text:#fff;--soft:#fff;--muted:#ccc;--accent:#4da6ff;--btn:#4da6ff}
+  html[data-theme="light"][data-a11y-contrast="high"]{--bg:#fff;--text:#000;--soft:#000;--muted:#222;--accent:#0030cc;--btn:#0030cc}
+  html[data-a11y-contrast="high"] .hero::after{display:none}
+  html[data-a11y-contrast="high"] .btng{border-color:currentColor}
+  /* --- movimiento reducido desde el widget --- */
+  html[data-a11y-motion="reduced"] *,html[data-a11y-motion="reduced"] *::before{transition:none!important;animation:none!important}
+
+  /* ================= home resumido ================= */
+  .sec{width:min(1000px,100% - 32px);margin:0 auto;padding:clamp(4rem,9vw,6.5rem) 0;border-top:1px solid var(--line)}
+  :root{--line:rgba(255,255,255,.07);--card:rgba(255,255,255,.02)}
+  html[data-theme="light"]{--line:rgba(0,0,0,.08);--card:rgba(0,0,0,.02)}
+  .lbl{font-family:'JetBrains Mono',monospace;font-size:.74rem;letter-spacing:.06em;color:var(--accent);margin:0 0 .9rem}
+  .h2{font-family:'DM Serif Display',serif;font-weight:400;font-size:clamp(1.8rem,4vw,2.5rem);line-height:1.15;margin:0 0 2rem;letter-spacing:-.01em;text-wrap:balance}
+  .more{display:inline-block;margin-top:1.8rem;color:var(--accent);text-decoration:none;font-size:.92rem}
+  .more:hover{text-decoration:underline;text-underline-offset:4px}
+  a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+
+  /* servicios */
+  .svc{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+  @media(max-width:700px){.svc{grid-template-columns:1fr}}
+  .svc article{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.5rem 1.5rem 1.4rem}
+  .svc h3{font-family:'DM Serif Display',serif;font-weight:400;font-size:1.35rem;margin:0 0 .6rem}
+  .svc p{color:var(--soft);line-height:1.65;margin:0;font-size:.95rem}
+  .svc .mini{margin-top:1.1rem;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:.4rem;align-items:center}
+  .chip{padding:1px 7px;border-radius:4px;border:1px solid rgba(111,211,164,.45);color:#7fe0b2}
+  html[data-theme="light"] .chip{color:#146c43;border-color:rgba(20,108,67,.45)}
+  .svc .stack{color:var(--muted)}
+
+  /* proyectos: filas sutiles (mismo patrón aprobado en /proyectos) */
+  .rows{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+  .rows li{border-bottom:1px solid var(--line)}
+  .rows a{display:grid;grid-template-columns:3.2rem 1fr auto;gap:1.2rem;align-items:baseline;padding:1.4rem .4rem;
+    color:inherit;text-decoration:none;position:relative;transition:opacity .25s ease}
+  .rows a::before{content:"";position:absolute;left:-.4rem;top:1.2rem;bottom:1.2rem;width:2px;background:var(--accent);transform:scaleY(0);transition:transform .25s ease}
+  .rows:hover a{opacity:.45} .rows a:hover,.rows a:focus-visible{opacity:1}
+  .rows a:hover::before,.rows a:focus-visible::before{transform:scaleY(1)}
+  .rows .n{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--muted)}
+  .rows h3{font-family:'DM Serif Display',serif;font-weight:400;font-size:1.45rem;margin:0 0 .3rem}
+  .rows p{margin:0;color:var(--soft);font-size:.92rem;line-height:1.55;max-width:56ch}
+  .rows .m{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--accent);text-align:right;white-space:nowrap}
+  .rows .m small{display:block;color:var(--muted);font-size:.68rem;margin-top:.2rem}
+  @media(max-width:700px){.rows a{grid-template-columns:2.4rem 1fr}.rows .m{grid-column:2;text-align:left}}
+
+  /* sobre mí: avance de la consola de /sobre-mi */
+  .about{display:grid;grid-template-columns:1.1fr .9fr;gap:2.5rem;align-items:center}
+  @media(max-width:800px){.about{grid-template-columns:1fr}}
+  .about .big{font-family:'DM Serif Display',serif;font-size:clamp(1.6rem,3.4vw,2.3rem);line-height:1.22;margin:0;text-wrap:balance}
+  .about .big em{font-style:normal;color:var(--accent)}
+  .term{background:#070b16;border:1px solid rgba(255,255,255,.1);border-radius:10px;overflow:hidden;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#c7cfe0}
+  .term .bar{display:flex;gap:6px;padding:.55rem .7rem;border-bottom:1px solid rgba(255,255,255,.07)}
+  .term .bar i{width:9px;height:9px;border-radius:50%;background:#2a3348}
+  .term pre{margin:0;padding:.9rem 1rem 1.1rem;line-height:1.6;white-space:pre-wrap;font:inherit}
+  .term .u{color:#6fd3a4}.term .d{color:#8b95b0}.term .c{color:#7eb3ff}
+  .term .cur{display:inline-block;width:.55em;height:1em;vertical-align:-2px;background:#7eb3ff;animation:blink 1s steps(1) infinite}
+
+  /* contacto */
+  .contact{text-align:center}
+  .contact .h2{margin-bottom:1rem}
+  .contact p{color:var(--soft);margin:0 auto 1.8rem;max-width:46ch;line-height:1.65}
+  .footer-ph{text-align:center;color:var(--muted);font-size:.8rem;padding:3rem 0 5rem;font-family:'JetBrains Mono',monospace;border-top:1px solid var(--line)}
+
+  /* aparición al hacer scroll (sutil, una vez) */
+  .rv{opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s ease}
+  .rv.in{opacity:1;transform:none}
+  html[data-a11y-motion="reduced"] .rv{opacity:1;transform:none}
+  @media (prefers-reduced-motion: reduce){.rv{opacity:1;transform:none}}
+  /* --- panel del mockup (simula tu AccessibilityWidget) --- */
+  .mockpanel{position:fixed;top:12px;right:12px;z-index:7;display:flex;flex-wrap:wrap;gap:6px;align-items:center;max-width:470px;justify-content:flex-end;
+    padding:.5rem .6rem;border:1px dashed rgba(126,179,255,.5);border-radius:8px;background:rgba(7,11,22,.88);font-size:.7rem;color:#a9b4c9}
+  .mockpanel span{width:100%;text-align:right;font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#8b95b0}
+  .mockpanel button{font:inherit;color:#dfe5f2;background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:.3rem .55rem;cursor:pointer}
+  .mockpanel button[aria-pressed="true"]{background:#4f8ef7;border-color:#4f8ef7;color:#0B1220}
+  .mockpanel button:focus-visible{outline:2px solid #7eb3ff;outline-offset:2px}
+  @media (max-width:600px){.mockpanel{left:12px;right:12px;max-width:none}}
+</style>
+</head>
+<body>
+<section class="hero" id="hero">
+  <canvas id="c3d" aria-hidden="true"></canvas>
+  <div class="content" id="content">
+    <p class="eyebrow"><span class="sr-only">Desarrollador freelance y auditor de código</span><span id="typed" aria-hidden="true"></span><span class="caret" id="caret" aria-hidden="true"></span></p>
+    <div class="name-slot" id="slot"><h1 class="name" id="nameText">Misael<em>.</em></h1></div>
+    <p class="sub">Construyo interfaces con React y Next.js, y audito código ajeno con la misma cabeza con la que aprendí seguridad: buscando qué se rompe antes de que lo haga otro.</p>
+    <div class="actions">
+      <a class="btnp" href="#">Ver proyectos →</a>
+      <a class="btng" href="#">Contacto</a>
+    </div>
+  </div>
+  <div class="scroll" aria-hidden="true">scroll ↓</div>
+  <div class="audit" id="audit" aria-hidden="true"></div>
+  <div id="findings" aria-hidden="true"></div>
+</section>
+<main>
+<section class="sec" aria-labelledby="t-svc">
+  <p class="lbl rv">// 01 · qué hago</p>
+  <h2 class="h2 rv" id="t-svc">Construyo software y reviso el de otros.</h2>
+  <div class="svc">
+    <article class="rv">
+      <h3>Desarrollo</h3>
+      <p>Sitios y landing pages, apps web full-stack, apps móviles y sistemas a medida para negocios.</p>
+      <div class="mini"><span class="stack">React · Next.js · Vue · Node.js · Flutter</span></div>
+    </article>
+    <article class="rv">
+      <h3>Auditoría de código</h3>
+      <p>Reviso tu repositorio y te entrego un informe con hallazgos priorizados: qué es crítico y qué puede esperar. No ofrezco pentesting por ahora.</p>
+      <div class="mini">$ audit ./tu-repo <span class="chip">xss ✓</span><span class="chip">secret expuesto ✓</span></div>
+    </article>
+  </div>
+  <a class="more rv" href="#">Ver servicios y cómo trabajo →</a>
+</section>
+
+<section class="sec" aria-labelledby="t-proj">
+  <p class="lbl rv">// 02 · proyectos</p>
+  <h2 class="h2 rv" id="t-proj">Lo que he construido</h2>
+  <ul class="rows rv">
+    <li><a href="#"><span class="n">001</span><div><h3>MEDI-IA</h3><p>Asistente de diagnóstico diferencial que responde a partir de 14 libros médicos reales, con recuperación híbrida y un agente ReAct.</p></div><span class="m">97.1%<small>Recall@1 · 40 consultas</small></span></a></li>
+    <li><a href="#"><span class="n">002</span><div><h3>AnimalVision</h3><p>Clasificador web de imágenes de animales con transfer learning sobre MobileNetV2, desplegado en producción.</p></div><span class="m">93.4%<small>accuracy · 5 clases</small></span></a></li>
+    <li><a href="#"><span class="n">003</span><div><h3>Sistema de librería</h3><p>Gestión de catálogo con Clean Architecture: CRUD, búsqueda, filtro por género y panel de administración.</p></div><span class="m">1 archivo<small>reescrito al cambiar de BD</small></span></a></li>
+  </ul>
+  <a class="more rv" href="#">Ver los 4 proyectos →</a>
+</section>
+
+<section class="sec" aria-labelledby="t-about">
+  <p class="lbl rv">// 03 · sobre mí</p>
+  <div class="about">
+    <p class="big rv" id="t-about">Construyo con la misma disciplina con la que entreno: <em>poco a poco, sin atajos.</em></p>
+    <div class="term rv" aria-hidden="true">
+      <div class="bar"><i></i><i></i><i></i></div>
+      <pre><span class="d">┌──(</span><span class="u">misael㉿portfolio</span><span class="d">)-[~]</span>
+<span class="d">└─$</span> <span class="c" id="who"></span><span class="cur"></span></pre>
+    </div>
+  </div>
+  <a class="more rv" href="#">Conóceme mejor →</a>
+</section>
+
+<section class="sec contact" aria-labelledby="t-contact">
+  <p class="lbl rv">// 04 · contacto</p>
+  <h2 class="h2 rv" id="t-contact">¿Tienes un proyecto en mente?</h2>
+  <p class="rv">Cuéntame qué necesitas construir o revisar y te respondo con una propuesta.</p>
+  <a class="btnp rv" href="#" style="display:inline-block">Hablemos →</a>
+</section>
+</main>
+<div class="footer-ph">(aquí sigue el footer Cordilleras que ya está en producción)</div>
+<div class="note"><b>Mockup home v1.</b> Hero cerrado + el resto del home resumido. Haz scroll: cada sección aparece una vez, y en "Sobre mí" la consola escribe <code>whoami</code> sola. El panel de arriba sigue funcionando para probar tema claro y accesibilidad.</div>
+<div class="mockpanel" role="group" aria-label="Controles del mockup">
+  <span>solo mockup · simula tu AccessibilityWidget</span>
+  <button type="button" data-attr="data-theme" data-on="light" data-off="dark" aria-pressed="false">Tema claro</button>
+  <button type="button" data-attr="data-a11y-contrast" data-on="high" data-off="off" aria-pressed="false">Alto contraste</button>
+  <button type="button" data-attr="data-a11y-motion" data-on="reduced" data-off="off" aria-pressed="false">Reducir movimiento</button>
+  <button type="button" data-attr="data-a11y-dyslexia" data-on="on" data-off="off" aria-pressed="false">Dislexia</button>
+</div>
+<div class="toast" id="toast" aria-live="polite"></div>
+
+<div class="note" style="display:none"><b>Mockup hero v2.</b> El nombre está hecho de ~miles de caracteres de código reales (<code>{ } &lt; / ; $</code>…). Acercá el mouse: el código se aparta. Cada tanto pasa un <b>escaneo</b> (auditoría) que lo recorre en ámbar.</div>
+
+<script>
+function initHero(){
+  var H = document.documentElement;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches || H.getAttribute('data-a11y-motion') === 'reduced';
+  var finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  var hero = document.getElementById('hero'), slot = document.getElementById('slot'), canvas = document.getElementById('c3d');
+
+  var nameText = document.getElementById('nameText');
+  var forceFallback = /nowebgl/.test(location.search);
+  var lowEnd = (navigator.hardwareConcurrency || 4) <= 2;
+  var renderer = null;
+  try {
+    if (forceFallback || lowEnd || typeof THREE === 'undefined') throw new Error('fallback');
+    renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:false, alpha:true});
+  } catch (err) { renderer = null; }
+  if (!renderer){
+    // Sin WebGL: el nombre queda como texto real (ya visible desde el primer paint), sin escaneo.
+    canvas.style.display = 'none';
+    window.__showContentNow();
+    window.__ready = true; window.__fallback = true;
+    return;
+  }
+  var PR = Math.min(window.devicePixelRatio||1, 1.5);
+  renderer.setPixelRatio(PR);
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+  camera.position.z = 10;
+  var group = new THREE.Group(); scene.add(group);
+
+  // --- Atlas de glifos de código ---
+  var GLYPHS = '{}<>/;=()[]$#*&|!?01:+-_%@~^.,"\'`';
+  var GX = 8, GY = 4, CELL = 64;
+  var atlasCanvas = document.createElement('canvas');
+  atlasCanvas.width = GX*CELL; atlasCanvas.height = GY*CELL;
+  function drawAtlas(){
+    var a = atlasCanvas.getContext('2d'), ink = document.documentElement.getAttribute('data-theme') === 'light';
+    a.clearRect(0,0,atlasCanvas.width,atlasCanvas.height);
+    a.fillStyle = '#fff'; a.strokeStyle = '#fff'; a.lineWidth = ink ? 5 : 0; a.lineJoin = 'round'; a.textAlign='center'; a.textBaseline='middle';
+    a.font = '500 46px "JetBrains Mono", monospace';
+    for (var i=0;i<GX*GY;i++){
+      var ch = GLYPHS[i % GLYPHS.length];
+      if (ink) a.strokeText(ch, (i%GX)*CELL+CELL/2, Math.floor(i/GX)*CELL+CELL/2+2);
+      a.fillText(ch, (i%GX)*CELL+CELL/2, Math.floor(i/GX)*CELL+CELL/2+2);
+    }
+  }
+  var atlas = new THREE.CanvasTexture(atlasCanvas);
+
+  var uniforms = {
+    uTime:{value:0}, uProgress:{value: reduce?1.2:0}, uScan:{value:-100}, uPR:{value:PR}, uSize:{value:10},
+    uMouse:{value:new THREE.Vector2(99,99)}, uMouseStr:{value:0}, uAtlas:{value:atlas}, uGrid:{value:new THREE.Vector2(GX,GY)},
+    uDrift:{value: reduce?0:1}, uScanOn:{value:0}, uClick:{value:new THREE.Vector2(99,99)}, uClickT:{value:-100}, uScroll:{value:0}, uN:{value:32}, uMorph:{value:0}, uBase:{value:new THREE.Vector3()}, uAccent:{value:new THREE.Vector3()}, uAmber:{value:new THREE.Vector3()}, uRed:{value:new THREE.Vector3()}, uGreen:{value:new THREE.Vector3()}
+  };
+
+  var vert = [
+    'attribute vec3 aTarget; attribute vec3 aStart; attribute float aGlyph; attribute float aSeed; attribute float aDot; attribute float aBug; attribute vec3 aTarget2;',
+    'uniform float uTime,uProgress,uScan,uPR,uSize,uMouseStr,uDrift,uScanOn,uClickT,uScroll,uN,uMorph; uniform vec2 uMouse,uClick; uniform vec3 uBase,uAccent,uAmber,uRed,uGreen; uniform float uAlphaMul;',
+    'varying float vGlyph; varying vec3 vColor; varying float vAlpha;',
+    'void main(){',
+    '  float p = clamp((uProgress - aSeed*0.45)/0.55, 0.0, 1.0);',
+    '  p = 1.0 - pow(1.0 - p, 3.0);',
+    '  vec3 pos = mix(aStart, aTarget, p);',
+    '  float mm = clamp((uMorph - aSeed*0.35)/0.65, 0.0, 1.0); mm = mm*mm*(3.0-2.0*mm);',
+    '  pos = mix(pos, aTarget2, mm); pos.z += sin(mm*3.14159)*(aSeed-0.5)*3.0;',
+    '  pos += (aStart - aTarget) * 0.28 * uScroll * uScroll + vec3(0.0, uScroll * (0.6 + aSeed*1.6), 0.0);',
+    '  pos.x += sin(uTime*0.6 + aSeed*40.0)*0.012*uDrift;',
+    '  pos.y += cos(uTime*0.5 + aSeed*30.0)*0.012*uDrift;',
+    '  vec2 d = pos.xy - uMouse; float l = length(d);',
+    '  float f = smoothstep(1.15, 0.0, l) * uMouseStr;',
+    '  pos.xy += normalize(d + 0.0001) * f * 0.42; pos.z += f * 1.6;',
+    '  float age = uTime - uClickT; vec2 cd = pos.xy - uClick;',
+    '  float ring = exp(-pow((length(cd) - age*4.5)*2.6, 2.0)) * exp(-age*1.4) * step(0.0, age);',
+    '  pos.xy += normalize(cd + 0.0001) * ring * 0.22; pos.z += ring * 0.9;',
+    '  float s = exp(-pow((pos.y - uScan)*5.0, 2.0));',
+    '  vec3 base = uBase;',
+    '  vec3 accent = uAccent;',
+    '  vec3 amber = uAmber;',
+    '  vec3 col = mix(base, accent, step(0.86, fract(aSeed*7.13)));',
+    '  col = mix(col, accent*1.15, aDot);',
+    '  col = mix(col, amber, s*0.95);',
+    '  float behind = uScanOn * step(uScan, pos.y); float trail = behind * exp(-(pos.y - uScan)*0.9);',
+    '  float isBug = aBug * behind * smoothstep(0.3, 0.6, trail); float fixd = aBug * behind * (1.0 - smoothstep(0.3, 0.6, trail));',
+    '  col = mix(col, uRed, isBug); col = mix(col, uGreen, fixd);',
+    '  col += ring * accent * 0.7;',
+    '  col = mix(col, accent*1.15, mm*0.55);',
+    '  col += f*0.35*accent;',
+    '  float rate = 0.1 + s*14.0 + ring*10.0;',
+    '  float tick = floor(uTime*rate*uDrift + aSeed*17.0);',
+    '  float h = fract(sin(tick*12.9898 + aSeed*78.233)*43758.5453);',
+    '  vColor = col; vGlyph = mix(mod(aGlyph + floor(h*uN), uN), 15.0, aBug*behind);',
+    '  vAlpha = p * (0.9 + 0.3*s + 0.2*aDot + 0.8*(isBug+fixd)) * (1.0 - 0.85*uScroll) * uAlphaMul;',
+    '  vec4 mv = modelViewMatrix * vec4(pos, 1.0);',
+    '  gl_Position = projectionMatrix * mv;',
+    '  gl_PointSize = uSize * uPR * (1.0 + s*0.45 + f*0.7 + ring*0.6 + isBug*1.6 + fixd*0.9) * (10.0 / -mv.z);',
+    '}'
+  ].join('\n');
+  var frag = [
+    'uniform sampler2D uAtlas; uniform vec2 uGrid;',
+    'varying float vGlyph; varying vec3 vColor; varying float vAlpha;',
+    'void main(){',
+    '  vec2 pc = gl_PointCoord;',
+    '  float cx = mod(vGlyph, uGrid.x); float cy = floor(vGlyph / uGrid.x);',
+    '  vec2 uv = vec2((cx + pc.x)/uGrid.x, 1.0 - (cy + pc.y)/uGrid.y);',
+    '  float a = texture2D(uAtlas, uv).a;',
+    '  if (a < 0.08) discard;',
+    '  gl_FragColor = vec4(vColor, a * vAlpha);',
+    '}'
+  ].join('\n');
+
+  var mat = new THREE.ShaderMaterial({uniforms:uniforms, vertexShader:vert, fragmentShader:frag,
+    transparent:true, depthWrite:false, blending:THREE.AdditiveBlending});
+
+  // Polvo de código de fondo (profundidad)
+  uniforms.uAlphaMul = {value:1};
+  var dustUniforms = Object.assign({}, uniforms, {uAlphaMul:{value:1}});
+  var dustMat = new THREE.ShaderMaterial({uniforms:dustUniforms, vertexShader:vert, fragmentShader:frag,
+    transparent:true, depthWrite:false, blending:THREE.AdditiveBlending});
+  var points = null, dust = null, scanLine = null, bugYs = [], bugPos = [], nameTop = 1, nameBot = -1;
+  var FINDINGS = ['xss', 'sqli', 'secret expuesto', 'csrf'], findEls = [];
+  var findWrap = document.getElementById('findings');
+  FINDINGS.forEach(function(n){ var el = document.createElement('span'); el.className = 'finding'; el.textContent = n; findWrap.appendChild(el); findEls.push(el); });
+  var EGG = '/sobre-mi \u2192';
+  var view = {w:1,h:1,worldW:1,worldH:1}, qualityScale = 1, staticOn = false, dirty = true;
+
+  function worldAt(){ var h = 2*camera.position.z*Math.tan(THREE.MathUtils.degToRad(camera.fov/2)); return {h:h, w:h*camera.aspect}; }
+
+  function build(){
+    var W = hero.clientWidth, H = hero.clientHeight;
+    renderer.setSize(W, H, false);
+    camera.aspect = W/H; camera.updateProjectionMatrix();
+    var wa = worldAt(); view = {w:W,h:H,worldW:wa.w,worldH:wa.h};
+    var pxToWorld = wa.h / H;
+
+    // Muestrear "Misael." desde un canvas 2D
+    var targetPxW = Math.min(W*0.9, 1000);
+    var fs = 300, c = document.createElement('canvas'), x = c.getContext('2d');
+    x.font = fs+'px "DM Serif Display", serif';
+    var wName = x.measureText('Misael').width, wAll = x.measureText('Misael.').width;
+    slot.style.height = Math.round(targetPxW/wAll*fs*0.95) + 'px';
+    nameText.style.fontSize = (targetPxW/wAll*fs).toFixed(1) + 'px';
+    var slotRect = slot.getBoundingClientRect(), heroRect = hero.getBoundingClientRect();
+    c.width = Math.ceil(wAll)+20; c.height = Math.ceil(fs*1.15);
+    x.font = fs+'px "DM Serif Display", serif'; x.fillStyle='#fff'; x.textBaseline='middle';
+    x.fillText('Misael.', 10, c.height/2);
+    var img = x.getImageData(0,0,c.width,c.height).data;
+    var canvasToScreen = targetPxW / wAll;
+    var screenGap = (W < 600 ? 3.6 : 5.6) * qualityScale;              // separación en pantalla entre glifos
+    var gap = Math.max(2, Math.round(screenGap / canvasToScreen));
+    uniforms.uSize.value = screenGap * (W < 600 ? 1.7 : 1.55);
+    var cy = (slotRect.top + slotRect.height/2 - heroRect.top);
+    var centerWorldY = (H/2 - cy) * pxToWorld;
+
+    var tgt=[], st=[], gl=[], sd=[], dt=[], bg=[]; bugYs = []; bugPos = [];
+    for (var yy=0; yy<c.height; yy+=gap){
+      for (var xx=0; xx<c.width; xx+=gap){
+        if (img[(yy*c.width+xx)*4+3] > 128){
+          var sx = (xx - 10 - wAll/2) * canvasToScreen * pxToWorld;
+          var sy = -(yy - c.height/2) * canvasToScreen * pxToWorld + centerWorldY;
+          tgt.push(sx, sy, (Math.random()-.5)*0.08);
+          var r = 6 + Math.random()*8, th = Math.random()*Math.PI*2;
+          st.push(Math.cos(th)*r, Math.sin(th)*r*0.6, -8 + Math.random()*14);
+          gl.push(Math.floor(Math.random()*32));
+          bg.push(0);
+          sd.push(Math.random());
+          dt.push((xx - 10) > wName + 4 ? 1 : 0);
+        }
+      }
+    }
+    // exactamente 4 "hallazgos", repartidos a lo ancho del nombre (no en el punto)
+    var nPts = tgt.length/3, cand = [];
+    for (var ci2=0; ci2<nPts; ci2++) if (!dt[ci2]) cand.push(ci2);
+    cand.sort(function(a,b){ return tgt[a*3]-tgt[b*3]; });
+    for (var q=0; q<4; q++){
+      var lo = Math.floor(cand.length*(q/4+0.04)), hi = Math.floor(cand.length*((q+1)/4-0.04));
+      var pick = cand[lo + Math.floor(Math.random()*(hi-lo))];
+      bg[pick] = 1; bugYs.push(tgt[pick*3+1]); bugPos.push([tgt[pick*3], tgt[pick*3+1], tgt[pick*3+2]]);
+    }
+    var minY=1e9,maxY=-1e9; for (var yi=1; yi<tgt.length; yi+=3){ if (tgt[yi]<minY) minY=tgt[yi]; if (tgt[yi]>maxY) maxY=tgt[yi]; }
+    nameTop = maxY + 0.35; nameBot = minY - 0.35;
+    // destino del easter egg: "/sobre-mi →" en JetBrains Mono, misma escala
+    var c2 = document.createElement('canvas'), x2 = c2.getContext('2d'), f2 = '500 ' + fs + 'px "JetBrains Mono", monospace';
+    x2.font = f2; var w2 = x2.measureText(EGG).width;
+    c2.width = Math.ceil(w2) + 20; c2.height = Math.ceil(fs*1.15);
+    x2.font = f2; x2.fillStyle = '#fff'; x2.textBaseline = 'middle'; x2.fillText(EGG, 10, c2.height/2);
+    var img2 = x2.getImageData(0,0,c2.width,c2.height).data;
+    var sc2 = Math.min(targetPxW*0.8, W*0.92) / w2, gap2 = Math.max(2, Math.round(screenGap*0.8 / sc2)), pts2 = [];
+    for (var y2=0; y2<c2.height; y2+=gap2) for (var x2i=0; x2i<c2.width; x2i+=gap2)
+      if (img2[(y2*c2.width+x2i)*4+3] > 128)
+        pts2.push([(x2i - 10 - w2/2)*sc2*pxToWorld, -(y2 - c2.height/2)*sc2*pxToWorld + centerWorldY]);
+    for (var si=pts2.length-1; si>0; si--){ var sj = Math.floor(Math.random()*(si+1)); var tmp = pts2[si]; pts2[si] = pts2[sj]; pts2[sj] = tmp; }
+    var t2 = [];
+    for (var ti=0; ti<nPts; ti++){ var pp = pts2[ti % pts2.length]; t2.push(pp[0] + (ti >= pts2.length ? (Math.random()-.5)*0.03 : 0), pp[1], (Math.random()-.5)*0.08); }
+    if (points){ group.remove(points); points.geometry.dispose(); }
+    var g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(tgt,3));
+    g.setAttribute('aTarget', new THREE.Float32BufferAttribute(tgt,3));
+    g.setAttribute('aStart', new THREE.Float32BufferAttribute(st,3));
+    g.setAttribute('aGlyph', new THREE.Float32BufferAttribute(gl,1));
+    g.setAttribute('aSeed', new THREE.Float32BufferAttribute(sd,1));
+    g.setAttribute('aDot', new THREE.Float32BufferAttribute(dt,1));
+    g.setAttribute('aBug', new THREE.Float32BufferAttribute(bg,1));
+    g.setAttribute('aTarget2', new THREE.Float32BufferAttribute(t2,3));
+    points = new THREE.Points(g, mat); points.frustumCulled = false; group.add(points);
+    window.__count = tgt.length/3;
+
+    // polvo de fondo
+    if (dust){ group.remove(dust); dust.geometry.dispose(); }
+    var n = qualityScale > 1 ? (W < 600 ? 60 : 160) : (W < 600 ? 180 : 420), dp=[], dg=[], ds=[], dd=[], db=[];
+    for (var i=0;i<n;i++){
+      var z = -3 - Math.random()*9, sc = (camera.position.z - z)/camera.position.z;
+      dp.push((Math.random()-.5)*wa.w*sc*1.1, (Math.random()-.5)*wa.h*sc*1.1, z);
+      dg.push(Math.floor(Math.random()*32)); ds.push(0.2+Math.random()*0.3); dd.push(0); db.push(0);
+    }
+    var g2 = new THREE.BufferGeometry();
+    g2.setAttribute('position', new THREE.Float32BufferAttribute(dp,3));
+    g2.setAttribute('aTarget', new THREE.Float32BufferAttribute(dp,3));
+    g2.setAttribute('aStart', new THREE.Float32BufferAttribute(dp,3));
+    g2.setAttribute('aGlyph', new THREE.Float32BufferAttribute(dg,1));
+    g2.setAttribute('aSeed', new THREE.Float32BufferAttribute(ds,1));
+    g2.setAttribute('aDot', new THREE.Float32BufferAttribute(dd,1));
+    g2.setAttribute('aBug', new THREE.Float32BufferAttribute(db,1));
+    g2.setAttribute('aTarget2', new THREE.Float32BufferAttribute(dp,3));
+    dust = new THREE.Points(g2, dustMat); dust.frustumCulled=false; dust.renderOrder=-1; group.add(dust);
+
+    // línea de escaneo
+    if (!scanLine){
+      var lg = new THREE.PlaneGeometry(1, 1);
+      scanLine = new THREE.Mesh(lg, new THREE.MeshBasicMaterial({color:0xf8b653, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false}));
+      group.add(scanLine);
+    }
+    scanLine.scale.set(wa.w*1.2, 0.006, 1);
+  }
+
+  // --- interacción ---
+  var mouse = {x:0,y:0,tx:0,ty:0,wx:99,wy:99,twx:99,twy:99,str:0,tstr:0};
+  if (finePointer){
+    hero.addEventListener('pointermove', function(e){
+      if (reduce || staticOn) return;
+      var r = hero.getBoundingClientRect();
+      var nx = (e.clientX - r.left)/r.width*2-1, ny = -((e.clientY - r.top)/r.height*2-1);
+      mouse.tx = nx; mouse.ty = ny;
+      mouse.twx = nx*view.worldW/2; mouse.twy = ny*view.worldH/2; mouse.tstr = 1;
+    });
+    hero.addEventListener('pointerleave', function(){ mouse.tstr = 0; mouse.tx = 0; mouse.ty = 0; });
+  }
+
+  if (true){
+    hero.addEventListener('pointerdown', function(e){
+      if (reduce || staticOn || e.target.closest('a,button')) return;
+      var r = hero.getBoundingClientRect();
+      var nx = (e.clientX - r.left)/r.width*2-1, ny = -((e.clientY - r.top)/r.height*2-1);
+      uniforms.uClick.value.set(nx*view.worldW/2, ny*view.worldH/2);
+      uniforms.uClickT.value = uniforms.uTime.value;
+    });
+  }
+  window.addEventListener('scroll', function(){
+    uniforms.uScroll.value = Math.min(1, Math.max(0, window.scrollY / (hero.clientHeight*0.75)));
+    dirty = true;
+  }, {passive:true});
+
+  // --- easter egg: escribir "whoami" ---
+  var buf = '', morphTarget = 0, eggTimer = null, toastEl = document.getElementById('toast'), toastTimer = null;
+  function toast(msg){ toastEl.textContent = msg; toastEl.classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(function(){ toastEl.classList.remove('on'); }, 2200); }
+  function eggOn(){ return morphTarget === 1; }
+  function triggerEgg(){
+    morphTarget = 1; hero.classList.add('egg');
+    if (reduce){ uniforms.uMorph.value = 1; dirty = true; }
+    setAudit('$ whoami <span class="ok">\u2192 /sobre-mi</span>');
+    clearTimeout(eggTimer);
+    eggTimer = setTimeout(function(){ morphTarget = 0; hero.classList.remove('egg'); if (reduce){ uniforms.uMorph.value = 0; dirty = true; }
+      setAudit('$ audit ./misael <span class="ok">\u2713 limpio</span>'); }, 7000);
+  }
+  function goEgg(){ toast('\u2192 /sobre-mi  (en el sitio real navega ahí)'); }
+  window.addEventListener('keydown', function(e){
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    var tg = e.target; if (tg && (tg.isContentEditable || /INPUT|TEXTAREA|SELECT/.test(tg.tagName))) return;
+    if (e.key === 'Enter' && eggOn()) { goEgg(); return; }
+    if (e.key.length !== 1) return;
+    buf = (buf + e.key.toLowerCase()).slice(-6);
+    if (buf === 'whoami' && window.scrollY < hero.clientHeight*0.5) triggerEgg();
+  });
+  hero.addEventListener('click', function(e){ if (eggOn() && !e.target.closest('a,button')) goEgg(); });
+
+  // --- estado de auditoría (esquina) ---
+  var auditEl = document.getElementById('audit'), lastAudit = '';
+  function setAudit(html){ if (html !== lastAudit){ auditEl.innerHTML = html; lastAudit = html; } }
+  setAudit('$ audit ./misael <span class="ok">✓ limpio</span>');
+
+  // --- loop ---
+  var running = true, t0 = performance.now(), last = t0, introStart = null, _v = new THREE.Vector3();
+  var SCAN_EVERY = 7.5, SCAN_DUR = 2.4, nextScan = 3.2;
+  function frame(now){
+    if (!running || staticOn) { running = false; return; }
+    if (reduce && !dirty){ requestAnimationFrame(frame); return; }   // estático: solo re-renderiza si algo cambió
+    dirty = false;
+    var dt = Math.min((now-last)/1000, .05); last = now;
+    var t = (now - t0)/1000;
+    uniforms.uTime.value = t;
+    if (!reduce && introStart !== null){
+      uniforms.uProgress.value = Math.min(1.2, (now - introStart)/2600*1.2);
+    }
+    mouse.x += (mouse.tx-mouse.x)*0.05; mouse.y += (mouse.ty-mouse.y)*0.05;
+    mouse.wx += (mouse.twx-mouse.wx)*0.12; mouse.wy += (mouse.twy-mouse.wy)*0.12;
+    mouse.str += (mouse.tstr-mouse.str)*0.06;
+    uniforms.uMouse.value.set(mouse.wx, mouse.wy); uniforms.uMouseStr.value = mouse.str;
+    group.rotation.y = mouse.x*0.09; group.rotation.x = -mouse.y*0.05;
+    if (!reduce){
+      var mv = uniforms.uMorph.value, step = dt/1.3;
+      uniforms.uMorph.value = morphTarget ? Math.min(1, mv + step) : Math.max(0, mv - step);
+    }
+    if (uniforms.uProgress.value > 0.8 && !nameText.classList.contains('dissolved')) nameText.classList.add('dissolved');
+
+    // escaneo de "auditoría"
+    var egging = uniforms.uMorph.value > 0.001;
+    if (egging) scanLine.material.opacity = 0;
+    if (!reduce && !egging && uniforms.uProgress.value >= 1.2){
+      if (t >= nextScan && t < nextScan + SCAN_DUR){
+        var k = (t - nextScan)/SCAN_DUR, top = nameTop, bot = nameBot;
+        var y = top + (bot-top)*k;
+        uniforms.uScan.value = y; scanLine.position.y = y; uniforms.uScanOn.value = 1;
+        scanLine.material.opacity = 0.6*Math.min(1, Math.sin(Math.PI*k)*2.5);
+        var found = 0; for (var bi=0; bi<bugYs.length; bi++) if (bugYs[bi] > y) found++;
+        setAudit('$ audit ./misael <span class="warn">escaneando ' + Math.round(k*100) + '%</span>' + (found ? ' · <span class="bug">' + found + ' hallazgo' + (found>1?'s':'') + '</span>' : ''));
+      } else if (t >= nextScan + SCAN_DUR && t < nextScan + SCAN_DUR + 1.6){
+        uniforms.uScanOn.value = 1 - (t - nextScan - SCAN_DUR)/1.6; scanLine.material.opacity = 0;
+        setAudit('$ audit ./misael <span class="ok">✓ ' + bugYs.length + ' hallazgos corregidos</span>');
+      } else if (t >= nextScan + SCAN_DUR + 1.6){
+        nextScan += SCAN_EVERY + 1.6; uniforms.uScan.value = -100; scanLine.material.opacity = 0; uniforms.uScanOn.value = 0;
+        setAudit('$ audit ./misael <span class="ok">✓ ' + bugYs.length + ' hallazgos corregidos</span>');
+        setTimeout(function(){ setAudit('$ audit ./misael <span class="ok">✓ limpio</span>'); }, 2500);
+      }
+    }
+    // etiquetas de hallazgos, proyectadas desde la posición 3D de cada glifo
+    group.updateMatrixWorld();
+    var scanning = uniforms.uScanOn.value > 0.25 && !egging && uniforms.uScroll.value < 0.05;
+    for (var fi=0; fi<findEls.length && fi<bugPos.length; fi++){
+      var el = findEls[fi], bp = bugPos[fi], dy = bp[1] - uniforms.uScan.value;
+      var on = scanning && dy > 0, fixed = on && dy > 0.85;
+      if (on){
+        _v.set(bp[0], bp[1], bp[2]).applyMatrix4(group.matrixWorld).project(camera);
+        el.style.transform = 'translate(' + ((_v.x+1)/2*view.w + 10).toFixed(1) + 'px,' + ((1-_v.y)/2*view.h - 26).toFixed(1) + 'px)';
+        el.textContent = FINDINGS[fi] + (fixed ? ' \u2713' : '');
+      }
+      el.classList.toggle('on', on); el.classList.toggle('fixed', fixed);
+    }
+    renderer.render(scene, camera);
+    requestAnimationFrame(frame);
+  }
+
+  // pausar fuera de pantalla / pestaña oculta
+  var heroVisible = true;
+  function resume(){ if (!running && !staticOn && heroVisible && !document.hidden && introStart !== null){ running = true; dirty = true; last = performance.now(); requestAnimationFrame(frame); } }
+  new IntersectionObserver(function(es){
+    heroVisible = es[0].isIntersecting;
+    if (heroVisible) resume(); else running = false;
+  }).observe(hero);
+  document.addEventListener('visibilitychange', function(){ if (document.hidden) running = false; else resume(); });
+
+  // ---------- tema + widget de accesibilidad, en vivo ----------
+  var atlasInk = false;
+  var PALETTES = {
+    dark:  {base:[0.74,0.81,0.94], accent:[0.49,0.70,1.0], amber:[0.98,0.72,0.33], red:[1.0,0.42,0.42], green:[0.44,0.83,0.64], scan:0xf8b653, blend:THREE.AdditiveBlending},
+    light: {base:[0.05,0.08,0.17], accent:[0.10,0.36,0.96], amber:[0.72,0.42,0.0],  red:[0.77,0.14,0.17], green:[0.08,0.47,0.29], scan:0xb86a00, blend:THREE.NormalBlending}
+  };
+  function applyTheme(){
+    var P = PALETTES[H.getAttribute('data-theme') === 'light' ? 'light' : 'dark'];
+    uniforms.uBase.value.fromArray(P.base); uniforms.uAccent.value.fromArray(P.accent); uniforms.uAmber.value.fromArray(P.amber);
+    uniforms.uRed.value.fromArray(P.red); uniforms.uGreen.value.fromArray(P.green);
+    [mat, dustMat].forEach(function(m){ m.blending = P.blend; m.needsUpdate = true; });
+    var wantInk = P === PALETTES.light;
+    dustUniforms.uAlphaMul.value = wantInk ? 0.3 : 1;
+    if (wantInk !== atlasInk){ atlasInk = wantInk; drawAtlas(); atlas.needsUpdate = true; }
+    if (scanLine){ scanLine.material.color.setHex(P.scan); scanLine.material.blending = P.blend; scanLine.material.needsUpdate = true; }
+    dirty = true;
+  }
+  function hideFindings(){ findEls.forEach(function(el){ el.classList.remove('on','fixed'); }); }
+  function setReduce(v){
+    reduce = v; uniforms.uDrift.value = v ? 0 : 1;
+    if (v){
+      uniforms.uProgress.value = 1.2; uniforms.uScanOn.value = 0; uniforms.uScan.value = -100; uniforms.uClickT.value = -100;
+      if (scanLine) scanLine.material.opacity = 0;
+      mouse.tstr = 0; mouse.str = 0; mouse.tx = mouse.ty = mouse.x = mouse.y = 0;
+      uniforms.uMorph.value = morphTarget; hideFindings();
+    }
+    dirty = true;
+  }
+  function setStatic(v){
+    staticOn = v;
+    canvas.style.opacity = v ? '0' : '1';
+    auditEl.classList.toggle('on', !v && introStart !== null);
+    if (v){ nameText.classList.remove('dissolved'); hideFindings(); running = false; }
+    else { if (uniforms.uProgress.value > 0.8) nameText.classList.add('dissolved'); resume(); }
+  }
+  new MutationObserver(function(){
+    applyTheme();
+    setReduce(window.matchMedia('(prefers-reduced-motion: reduce)').matches || H.getAttribute('data-a11y-motion') === 'reduced');
+    setStatic(window.__heroStatic());
+  }).observe(H, {attributes:true, attributeFilter:['data-theme','data-a11y-contrast','data-a11y-motion','data-a11y-dyslexia']});
+
+  var rt; window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(build, 150); });
+
+  Promise.all([
+    document.fonts.load('300px "DM Serif Display"'),
+    document.fonts.load('500 46px "JetBrains Mono"')
+  ]).catch(function(){}).then(function(){
+    drawAtlas(); atlas.needsUpdate = true;
+    build(); applyTheme();
+    // mide ~0.4s con las partículas aún invisibles (uProgress = 0); si el equipo no llega a 45fps, baja la calidad
+    var bFrames = 0, bStart = performance.now();
+    function bench(now){
+      renderer.render(scene, camera); bFrames++;
+      if (now - bStart < 400 && !reduce){ requestAnimationFrame(bench); return; }
+      var fps = bFrames / ((now - bStart)/1000); window.__fps = Math.round(fps);
+      if (!reduce && fps < 45){
+        qualityScale = window.innerWidth < 600 ? 1.08 : 1.25; PR = 1; renderer.setPixelRatio(1); uniforms.uPR.value = 1; build(); applyTheme();
+        window.__quality = 'low';
+      } else window.__quality = 'normal';
+      startIntro();
+    }
+    requestAnimationFrame(bench);
+  });
+  function startIntro(){
+    introStart = performance.now();
+    var parts = [['// dev ',''],['freelance','b']].concat(window.innerWidth < 600 ? [] : [[' · auditor de código','']]);
+    var typed = document.getElementById('typed'), caret = document.getElementById('caret');
+    function renderTyped(n){
+      var out = '', left = n;
+      parts.forEach(function(pt){ var t = pt[0].slice(0, Math.max(0,left)); left -= pt[0].length;
+        if (t) out += pt[1] ? '<b>'+t+'</b>' : t; });
+      typed.innerHTML = out;
+    }
+    var total = parts.reduce(function(a,p){return a+p[0].length;},0);
+    if (window.__contentShown){ /* la red de seguridad ya mostró el contenido: no re-tipear */ }
+    else if (reduce){ renderTyped(total); caret.classList.add('off'); }
+    else {
+      var ci = 0; setTimeout(function tick(){ renderTyped(++ci);
+        if (ci < total) setTimeout(tick, 48); else setTimeout(function(){ caret.classList.add('off'); }, 2600);
+      }, 500);
+    }
+    setTimeout(function(){ if (!staticOn) auditEl.classList.add('on'); }, reduce ? 0 : 2600);
+    setStatic(window.__heroStatic());
+    setTimeout(function(){ document.getElementById('content').classList.add('ready'); window.__contentShown = true; }, reduce ? 0 : 1400);
+    window.__ready = true;
+    running = true; dirty = true; requestAnimationFrame(frame);
+  }
+}
+</script>
+<script>
+/* Arranque: el nombre ya es texto visible (primer paint). Three.js se pide cuando el navegador está libre. */
+(function(){
+  var H = document.documentElement;
+  // panel del mockup: simula el AccessibilityWidget escribiendo los mismos atributos en <html>
+  document.querySelectorAll('.mockpanel button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var on = b.getAttribute('aria-pressed') !== 'true';
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      H.setAttribute(b.dataset.attr, on ? b.dataset.on : b.dataset.off);
+    });
+  });
+  function a11yStatic(){ return H.getAttribute('data-a11y-contrast') === 'high' || H.getAttribute('data-a11y-dyslexia') === 'on'; }
+  window.__heroStatic = a11yStatic;
+  window.__showContentNow = function(){
+    if (window.__contentShown) return; window.__contentShown = true;
+    document.getElementById('typed').innerHTML = '// dev <b>freelance</b>' + (window.innerWidth < 600 ? '' : ' · auditor de código');
+    document.getElementById('caret').classList.add('off');
+    document.getElementById('content').classList.add('ready');
+  };
+  var loading = false;
+  function boot(){
+    if (loading) return; loading = true;
+    var forceFallback = /nowebgl/.test(location.search), lowEnd = (navigator.hardwareConcurrency || 4) <= 2;
+    if (forceFallback || lowEnd){ initHero(); return; }
+    var sc = document.createElement('script');
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+    sc.onload = initHero; sc.onerror = initHero;   // si el CDN falla, initHero cae al modo texto
+    document.head.appendChild(sc);
+    window.__threeRequestedAt = performance.now();
+  }
+  function idle(fn){ if ('requestIdleCallback' in window) requestIdleCallback(fn, {timeout:500}); else setTimeout(fn, 200); }
+  // red de seguridad: si Three.js tarda, el contenido igual aparece
+  setTimeout(function(){ window.__showContentNow(); }, 3200);
+  if (a11yStatic()){ window.__showContentNow(); }
+  else idle(boot);
+  // si alguien apaga alto contraste/dislexia y Three.js nunca cargó, cargarlo ahora
+  new MutationObserver(function(){ if (!a11yStatic()) idle(boot); }).observe(H, {attributes:true, attributeFilter:['data-a11y-contrast','data-a11y-dyslexia']});
+})();
+</script>
+
+<script>
+/* aparición al hacer scroll + "whoami" que se escribe solo una vez */
+(function(){
+  var H = document.documentElement;
+  function reduced(){ return matchMedia('(prefers-reduced-motion: reduce)').matches || H.getAttribute('data-a11y-motion') === 'reduced'; }
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:.15, rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.rv').forEach(function(el, i){ el.style.transitionDelay = (i % 3) * 80 + 'ms'; io.observe(el); });
+  var who = document.getElementById('who'), done = false;
+  new IntersectionObserver(function(es, o){
+    if (!es[0].isIntersecting || done) return; done = true; o.disconnect();
+    if (reduced()){ who.textContent = 'whoami'; return; }
+    var t = 'whoami', i = 0;
+    setTimeout(function tick(){ who.textContent = t.slice(0, ++i); if (i < t.length) setTimeout(tick, 110); }, 450);
+  }, {threshold:.6}).observe(document.querySelector('.term'));
+})();
+</script>
+</body>
+</html>

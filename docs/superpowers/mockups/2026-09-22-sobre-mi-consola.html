@@ -1,0 +1,214 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500&display=swap');
+  .wrap5{font-family:var(--font-dm-sans,'DM Sans'),-apple-system,'Segoe UI',sans-serif;background:#0B1220;color:#f0f0f2;padding:2rem;border-radius:12px;max-width:720px;margin:0 auto}
+  .lbl{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#7eb3ff;margin:0 0 .9rem}
+  .big{font-family:var(--font-dm-serif,'DM Serif Display'),serif;font-size:clamp(1.6rem,4vw,2.4rem);
+    line-height:1.22;letter-spacing:-0.01em;margin:0 0 2.1rem;font-weight:400;
+    max-width:34ch;text-wrap:balance}
+  .big em{color:#7eb3ff;font-style:italic}
+
+  .console{background:#070b16;border:1px solid rgba(126,179,255,.18);border-radius:10px;
+    box-shadow:0 0 40px rgba(79,142,247,.06), inset 0 0 60px rgba(79,142,247,.03);overflow:hidden;
+    display:flex;flex-direction:column}
+  .cbar{display:flex;align-items:center;gap:.5rem;padding:.55rem .9rem;background:rgba(126,179,255,.05);
+    border-bottom:1px solid rgba(126,179,255,.12)}
+  .cdot{width:8px;height:8px;border-radius:50%;background:rgba(126,179,255,.3)}
+  .ctitle{margin-left:.4rem;font-family:'JetBrains Mono',Consolas,monospace;font-size:.7rem;color:#7a8296}
+
+  /* alto que crece con los 4 comandos base (nada se esconde por defecto);
+     el scroll interno solo entra en juego si se agregan los comandos bonus */
+  .cbody{padding:1rem 1.15rem 1.3rem;font-family:'JetBrains Mono',Consolas,monospace;
+    font-size:.79rem;line-height:1.75;letter-spacing:-.01em;
+    max-height:640px;overflow-y:auto;scroll-behavior:smooth}
+  .cbody::-webkit-scrollbar{width:6px}
+  .cbody::-webkit-scrollbar-thumb{background:rgba(126,179,255,.2);border-radius:3px}
+
+  .motd{color:#8b95b0;font-size:.74rem;margin-bottom:.9rem;opacity:0}
+  .promptline1{color:#8b95b0}
+  .promptline1 .user{color:#6bcf6b;font-weight:500}
+  .promptline1 .at{color:#8b95b0}
+  .promptline1 .host{color:#6bcf6b;font-weight:500}
+  .promptline2{color:#8b95b0}
+  .cmd{white-space:pre;color:#f0f0f2}
+  .flagtok{white-space:pre;color:#e8b672}
+  .out{color:#9aa4bd;margin:.1rem 0 1.15rem;opacity:0;transition:opacity .25s}
+  .out strong{color:#f0f0f2;font-weight:600}
+  .out a{color:#7eb3ff}
+  .out .cat{color:#7eb3ff;opacity:.85}
+  .status{display:inline-flex;align-items:center;gap:.4rem;color:#7eb3ff}
+  .pulse{width:5px;height:5px;border-radius:50%;background:#7eb3ff;animation:pulse 1.8s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+  .block-cursor{display:inline-block;width:7px;height:14px;background:#7eb3ff;vertical-align:-2px;
+    animation:blinkblock 1s step-end infinite}
+  @keyframes blinkblock{50%{opacity:0}}
+
+  /* barra de comandos fija abajo, fuera del área que scrollea -- no "aparece" dentro del log */
+  .cmdbar{display:flex;flex-wrap:wrap;gap:.5rem;padding:.7rem 1.15rem;background:rgba(126,179,255,.04);
+    border-top:1px solid rgba(126,179,255,.12);opacity:0;transition:opacity .4s}
+  .chip{font-family:'JetBrains Mono',Consolas,monospace;font-size:.7rem;background:rgba(79,142,247,.1);
+    border:1px solid rgba(79,142,247,.3);color:#7eb3ff;border-radius:5px;padding:.3rem .6rem;cursor:pointer}
+  .chip:hover{background:rgba(79,142,247,.2)}
+  .chip:disabled{opacity:.3;cursor:default}
+  .chip::before{content:'❯ '}
+
+  .neofetch{display:flex;gap:1rem;margin:.2rem 0 1.15rem;opacity:0;transition:opacity .25s}
+  .nf-logo{color:#7eb3ff;font-size:.68rem;line-height:1.15;white-space:pre;opacity:.85}
+  .nf-info div{white-space:nowrap}
+  .nf-key{color:#7eb3ff}
+  .nf-bars{display:flex;gap:2px;margin-top:.4rem}
+  .nf-bar{width:11px;height:9px;background:#4f8ef7}
+
+  .histline{color:#7a8296;opacity:0;transition:opacity .25s}
+  .histline .n{color:#4a5570;display:inline-block;width:1.4rem}
+
+  .cta{margin-top:1.6rem;text-align:right}
+  .cta a{color:#7eb3ff;font-size:.9rem;text-decoration:none;font-family:-apple-system,sans-serif}
+  .note{color:#8a8a96;font-size:.78rem;margin-top:1rem}
+</style>
+
+<h2>v14 — fix real encontrado con Playwright: el "whoami" no se esconde</h2>
+<p class="subtitle">Con altura fija de 280px, screenshots reales (desktop y mobile) mostraron que "whoami" — lo más importante — terminaba scrolleado fuera de vista al terminar la animación. Ahora la caja crece con los 4 comandos base; el scroll solo aparece si usás los comandos bonus de abajo.</p>
+
+<div class="wrap5">
+  <p class="lbl">Sobre mí</p>
+  <p class="big">Construyo con la misma disciplina con la que entreno: <em>poco a poco, sin atajos.</em></p>
+
+  <div class="console">
+    <div class="cbar">
+      <span class="cdot"></span><span class="cdot"></span><span class="cdot"></span>
+      <span class="ctitle">misael@portfolio: ~</span>
+    </div>
+    <div class="cbody" id="cbody"></div>
+    <div class="cmdbar" id="cmdbar">
+      <button class="chip" id="chipNf">neofetch</button>
+      <button class="chip" id="chipHist">history</button>
+    </div>
+  </div>
+
+  <div class="cta"><a href="#">Hablemos → (/contacto)</a></div>
+  <p class="note">Probá los botones de la barra inferior — quedan deshabilitados después de usarse una vez.</p>
+</div>
+
+<script>
+(function(){
+  var data = [
+    {cmd:'whoami', out:'Ingeniería en Sistemas, freelance (desarrollo + auditoría de código). Empecé en seguridad viendo a <a href="#" onclick="return false">El Pingüino de Mario</a> y <a href="#" onclick="return false">S4vitar</a> en YouTube.'},
+    {cmd:'stack --list', out:'<span class="cat">frontend</span> → React, Next.js, Vue.js<br><span class="cat">backend</span> → Node.js, Python<br><span class="cat">ia</span> → Deep Learning'},
+    {cmd:'status --current', out:'<strong>Base</strong> (app móvil, cliente privado) — <span class="status"><span class="pulse"></span>en revisión de tiendas</span>. Cliente conforme con el resultado.'},
+    {cmd:'fuera-de-codigo', out:'gym · inglés'}
+  ];
+  var body = document.getElementById('cbody');
+  var cmdbar = document.getElementById('cmdbar');
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var LINE1 = '<span class="promptline1">┌──(<span class="user">misael</span><span class="at">㉿</span><span class="host">portfolio</span>)-[~]</span>';
+  var LINE2 = '<span class="promptline2">└─$</span> ';
+
+  function scrollDown(){ body.scrollTop = body.scrollHeight; }
+
+  // separa "stack --list" en tokens y marca los que empiezan con -- como flag
+  function tokenize(cmdText){
+    var parts = cmdText.split(/(\s+)/);
+    var flat = [];
+    parts.forEach(function(p){
+      var cls = /^--/.test(p) ? 'flagtok' : 'cmd';
+      for (var k = 0; k < p.length; k++) flat.push({ch: p[k], cls: cls});
+    });
+    return flat;
+  }
+
+  function typeCommand(cmdText, cb){
+    var l1 = document.createElement('div'); l1.innerHTML = LINE1;
+    var l2 = document.createElement('div');
+    l2.innerHTML = LINE2 + '<span class="cmdwrap"></span><span class="block-cursor"></span>';
+    body.appendChild(l1); body.appendChild(l2); scrollDown();
+    var wrap = l2.querySelector('.cmdwrap');
+    var caret = l2.querySelector('.block-cursor');
+
+    if(reduced){
+      var flatAll = tokenize(cmdText), lastCls = null, span = null;
+      flatAll.forEach(function(item){
+        if(item.cls !== lastCls){ span = document.createElement('span'); span.className = item.cls; wrap.appendChild(span); lastCls = item.cls; }
+        span.textContent += item.ch;
+      });
+      caret.remove(); cb(); return;
+    }
+
+    var flat = tokenize(cmdText), ci = 0, curCls = null, curSpan = null;
+    var typer = setInterval(function(){
+      var item = flat[ci];
+      if(item.cls !== curCls){ curSpan = document.createElement('span'); curSpan.className = item.cls; wrap.appendChild(curSpan); curCls = item.cls; }
+      curSpan.textContent += item.ch;
+      ci++; scrollDown();
+      if(ci >= flat.length){ clearInterval(typer); caret.remove(); cb(); }
+    }, 68);
+  }
+
+  function printOut(html, cb){
+    var outEl = document.createElement('div'); outEl.className = 'out'; outEl.innerHTML = html;
+    body.appendChild(outEl); scrollDown();
+    setTimeout(function(){ outEl.style.opacity = 1; scrollDown(); setTimeout(cb, reduced?0:180); }, reduced?0:120);
+  }
+
+  function run(){
+    body.innerHTML = '';
+    var motd = document.createElement('div'); motd.className = 'motd';
+    motd.textContent = 'Last login: hoy — sesión iniciada desde este navegador';
+    body.appendChild(motd);
+    requestAnimationFrame(function(){ motd.style.transition='opacity .4s'; motd.style.opacity = 1; });
+
+    var i = 0;
+    function next(){
+      if(i >= data.length){
+        requestAnimationFrame(function(){ cmdbar.style.opacity = 1; });
+        return;
+      }
+      typeCommand(data[i].cmd, function(){
+        printOut(data[i].out, function(){ i++; next(); });
+      });
+    }
+    next();
+  }
+
+  document.getElementById('chipNf').addEventListener('click', function(){
+    this.disabled = true;
+    typeCommand('neofetch', function(){
+      var nf = document.createElement('div'); nf.className = 'neofetch';
+      nf.innerHTML =
+        '<div class="nf-logo">   /\\\n  /  \\\n /_/\\_\\\n/ ___  \\\n/_/   \\_\\</div>' +
+        '<div class="nf-info">' +
+          '<div><span class="nf-key">OS</span>: Misael OS (navy edition)</div>' +
+          '<div><span class="nf-key">Host</span>: portfolio</div>' +
+          '<div><span class="nf-key">Shell</span>: zsh</div>' +
+          '<div><span class="nf-key">Rol</span>: Frontend dev + auditoría de código</div>' +
+          '<div><span class="nf-key">Uptime</span>: estudiante + freelance desde 2025</div>' +
+          '<div class="nf-bars"><div class="nf-bar"></div><div class="nf-bar"></div><div class="nf-bar"></div><div class="nf-bar"></div><div class="nf-bar" style="background:rgba(79,142,247,.25)"></div></div>' +
+        '</div>';
+      body.appendChild(nf); scrollDown();
+      requestAnimationFrame(function(){ nf.style.opacity = 1; scrollDown(); });
+    });
+  });
+
+  document.getElementById('chipHist').addEventListener('click', function(){
+    this.disabled = true;
+    typeCommand('history', function(){
+      var lines = [
+        'youtube.com/watch?v=writeup-ctf-01',
+        'apt install curiosidad',
+        'git clone primer-proyecto-que-funciono.git',
+        'code . # y ya no paré'
+      ];
+      lines.forEach(function(l, idx){
+        setTimeout(function(){
+          var h = document.createElement('div'); h.className = 'histline';
+          h.innerHTML = '<span class="n">'+(idx+501)+'</span>'+l;
+          body.appendChild(h); scrollDown();
+          requestAnimationFrame(function(){ h.style.opacity = 1; scrollDown(); });
+        }, idx*100);
+      });
+    });
+  });
+
+  run();
+})();
+</script>
