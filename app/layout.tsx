@@ -2,10 +2,8 @@ import type { Metadata } from "next";
 import { DM_Sans, DM_Serif_Display, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-import Loader from "@/components/Loader";
 import CustomCursor from "@/components/CustomCursor";
 import Footer from "@/components/Footer";
-import { LoaderProvider } from "@/components/LoaderContext";
 import AccessibilityWidget from "@/components/AccessibilityWidget";
 
 const dmSans = DM_Sans({
@@ -83,7 +81,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     // data-landing / data-gate / data-hero3d en <html> antes de hidratar.
     <html lang="es" className="h-full" suppressHydrationWarning>
       <body className={`${dmSans.className} ${dmSans.variable} ${dmSerifDisplay.variable} ${jetbrainsMono.variable} antialiased h-full`}>
-        <LoaderProvider>
+        <>
 
           {/*
             WCAG 2.4.1 — Skip to content
@@ -109,12 +107,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           />
 
           <CustomCursor />
-          <Loader />
           <Navbar />
           {children}
           <Footer />
           <AccessibilityWidget />
-        </LoaderProvider>
+        </>
       </body>
     </html>
   );
