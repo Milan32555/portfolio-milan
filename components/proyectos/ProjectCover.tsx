@@ -22,7 +22,7 @@ export default function ProjectCover({ project, variant = "row" }: Props) {
           alt={project.cover.alt}
           fill
           sizes={variant === "row" ? "(max-width: 700px) 100vw, 230px" : "(max-width: 1100px) 100vw, 1000px"}
-          style={{ objectFit: "cover" }}
+          style={{ objectFit: "cover", objectPosition: "top" }}
         />
       </div>
     );

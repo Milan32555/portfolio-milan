@@ -115,6 +115,12 @@ export const projects: Project[] = [
     tags: ["MobileNetV2", "Flask", "Gunicorn", "Render"],
     metric: { value: "93.4%", label: "accuracy · 5 clases" },
     repo: { url: "https://github.com/Milan32555/AnimalVision-AI-Image-Classification-System" },
+    cover: {
+      src: "/proyectos/animalvision/cover.webp",
+      alt: "Interfaz de AnimalVision: un área para arrastrar o seleccionar una imagen y, al lado, el panel donde aparece la predicción del animal.",
+      width: 1440,
+      height: 860,
+    },
     demo: {
       url: "https://animal-cnn-classifier.onrender.com",
       note: "Plan gratuito de Render: la primera carga puede tardar cerca de 1 minuto mientras el servicio despierta.",
@@ -163,6 +169,12 @@ export const projects: Project[] = [
     tags: ["Vue 3", "Node.js", "Express", "Neon", "Vercel"],
     metric: { value: "1 archivo", label: "reescrito al cambiar de base de datos" },
     repo: { url: "https://github.com/Milan32555/Full-stack-library-management-system-with-Vue.js-frontend-and-Node.js-backend" },
+    cover: {
+      src: "/proyectos/library-system/cover.webp",
+      alt: "Catálogo de La Gran Librería: buscador, filtros por género y tarjetas de libros con su precio y cantidad disponible.",
+      width: 1440,
+      height: 900,
+    },
     demo: { url: "https://full-stack-library-management-syste-eight.vercel.app" },
     stats: [
       { value: "1", label: "archivo reescrito al cambiar de base de datos" },
