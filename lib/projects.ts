@@ -103,7 +103,7 @@ export const projects: Project[] = [
       resultado: "Un agente con respuestas en streaming, voz, mapa corporal de 24 zonas y panel de métricas.",
       conMasTiempo: ["Ampliar el dataset de evaluación y validarlo con criterio clínico externo."],
     },
-    borrador: ["arquitectura"],
+    borrador: [],
   },
   {
     slug: "animalvision",
@@ -157,7 +157,7 @@ export const projects: Project[] = [
       resultado: "Demo en producción con las 5 predicciones más probables y sus porcentajes.",
       conMasTiempo: ["Ampliar las clases y publicar el análisis de errores por clase."],
     },
-    borrador: ["arquitectura"],
+    borrador: [],
   },
   {
     slug: "library-system",
@@ -205,7 +205,7 @@ export const projects: Project[] = [
       resultado: "Una demo en vivo con catálogo, búsqueda, filtro por género y panel de administración.",
       conMasTiempo: ["Añadir tests de los casos de uso y autenticación para el panel."],
     },
-    borrador: ["arquitectura"],
+    borrador: [],
   },
   {
     slug: "safe-transfer-ai",
@@ -246,7 +246,7 @@ export const projects: Project[] = [
       resultado: "Una app Android nativa que evalúa una transferencia y justifica el riesgo.",
       conMasTiempo: ["Calibrar los pesos con datos reales y añadir reglas por historial del usuario."],
     },
-    borrador: ["arquitectura"],
+    borrador: [],
   },
 ];
 
