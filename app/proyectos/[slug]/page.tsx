@@ -134,7 +134,7 @@ export default async function ProyectoPage({ params }: Props) {
             <h2>¿Tienes un problema parecido?</h2>
             <p>Cuéntame qué necesitas y vemos si puedo ayudarte.</p>
           </div>
-          <Link className="btn-primary" href="/#contact">Hablemos <span aria-hidden="true">→</span></Link>
+          <Link className="btn-primary" href="/contacto">Hablemos <span aria-hidden="true">→</span></Link>
         </aside>
       </div>
     </main>

@@ -80,8 +80,6 @@ html[data-a11y-motion="reduced"] *::after {
   animation-iteration-count: 1     !important;
   transition-duration:      0.01ms !important;
 }
-html[data-a11y-motion="reduced"] .hero-video  { opacity: 0 !important; }
-html[data-a11y-motion="reduced"] .scroll-line { animation: none !important; }
 
 /* Resaltar enlaces */
 html[data-a11y-links="highlight"] a:not(.btn-primary):not(.btn-ghost):not(.project-card):not(.navbar-logo) {
@@ -144,7 +142,6 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .hero-video { opacity: 0 !important; }
 }
 
 /* ─── SELECTION & SCROLLBAR ───────────────────────────────── */
@@ -194,75 +191,19 @@ body {
 }
 .theme-toggle:hover { color: var(--text); border-color: var(--accent); }
 
-/* ─── HERO ────────────────────────────────────────────────── */
-.hero {
-  position: relative;
-  width: 100%; height: 100vh;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.hero-video {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-  opacity: 0.35;
-  transition: opacity 1s ease;
-}
-[data-theme="light"] .hero-video { opacity: 0.18; }
-.hero-overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(to bottom, rgba(12,12,14,0.45) 0%, transparent 40%, var(--bg) 100%);
-  pointer-events: none;
-}
-.hero-content {
-  position: relative; z-index: 10;
-  text-align: center;
-  padding: 0 1.5rem;
-}
-.hero-eyebrow {
-  display: inline-block;
-  font-size: 0.75rem; font-weight: 500;
-  letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--accent2);
-  margin-bottom: 1.4rem;
-}
-.hero-title {
-  font-family: var(--font-dm-serif), serif;
-  font-size: clamp(4rem, 12vw, 9rem);
-  line-height: 0.95;
-  letter-spacing: -0.03em;
-  color: var(--text);
-}
-.hero-title em { font-style: italic; color: var(--accent2); }
-.hero-sub {
-  margin-top: 1.6rem;
-  font-size: clamp(0.95rem, 2vw, 1.1rem);
-  color: var(--muted);
-  max-width: 500px;
-  margin-left: auto; margin-right: auto;
-  line-height: 1.7; font-weight: 300;
-}
-.hero-actions {
-  margin-top: 2.8rem;
-  display: flex; align-items: center;
-  justify-content: center;
-  gap: 1rem; flex-wrap: wrap;
-}
-
 /* ─── BUTTONS ─────────────────────────────────────────────── */
 .btn-primary {
   display: inline-flex; align-items: center; gap: 0.5rem;
   padding: 0.75rem 1.8rem;
   border-radius: 99px;
-  background: var(--accent); color: #fff;
+  background: var(--accent); color: var(--bg);
   font-size: 0.88rem; font-weight: 500;
   border: 2px solid transparent;
   transition: all var(--transition);
   box-shadow: 0 0 24px rgba(79,142,247,0.35);
   min-height: 44px;
 }
+[data-theme="light"] .btn-primary { color: #fff; }
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 0 36px rgba(79,142,247,0.5);
@@ -280,24 +221,6 @@ body {
 .btn-ghost:hover {
   border-color: var(--accent); color: var(--accent);
   transform: translateY(-2px);
-}
-
-/* ─── SCROLL HINT ─────────────────────────────────────────── */
-.scroll-hint {
-  position: absolute;
-  bottom: 2.5rem; left: 50%;
-  transform: translateX(-50%);
-  display: flex; flex-direction: column;
-  align-items: center; gap: 0.5rem;
-  color: var(--muted);
-  font-size: 0.72rem;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  pointer-events: none;
-}
-.scroll-line {
-  width: 1px; height: 40px;
-  background: linear-gradient(to bottom, var(--accent), transparent);
-  animation: scrollPulse 2s infinite;
 }
 
 /* ─── SECTIONS ────────────────────────────────────────────── */
@@ -436,7 +359,7 @@ body {
 .form-label {
   display: block; font-size: 0.75rem; font-weight: 500;
   letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--muted); margin-bottom: 0.5rem;
+  color: var(--soft); margin-bottom: 0.5rem;
 }
 .form-input, .form-textarea {
   width: 100%; background: var(--surface);
@@ -474,14 +397,6 @@ body {
 }
 
 /* ─── ANIMATIONS ──────────────────────────────────────────── */
-@keyframes heroFadeUp {
-  from { opacity: 0; transform: translateY(22px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes scrollPulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.3; }
-}
 .fade-in-section {
   opacity: 0; transform: translateY(28px);
   transition: opacity 0.75s ease, transform 0.75s ease;
@@ -493,7 +408,12 @@ body {
   .navbar { padding: 1rem 1.2rem; }
   .navbar-links { gap: 1.2rem; }
   .section { padding: 4rem 1rem; }
-  .hero-content { padding: 0 1rem; }
+}
+@media (max-width: 420px) {
+  .navbar-logo .logo-long { display: none; }
+  .navbar { padding: 0.9rem 1rem; }
+  .navbar-links { gap: 0.9rem; }
+  .navbar-links a { font-size: 0.8rem !important; }
 }
 
 /* ─── CARD FOOTER (projects) ──────────────────────────────── */
@@ -540,3 +460,31 @@ body {
   color: var(--accent) !important;
   transform: scale(1.1);
 }
+
+/* ─── HERO DE CÓDIGO + MURO (home) ────────────────────────── */
+/* Mientras se espera la escena 3D, el nombre de texto no se ve (evita el salto
+   "Misael en blanco → Misael de código"). Sigue en el HTML para SEO y lectores. */
+html[data-hero3d="on"] .hero-name { opacity: 0; }
+/* Alto contraste / dislexia: el nombre es texto sólido aunque haya 3D. */
+html[data-a11y-contrast="high"] .hero-name,
+html[data-a11y-dyslexia="on"] .hero-name { opacity: 1 !important; }
+/* El muro está oculto por defecto (sin JS nunca aparece). Solo se muestra si el script
+   previo al primer paint marcó la llegada al home y el muro no se vio en esta sesión. */
+.code-gate { display: none; }
+html[data-landing="home"]:not([data-gate="skip"]) .code-gate { display: block; }
+
+/* ─── SKIP LINK (WCAG 2.4.1) ──────────────────────────────── */
+/* Fuera de la vista hasta que recibe foco con Tab; entonces aparece arriba a la izquierda. */
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 10000;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 0.9rem;
+  transform: translateY(-200%);
+}
+.skip-link:focus { transform: none; }

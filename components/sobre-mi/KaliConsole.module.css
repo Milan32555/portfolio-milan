@@ -1,0 +1,74 @@
+.console {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(126, 179, 255, 0.18);
+  border-radius: 12px;
+  background: #070b16;
+  box-shadow: 0 0 40px rgba(79, 142, 247, 0.06), inset 0 0 60px rgba(79, 142, 247, 0.03);
+  color: #c7cfe0;
+  font-family: var(--font-mono), monospace;
+}
+/* Sin JS o con movimiento reducido no se marca data-console-anim: todo se ve tal cual
+   lo manda el servidor. Con JS, se oculta hasta que React toma el control (data-live). */
+:global(html[data-console-anim="on"]) .console:not([data-live]) .body > :not(.motd) {
+  visibility: hidden;
+}
+.bar { display: flex; align-items: center; gap: 6px; padding: 0.6rem 0.8rem; border-bottom: 1px solid rgba(126, 179, 255, 0.12); }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: #2a3348; }
+.title { margin-left: 0.5rem; color: #8b95b0; font-size: 0.72rem; }
+
+.body {
+  max-height: 640px;
+  overflow-y: auto;
+  padding: 1rem 1.1rem 1.2rem;
+  font-size: 0.79rem;
+  line-height: 1.75;
+  letter-spacing: -0.01em;
+  scroll-behavior: smooth;
+}
+.body::-webkit-scrollbar { width: 6px; }
+.body::-webkit-scrollbar-thumb { border-radius: 3px; background: rgba(126, 179, 255, 0.2); }
+
+.motd { color: #8b95b0; }
+.p1, .p2 { color: #8b95b0; }
+.host { color: #6bcf6b; font-weight: 500; }
+.cmd { color: #f0f0f2; }
+.flag { color: #f8b653; }
+.caret { display: inline-block; width: 0.55em; height: 1em; margin-left: 1px; vertical-align: -2px; background: #7eb3ff; animation: kaliCaret 1s steps(1) infinite; }
+@keyframes kaliCaret { 50% { opacity: 0; } }
+
+.out { margin: 0.1rem 0 0.7rem; animation: kaliOut 0.3s ease both; }
+@keyframes kaliOut { from { opacity: 0; } }
+.out a { color: #7eb3ff; border-bottom: 1px solid rgba(126, 179, 255, 0.4); }
+.out a:hover { border-bottom-color: #7eb3ff; }
+.out strong { color: #f0f0f2; font-weight: 600; }
+.cat { color: #7eb3ff; }
+.live { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0 0.45rem; border: 1px solid rgba(95, 209, 139, 0.4); border-radius: 99px; color: #5fd18b; }
+.live::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #5fd18b; animation: kaliPulse 1.6s ease-in-out infinite; }
+@keyframes kaliPulse { 50% { opacity: 0.3; } }
+
+.neofetch { display: flex; gap: 1.2rem; margin: 0.2rem 0 0.8rem; animation: kaliOut 0.3s ease both; }
+.logo { margin: 0; color: #7eb3ff; font: inherit; line-height: 1.3; }
+.swatches { display: flex; gap: 4px; margin-top: 0.4rem; }
+.swatches i { width: 18px; height: 10px; background: #7eb3ff; }
+.swatches i:nth-child(2) { background: #6bcf6b; }
+.swatches i:nth-child(3) { background: #f8b653; }
+.swatches i:nth-child(4) { background: #ff7a7a; }
+.swatches i:nth-child(5) { background: rgba(79, 142, 247, 0.25); }
+
+.cmdbar { display: flex; gap: 0.5rem; padding: 0.6rem 0.8rem; border-top: 1px solid rgba(126, 179, 255, 0.12); opacity: 0; transition: opacity 0.4s ease; }
+.cmdbar[data-on] { opacity: 1; }
+.chip {
+  padding: 0.3rem 0.6rem;
+  border: 1px solid rgba(79, 142, 247, 0.3);
+  border-radius: 5px;
+  background: transparent;
+  color: #7eb3ff;
+  font: inherit;
+  font-size: 0.74rem;
+}
+.chip::before { content: "❯ "; }
+.chip:hover:not(:disabled) { background: rgba(79, 142, 247, 0.2); }
+.chip:disabled { opacity: 0.3; }
+.chip:focus-visible { outline: 2px solid #7eb3ff; outline-offset: 2px; }
