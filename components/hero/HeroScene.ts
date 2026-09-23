@@ -157,18 +157,26 @@ export class HeroScene {
   private buildSeq = 0;
 
   /**
-   * Primera construcción por partes: cede el hilo entre pasos (renderer y atlas,
+   * Primera construcción por partes: cede el hilo entre pasos (renderer, atlas,
    * muestreo del nombre, atributos, easter egg, polvo, geometrías, compilación) para no
    * bloquear el hilo principal con una sola tarea larga. Si `cancelled()` se vuelve
    * true a mitad de camino, libera lo creado y devuelve null.
    */
   static async create(opts: HeroSceneOptions, cancelled: () => boolean = () => false): Promise<HeroScene | null> {
+    // El chunk de three.js se evalúa en la misma tarea que retoma este código: se cede
+    // antes de crear el contexto WebGL para no sumarle esa creación.
+    await yieldToMain();
+    if (cancelled()) return null;
     const scene = new HeroScene(opts);
     const abort = () => {
       scene.dispose();
       return null;
     };
     try {
+      await yieldToMain();
+      if (cancelled()) return abort();
+      // Colores y atlas de glifos (dibujo en canvas 2D): paso propio.
+      scene.setTheme(opts.theme);
       await yieldToMain();
       if (cancelled()) return abort();
       if (!(await scene.buildAsync(cancelled))) return abort();
@@ -205,8 +213,7 @@ export class HeroScene {
     this.dustMaterial = new ShaderMaterial({ uniforms: { ...this.uniforms, uAlphaMul: this.dustAlpha }, ...shared });
     this.scanLine = new Mesh(new PlaneGeometry(1, 1), new MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
     this.group.add(this.scanLine);
-
-    this.setTheme(opts.theme);
+    // El tema (y el atlas) se aplica en `create`, en un paso aparte.
   }
 
   // ─── API pública ────────────────────────────────────────────────────────────
@@ -223,8 +230,14 @@ export class HeroScene {
     while (document.hidden) {
       await new Promise<void>((r) => document.addEventListener("visibilitychange", () => r(), { once: true }));
     }
+    // Calentamiento antes de medir, en tareas separadas: compilar y subir el atlas, y
+    // luego el primer render (sube los atributos y termina de enlazar los shaders).
+    await yieldToMain();
     if (this.disposed) return this.quality;
     this.renderer.compile(this.scene, this.camera);
+    this.renderer.initTexture(this.atlas);
+    await yieldToMain();
+    if (this.disposed) return this.quality;
     this.renderer.render(this.scene, this.camera);
     const start = performance.now();
     let frames = 0;

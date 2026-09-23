@@ -1,4 +1,10 @@
-.sec { border-top: 1px solid var(--border); }
+/* Debajo del hero: el navegador no calcula ni pinta la sección hasta que se acerca a
+   la pantalla (primer layout más corto). `auto` recuerda el alto real una vez medido. */
+.sec {
+  border-top: 1px solid var(--border);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}
 .label {
   margin: 0 0 0.9rem;
   font-family: var(--font-mono), monospace;

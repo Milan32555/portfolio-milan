@@ -4,6 +4,10 @@
   isolation: isolate;
   height: min(820px, 100svh + 60px);
   min-height: 640px;
+  /* Fuera de pantalla no se calcula ni se pinta (la escena tiene cientos de nodos SVG).
+     El alto es fijo, así que el tamaño intrínseco coincide con el real: sin saltos. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 820px;
   background: linear-gradient(180deg, #0b1220 0%, #0d1730 45%, #16264b 78%, #1b2f5c 100%);
   /* Transición suave con lo que haya arriba: el borde superior se desvanece y deja
      ver el fondo real de la página (var(--bg), el mismo en cualquier tema) en vez
@@ -165,5 +169,6 @@
   .footer {
     height: 640px;
     min-height: 0;
+    contain-intrinsic-size: auto 640px;
   }
 }
