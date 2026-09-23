@@ -9,6 +9,11 @@
   color: #c7cfe0;
   font-family: var(--font-mono), monospace;
 }
+/* Sin JS o con movimiento reducido no se marca data-console-anim: todo se ve tal cual
+   lo manda el servidor. Con JS, se oculta hasta que React toma el control (data-live). */
+:global(html[data-console-anim="on"]) .console:not([data-live]) .body > :not(.motd) {
+  visibility: hidden;
+}
 .bar { display: flex; align-items: center; gap: 6px; padding: 0.6rem 0.8rem; border-bottom: 1px solid rgba(126, 179, 255, 0.12); }
 .dot { width: 10px; height: 10px; border-radius: 50%; background: #2a3348; }
 .title { margin-left: 0.5rem; color: #8b95b0; font-size: 0.72rem; }

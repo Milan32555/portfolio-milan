@@ -75,16 +75,21 @@ export default function KaliConsole() {
   const [baseDone, setBaseDone] = useState(true);
   const [busy, setBusy] = useState(false);
   const [used, setUsed] = useState<string[]>([]);
+  const [live, setLive] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
   const run = useCallback(async (entries: readonly ConsoleEntry[], signal: AbortSignal) => {
     const sleep = (ms: number) =>
       new Promise<void>((resolve, reject) => {
-        const id = window.setTimeout(resolve, ms);
-        signal.addEventListener("abort", () => {
+        const onAbort = () => {
           window.clearTimeout(id);
           reject(new Error("abort"));
-        });
+        };
+        const id = window.setTimeout(() => {
+          signal.removeEventListener("abort", onAbort);
+          resolve();
+        }, ms);
+        signal.addEventListener("abort", onAbort, { once: true });
       });
     for (const entry of entries) {
       setShown((s) => [...s, { entry, typed: 0, done: false }]);
@@ -99,10 +104,14 @@ export default function KaliConsole() {
   }, []);
 
   // Antes de pintar: si hay animación, vaciar la consola y esperar a que entre en pantalla.
+  // `live` se marca siempre (incluso con movimiento reducido) para que el CSS que oculta
+  // el cuerpo antes de hidratar (data-console-anim, ver KaliConsole.module.css) lo suelte.
   useLayoutEffect(() => {
-    if (motionReduced(document.documentElement, matchMedia)) return;
-    setShown([]);
-    setBaseDone(false);
+    if (!motionReduced(document.documentElement, matchMedia)) {
+      setShown([]);
+      setBaseDone(false);
+    }
+    setLive(true);
   }, []);
 
   useEffect(() => {
@@ -130,15 +139,19 @@ export default function KaliConsole() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Auto-scroll solo cuando cambia la cantidad de líneas mostradas o alguna termina de
+  // tipearse (no en cada letra): shownKey solo cambia en esos dos casos.
+  const shownKey = shown.length + ":" + shown.filter((s) => s.done).length;
   useEffect(() => {
     const body = bodyRef.current;
     if (body) body.scrollTop = body.scrollHeight;
-  }, [shown]);
+  }, [shownKey]);
 
+  // Aborta cualquier corrida en curso al desmontar: cubre tanto la corrida base como una bonus.
   useEffect(() => () => abortRef.current?.abort(), []);
 
   const runBonus = (entry: ConsoleEntry) => {
-    if (busy || used.includes(entry.id)) return;
+    if (!baseDone || busy || used.includes(entry.id)) return;
     setUsed((u) => [...u, entry.id]);
     if (motionReduced(document.documentElement, matchMedia)) {
       setShown((s) => [...s, ...allDone([entry])]);
@@ -153,7 +166,7 @@ export default function KaliConsole() {
   };
 
   return (
-    <div ref={rootRef} className={styles.console}>
+    <div ref={rootRef} className={styles.console} data-live={live ? "" : undefined}>
       <div className={styles.bar} aria-hidden="true">
         <span className={styles.dot} />
         <span className={styles.dot} />
