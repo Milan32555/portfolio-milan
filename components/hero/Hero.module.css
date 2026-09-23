@@ -131,7 +131,9 @@
 
 .audit {
   position: absolute;
-  right: 22px;
+  /* Abajo a la izquierda: abajo a la derecha la tapa el engranaje de accesibilidad. */
+  left: 22px;
+  right: auto;
   bottom: 20px;
   z-index: 2;
   margin: 0;
@@ -174,5 +176,6 @@
 :global([data-theme="light"]) .finding[data-state="fixed"] { color: #146c43; background: #e3f3ea; border-color: rgba(20, 108, 67, 0.45); }
 
 @media (max-width: 600px) {
-  .audit { right: auto; left: 50%; bottom: 48px; transform: translateX(-50%); white-space: nowrap; }
+  .audit { left: 16px; right: 16px; bottom: 48px; transform: none; white-space: normal; text-align: center; font-size: 0.64rem; }
+  .finding { font-size: 0.58rem; }
 }

@@ -741,7 +741,9 @@ export class HeroScene {
         this.v.set(b[0], b[1], b[2]).applyMatrix4(this.group.matrixWorld).project(this.camera);
         let left = ((this.v.x + 1) / 2) * this.view.w + 10;
         left = Math.max(8, Math.min(left, this.view.w - el.offsetWidth - 8));
-        const top = ((1 - this.v.y) / 2) * this.view.h - 26;
+        // En pantallas angostas las etiquetas impares van debajo del glifo para no chocar.
+        const below = this.view.w < 600 && i % 2 === 1;
+        const top = ((1 - this.v.y) / 2) * this.view.h + (below ? 30 : -26);
         el.style.transform = `translate(${left.toFixed(1)}px, ${top.toFixed(1)}px)`;
       }
       if (el.dataset.state !== state) el.dataset.state = state;
