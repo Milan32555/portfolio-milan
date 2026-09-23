@@ -34,6 +34,8 @@ export function createIntroBus() {
     },
     openGate(fromDoor: boolean) {
       gate = "open";
+      // Las etapas solo le sirven al muro mientras carga: abierto, ya nadie las necesita.
+      stages = [];
       const fn = pending;
       pending = null;
       fn?.(fromDoor);

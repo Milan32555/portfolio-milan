@@ -66,10 +66,6 @@ export default function AccessibilityWidget() {
     return () => document.removeEventListener("keydown", fn);
   }, [open]);
 
-  const toggle = useCallback(<K extends keyof A11yState>(key: K, val: A11yState[K]) => {
-    setS(prev => ({ ...prev, [key]: prev[key] === val ? DEFAULTS[key] : val }));
-  }, []);
-
   const reset = useCallback(() => setS(DEFAULTS), []);
 
   const activeCount = [
@@ -82,7 +78,6 @@ export default function AccessibilityWidget() {
   const border       = "var(--border, rgba(255,255,255,0.08))";
   const textColor    = "var(--text, #f0f0f2)";
   const mutedColor   = "var(--muted, #6b6b78)";
-  const bg2          = "var(--bg2, #111114)";
 
   return (
     <>

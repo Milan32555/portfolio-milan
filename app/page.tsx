@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <>
       <noscript>
-        <style>{".fade-in-section{opacity:1!important;transform:none!important}"}</style>
+        <style>{".fade-in-section{opacity:1!important;transform:none!important}.code-gate{display:none!important}"}</style>
       </noscript>
       <PrePaintScript />
       <CodeGate />

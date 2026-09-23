@@ -468,8 +468,10 @@ html[data-hero3d="on"] .hero-name { opacity: 0; }
 /* Alto contraste / dislexia: el nombre es texto sólido aunque haya 3D. */
 html[data-a11y-contrast="high"] .hero-name,
 html[data-a11y-dyslexia="on"] .hero-name { opacity: 1 !important; }
-/* El muro ya se vio en esta sesión: oculto antes del primer paint. */
-html[data-gate="skip"] .code-gate { display: none; }
+/* El muro está oculto por defecto (sin JS nunca aparece). Solo se muestra si el script
+   previo al primer paint marcó la llegada al home y el muro no se vio en esta sesión. */
+.code-gate { display: none; }
+html[data-landing="home"]:not([data-gate="skip"]) .code-gate { display: block; }
 
 /* ─── SKIP LINK (WCAG 2.4.1) ──────────────────────────────── */
 /* Fuera de la vista hasta que recibe foco con Tab; entonces aparece arriba a la izquierda. */

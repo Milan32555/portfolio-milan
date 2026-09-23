@@ -36,6 +36,8 @@ export default function CodeGate() {
   const pctRef = useRef<HTMLSpanElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
   const skipRef = useRef<HTMLButtonElement>(null);
+  /** El efecto de layout decidió que no hay muro: los demás efectos no hacen nada. */
+  const gateSkippedRef = useRef(false);
   const inertRef = useRef<HTMLElement[]>([]);
   const prevOverflowRef = useRef("");
   const lockedRef = useRef(false);
@@ -67,13 +69,14 @@ export default function CodeGate() {
     if (!landedHere || seen || introBus.gateState() === "open") {
       // Tiene que decidirse antes de pintar y depende de atributos que el script previo
       // escribió en <html> (no existen durante el render en el servidor).
+      gateSkippedRef.current = true;
       // eslint-disable-next-line react-hooks/set-state-in-effect
       go("gone");
       introBus.openGate(false);
       return;
     }
     introBus.activateGate();
-    inertRef.current = Array.from(document.querySelectorAll<HTMLElement>("main, nav, footer"));
+    inertRef.current = Array.from(document.querySelectorAll<HTMLElement>("main, nav, footer, .skip-link"));
     inertRef.current.forEach((el) => (el.inert = true));
     prevOverflowRef.current = root.style.overflow;
     root.style.overflow = "hidden";
@@ -90,7 +93,7 @@ export default function CodeGate() {
 
   const alive = phase !== "gone";
   useEffect(() => {
-    if (!alive || !leftRef.current || !rightRef.current) return;
+    if (gateSkippedRef.current || !alive || !leftRef.current || !rightRef.current) return;
     const wall = new CodeWall(leftRef.current, rightRef.current);
     wallRef.current = wall;
     return () => wall.dispose();
@@ -98,7 +101,7 @@ export default function CodeGate() {
 
   // Barra de progreso: avanza con las etapas reales que reporta el hero.
   useEffect(() => {
-    if (phase !== "loading") return;
+    if (gateSkippedRef.current || phase !== "loading") return;
     let target = 4;
     let shown = 0;
     let raf = 0;

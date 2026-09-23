@@ -1,16 +1,26 @@
-import type { Metadata } from "next";
+import type { Metadata, ResolvingMetadata } from "next";
 import ContactForm from "@/components/ContactForm";
 import styles from "./page.module.css";
 
-const description = "Escríbele a Misael para un proyecto de desarrollo web o móvil, o para auditar el código de tu aplicación.";
-
-export const metadata: Metadata = {
-  title: "Contacto",
-  description,
-  alternates: { canonical: "/contacto" },
-  openGraph: { title: "Contacto — Misael", description, url: "/contacto", type: "website" },
-  twitter: { card: "summary_large_image", title: "Contacto — Misael", description },
-};
+export async function generateMetadata(_props: unknown, parent: ResolvingMetadata): Promise<Metadata> {
+  const parentOg = (await parent).openGraph;
+  const description = "Escríbele a Misael para un proyecto de desarrollo web o móvil, o para auditar el código de tu aplicación.";
+  return {
+    title: "Contacto",
+    description,
+    alternates: { canonical: "/contacto" },
+    openGraph: {
+      title: "Contacto — Misael",
+      description,
+      url: "/contacto",
+      type: "website",
+      siteName: parentOg?.siteName,
+      locale: parentOg?.locale,
+      images: parentOg?.images,
+    },
+    twitter: { card: "summary_large_image", title: "Contacto — Misael", description },
+  };
+}
 
 export default function ContactoPage() {
   return (

@@ -58,6 +58,18 @@ describe("createIntroBus", () => {
     assert.deepEqual(calls, ["nuevo"]);
   });
 
+  it("al abrir el muro olvida las etapas: un suscriptor nuevo no recibe las viejas", () => {
+    const bus = createIntroBus();
+    bus.activateGate();
+    bus.report({ stage: "fonts", label: "a" });
+    bus.openGate(true);
+    const seen: string[] = [];
+    bus.subscribe((e) => seen.push(e.stage));
+    assert.deepEqual(seen, []);
+    bus.report({ stage: "ready", label: "b" });
+    assert.deepEqual(seen, ["ready"]);
+  });
+
   it("reset olvida etapas y estado", () => {
     const bus = createIntroBus();
     bus.report({ stage: "fonts", label: "a" });

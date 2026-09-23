@@ -228,6 +228,7 @@ export class HeroScene {
     // rAF no corre con la pestaña oculta: hay que esperar a que vuelva a estar visible
     // antes de medir, si no la primera vuelta del bucle mide un hueco enorme.
     while (document.hidden) {
+      if (this.disposed) return this.quality;
       await new Promise<void>((r) => document.addEventListener("visibilitychange", () => r(), { once: true }));
     }
     // Calentamiento antes de medir, en tareas separadas: compilar y subir el atlas, y
