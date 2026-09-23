@@ -22,6 +22,7 @@ import { decideQuality, qualitySettings, type Quality } from "@/lib/hero/quality
 import type { ThemeName } from "@/lib/a11y";
 import { FRAG, VERT } from "./shaders";
 import { PALETTES } from "./palettes";
+import { yieldToMain } from "./yieldToMain";
 
 export interface HeroSceneOptions {
   host: HTMLElement;
@@ -49,6 +50,8 @@ const EGG_MS = 7000;
 const MORPH_SECONDS = 1.3;
 const BENCH_MS = 400;
 const FS = 300;
+/** En los recorridos largos de puntos, se cede el hilo cada tantos glifos. */
+const YIELD_EVERY = 800;
 
 interface Attrs {
   aTarget: number[];
@@ -150,8 +153,39 @@ export class HeroScene {
   private lastAudit = "";
   private v = new Vector3();
   private cleanups: Array<() => void> = [];
+  /** Sube con cada construcción: una construcción por partes se abandona si otra la reemplaza. */
+  private buildSeq = 0;
 
-  constructor(opts: HeroSceneOptions) {
+  /**
+   * Primera construcción por partes: cede el hilo entre pasos (renderer y atlas,
+   * muestreo del nombre, atributos, easter egg, polvo, geometrías, compilación) para no
+   * bloquear el hilo principal con una sola tarea larga. Si `cancelled()` se vuelve
+   * true a mitad de camino, libera lo creado y devuelve null.
+   */
+  static async create(opts: HeroSceneOptions, cancelled: () => boolean = () => false): Promise<HeroScene | null> {
+    const scene = new HeroScene(opts);
+    const abort = () => {
+      scene.dispose();
+      return null;
+    };
+    try {
+      await yieldToMain();
+      if (cancelled()) return abort();
+      if (!(await scene.buildAsync(cancelled))) return abort();
+      await yieldToMain();
+      if (cancelled()) return abort();
+      // compileAsync usa KHR_parallel_shader_compile si existe: el enlazado no bloquea.
+      await scene.renderer.compileAsync(scene.scene, scene.camera);
+      if (cancelled()) return abort();
+    } catch (err) {
+      scene.dispose();
+      throw err;
+    }
+    scene.bindEvents();
+    return scene;
+  }
+
+  private constructor(opts: HeroSceneOptions) {
     this.opts = opts;
     this.reduced = opts.reduced;
     // Lanza si no hay contexto WebGL: Hero.tsx lo atrapa y cae al hero de texto.
@@ -173,8 +207,6 @@ export class HeroScene {
     this.group.add(this.scanLine);
 
     this.setTheme(opts.theme);
-    this.build();
-    this.bindEvents();
   }
 
   // ─── API pública ────────────────────────────────────────────────────────────
@@ -182,7 +214,7 @@ export class HeroScene {
   /** Decide la calidad: reutiliza la guardada o mide ~0.4 s con las partículas aún invisibles. */
   async prepare(cached: Quality | null): Promise<Quality> {
     if (cached) {
-      this.applyQuality(cached);
+      await this.applyQuality(cached);
       return cached;
     }
     if (this.reduced) return this.quality;
@@ -237,7 +269,7 @@ export class HeroScene {
     const fps = frames / ((performance.now() - start) / 1000);
     this.fps = Math.round(fps);
     const q = decideQuality(fps);
-    this.applyQuality(q);
+    await this.applyQuality(q);
     return q;
   }
 
@@ -338,17 +370,39 @@ export class HeroScene {
     this.atlas.needsUpdate = true;
   }
 
-  private applyQuality(q: Quality) {
+  private async applyQuality(q: Quality) {
     if (q === this.quality) return;
     this.quality = q;
     const s = qualitySettings(q, this.opts.host.clientWidth);
     this.pixelRatio = Math.min(window.devicePixelRatio || 1, s.pixelRatioCap);
     this.renderer.setPixelRatio(this.pixelRatio);
     this.uniforms.uPR.value = this.pixelRatio;
-    this.build();
+    await this.buildAsync();
   }
 
+  /** Construcción de una sola vez (resize): recorre todos los pasos sin ceder. */
   private build() {
+    this.buildSeq++;
+    const steps = this.buildSteps();
+    while (!steps.next().done) continue;
+  }
+
+  /**
+   * Recorre los pasos cediendo el hilo entre cada uno. Devuelve false si se abandonó:
+   * escena desechada, `cancelled()` o una construcción más nueva (p. ej. un resize).
+   */
+  private async buildAsync(cancelled: () => boolean = () => false): Promise<boolean> {
+    const seq = ++this.buildSeq;
+    const steps = this.buildSteps();
+    while (!steps.next().done) {
+      await yieldToMain();
+      if (this.disposed || cancelled() || seq !== this.buildSeq) return false;
+    }
+    return true;
+  }
+
+  /** Los pasos de la construcción; cada `yield` es un punto donde se puede ceder el hilo. */
+  private *buildSteps(): Generator<void, void, void> {
     const { host, slot, nameEl, fonts } = this.opts;
     const W = host.clientWidth;
     const H = host.clientHeight;
@@ -387,11 +441,14 @@ export class HeroScene {
     const hostRect = host.getBoundingClientRect();
     const centerY = (H / 2 - (slotRect.top + slotRect.height / 2 - hostRect.top)) * pxToWorld;
     const pts = sampleMask(x.getImageData(0, 0, c.width, c.height).data, c.width, c.height, gap);
+    yield;
 
     // 2. Un glifo por punto: destino, origen disperso, origen en la rendija, glifo, semilla.
     const A = emptyAttrs();
     const xs: number[] = [];
-    for (const [px, py] of pts) {
+    for (let i = 0; i < pts.length; i++) {
+      if (i > 0 && i % YIELD_EVERY === 0) yield;
+      const [px, py] = pts[i];
       const sx = (px - 10 - wAll / 2) * toScreen * pxToWorld;
       const sy = -(py - c.height / 2) * toScreen * pxToWorld + centerY;
       A.aTarget.push(sx, sy, (Math.random() - 0.5) * 0.08);
@@ -421,6 +478,7 @@ export class HeroScene {
     }
     this.nameTop = maxY + 0.35;
     this.nameBottom = minY - 0.35;
+    yield;
 
     // 4. Destino del easter egg: "/sobre-mi →" en la mono, misma escala.
     const c2 = document.createElement("canvas");
@@ -438,12 +496,16 @@ export class HeroScene {
     const sc2 = Math.min(targetPxW * 0.8, W * 0.92) / w2;
     const gap2 = Math.max(2, Math.round((screenGap * 0.8) / sc2));
     const eggPts = shuffle(sampleMask(x2.getImageData(0, 0, c2.width, c2.height).data, c2.width, c2.height, gap2), Math.random);
+    yield;
     for (let i = 0; i < n; i++) {
+      if (i > 0 && i % YIELD_EVERY === 0) yield;
       const [ex, ey] = eggPts[i % eggPts.length];
       const jitter = i >= eggPts.length ? (Math.random() - 0.5) * 0.03 : 0;
       A.aTarget2.push((ex - 10 - w2 / 2) * sc2 * pxToWorld + jitter, -(ey - c2.height / 2) * sc2 * pxToWorld + centerY, (Math.random() - 0.5) * 0.08);
     }
+    yield;
     this.points = this.replace(this.points, geometryFrom(A), this.material);
+    yield;
 
     // 5. Polvo de glifos en profundidad.
     const D = emptyAttrs();
@@ -460,6 +522,7 @@ export class HeroScene {
       D.aDot.push(0);
       D.aBug.push(0);
     }
+    yield;
     this.dust = this.replace(this.dust, geometryFrom(D), this.dustMaterial);
     this.dust.renderOrder = -1;
 

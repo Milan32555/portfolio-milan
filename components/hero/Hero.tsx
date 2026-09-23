@@ -102,25 +102,36 @@ export default function Hero() {
         await Promise.all([document.fonts.load(`300px ${fonts.serif}`), document.fonts.load(`500 46px ${fonts.mono}`)]);
         if (disposed || gaveUp || !hostRef.current || !canvasRef.current || !slotRef.current || !nameRef.current) return;
 
-        scene = new HeroScene({
-          host: hostRef.current,
-          canvas: canvasRef.current,
-          slot: slotRef.current,
-          nameEl: nameRef.current,
-          findingEls: findingRefs.current.filter((el): el is HTMLSpanElement => el !== null),
-          fonts,
-          theme: themeOf(root),
-          reduced: motionReduced(root, matchMedia),
-          onAudit: setAudit,
-          onEgg: setEgg,
-          onEggNavigate: () => routerRef.current.push("/sobre-mi"),
-          onContextLost: () => {
-            if (disposed) return;
-            fallBackToText("modo texto (contexto WebGL perdido)");
-            scene?.dispose();
-            scene = null;
+        // La construcción cede el hilo entre pasos; si el hero se desmonta o cae a texto
+        // a mitad de camino, `create` libera lo creado y devuelve null.
+        const created = await HeroScene.create(
+          {
+            host: hostRef.current,
+            canvas: canvasRef.current,
+            slot: slotRef.current,
+            nameEl: nameRef.current,
+            findingEls: findingRefs.current.filter((el): el is HTMLSpanElement => el !== null),
+            fonts,
+            theme: themeOf(root),
+            reduced: motionReduced(root, matchMedia),
+            onAudit: setAudit,
+            onEgg: setEgg,
+            onEggNavigate: () => routerRef.current.push("/sobre-mi"),
+            onContextLost: () => {
+              if (disposed) return;
+              fallBackToText("modo texto (contexto WebGL perdido)");
+              scene?.dispose();
+              scene = null;
+            },
           },
-        });
+          () => disposed || gaveUp,
+        );
+        if (!created) return;
+        if (disposed || gaveUp) {
+          created.dispose();
+          return;
+        }
+        scene = created;
         introBus.report({ stage: "scene", label: `escena: ${scene.count.toLocaleString("es-CO")} glifos` });
 
         let cached = null;
