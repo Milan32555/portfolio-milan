@@ -156,6 +156,8 @@ export default function AccessibilityWidget() {
         role="dialog"
         aria-label="Panel de accesibilidad"
         aria-hidden={!open}
+        // Cerrado, sus botones no deben ser alcanzables con Tab (el panel es invisible).
+        inert={!open}
         style={{
           position:      "fixed",
           bottom:        "calc(1.75rem + 64px)",

@@ -358,7 +358,7 @@ body {
 .form-label {
   display: block; font-size: 0.75rem; font-weight: 500;
   letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--muted); margin-bottom: 0.5rem;
+  color: var(--soft); margin-bottom: 0.5rem;
 }
 .form-input, .form-textarea {
   width: 100%; background: var(--surface);
@@ -469,3 +469,19 @@ html[data-a11y-contrast="high"] .hero-name,
 html[data-a11y-dyslexia="on"] .hero-name { opacity: 1 !important; }
 /* El muro ya se vio en esta sesión: oculto antes del primer paint. */
 html[data-gate="skip"] .code-gate { display: none; }
+
+/* ─── SKIP LINK (WCAG 2.4.1) ──────────────────────────────── */
+/* Fuera de la vista hasta que recibe foco con Tab; entonces aparece arriba a la izquierda. */
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 10000;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 0.9rem;
+  transform: translateY(-200%);
+}
+.skip-link:focus { transform: none; }
