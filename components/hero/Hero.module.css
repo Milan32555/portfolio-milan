@@ -77,6 +77,8 @@
   transition: opacity 0.7s ease;
 }
 .name em { font-style: normal; color: var(--accent2); }
+/* El foco llega aquí por programa al cerrar el muro (tabindex=-1): no es un control, sin anillo. */
+.name:focus { outline: none; }
 
 .sub,
 .actions {
