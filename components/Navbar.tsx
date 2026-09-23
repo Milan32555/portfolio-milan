@@ -45,7 +45,7 @@ export default function Navbar() {
       }}
     >
       <Link href="/" className="navbar-logo">
-        Portfolio Misael
+        <span className="logo-long">Portfolio </span>Misael
       </Link>
 
       <div className="navbar-links">
