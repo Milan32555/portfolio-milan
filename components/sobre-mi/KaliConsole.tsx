@@ -106,7 +106,14 @@ export default function KaliConsole() {
   // Antes de pintar: si hay animación, vaciar la consola y esperar a que entre en pantalla.
   // `live` se marca siempre (incluso con movimiento reducido) para que el CSS que oculta
   // el cuerpo antes de hidratar (data-console-anim, ver KaliConsole.module.css) lo suelte.
+  // Antes de vaciar, medimos el alto del contenido completo que vino del servidor y lo
+  // fijamos como minHeight (directo en el DOM, no estado) para que "Hablemos" no salte
+  // mientras la consola se vuelve a tipear: reserva su espacio final desde el primer frame.
   useLayoutEffect(() => {
+    const body = bodyRef.current;
+    if (body) {
+      body.style.minHeight = `${body.scrollHeight}px`;
+    }
     if (!motionReduced(document.documentElement, matchMedia)) {
       setShown([]);
       setBaseDone(false);
