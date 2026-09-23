@@ -1,93 +1,114 @@
-# portfolio-milan
+<div align="center">
 
-Portfolio personal de **Misael** — Ingeniero en Sistemas & Ethical Hacker.
+# Misael.
 
-Construido con Next.js 16, TypeScript y Tailwind CSS. Diseño dark/light, cursor personalizado, loader animado, accesibilidad WCAG y rendimiento optimizado.
+**Portfolio personal — desarrollador freelance y auditor de código.**
+
+El nombre está hecho de código: ~2.700 glifos en Three.js que un escáner audita en vivo.
+
+[**Ver en vivo →**](https://portfolio-milan-omega.vercel.app) · [Proyectos](https://portfolio-milan-omega.vercel.app/proyectos) · [Sobre mí](https://portfolio-milan-omega.vercel.app/sobre-mi) · [Contacto](https://portfolio-milan-omega.vercel.app/contacto)
+
+![Next.js](https://img.shields.io/badge/Next.js-16-000?logo=nextdotjs)
+![React](https://img.shields.io/badge/React-19-149eca?logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)
+![Three.js](https://img.shields.io/badge/Three.js-0.186-000?logo=threedotjs)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss&logoColor=white)
+![Vercel](https://img.shields.io/badge/deploy-Vercel-000?logo=vercel)
+
+</div>
+
+---
+
+## Lo que tiene de distinto
+
+| | |
+|---|---|
+| **Muro de código** | Loader de primera visita: un muro de glifos con una terminal Kali que muestra la carga **real** (fuentes, Three.js, escena, calidad). Al entrar, el muro se abre en dos y el código sale de la rendija. Se dibuja en un **Web Worker con OffscreenCanvas**, así que no bloquea el hilo principal. Una vez por sesión, con "Saltar intro" y Esc. |
+| **Hero "Misael." hecho de código** | `THREE.Points` + `ShaderMaterial` sobre un atlas de glifos. Un escaneo de auditoría recorre el nombre y marca 4 hallazgos (`xss`, `sqli`, `secret expuesto`, `csrf`) que pasan de rojo a verde. Reacciona al mouse, hace una onda al clic y se deshace al hacer scroll. |
+| **Easter egg** | Escribe `whoami` en el home. |
+| **Consola en `/sobre-mi`** | Una terminal estilo Kali que se escribe sola (`whoami`, `stack --list`, `status --current`) con los comandos extra `neofetch` y `history`. |
+| **Expediente de proyectos** | Cada proyecto tiene cifras verificables, su arquitectura explicada en lenguaje simple y un expediente por carpetas. |
+| **Footer "Cordilleras"** | Una noche en los Andes en capas SVG, con luciérnagas que reaccionan al cursor. |
+
+## Robustez y accesibilidad
+
+- **Sin salto al cargar**: el `<h1>` real está en el HTML (SEO y lectores de pantalla) y un script previo al primer paint lo oculta mientras llega el 3D.
+- **Degradación elegante**: sin WebGL, con carga lenta, con el contexto perdido o **sin JavaScript**, el sitio pasa a un hero tipográfico y todo el contenido sigue visible.
+- **Calidad adaptativa**: un benchmark invisible mide los fps y ajusta la densidad. La escena se construye por pasos para no bloquear el navegador.
+- **Widget de accesibilidad propio**: tamaño de texto, alto contraste, fuente para dislexia y movimiento reducido. El hero y el muro reaccionan **en vivo** a cada opción.
+- Tema claro y oscuro, `prefers-reduced-motion`, foco gestionado, `inert` mientras el muro está cerrado, contraste **WCAG AA**. axe da 0 violaciones en `/`, `/sobre-mi` y `/contacto`.
+- Lighthouse móvil: `/sobre-mi` 94, `/contacto` 93, `/proyectos` 92, y accesibilidad de 96 a 100.
 
 ## Stack
 
-- **Framework:** Next.js 16 + React 19
-- **Lenguaje:** TypeScript
-- **Estilos:** Tailwind CSS 4 + CSS custom properties
-- **Fuentes:** DM Sans / DM Serif Display (Google Fonts, autohospedadas vía `next/font`)
-- **Contacto:** API route + [Resend](https://resend.com)
+- **Framework**: Next.js 16 (App Router, Turbopack) + React 19
+- **Lenguaje**: TypeScript estricto
+- **3D**: Three.js (import dinámico, cargado solo en el home)
+- **Estilos**: CSS Modules + tokens CSS globales + Tailwind CSS 4
+- **Fuentes**: DM Serif Display, DM Sans y JetBrains Mono (autohospedadas con `next/font`)
+- **Contacto**: API route + [Resend](https://resend.com) (honeypot y rate limiting)
+- **Tests**: `node:test` con TypeScript nativo sobre la lógica pura de `lib/`
+- **Deploy**: Vercel (preview por PR, producción al fusionar en `main`)
 
-## Features
+## Estructura
 
-- Tema dark/light con persistencia en localStorage
-- Loader animado con efecto de cortina
-- Cursor personalizado con anillo de seguimiento
-- Video de fondo optimizado (1080p, ~2.7MB) con parallax al movimiento del mouse y poster para carga instantánea
-- Animaciones de entrada con Intersection Observer
-- Widget de accesibilidad (tamaño de fuente, alto contraste, fuente disléxica, movimiento reducido)
-- Cumplimiento WCAG 2.1 (skip-link, aria-live, lang, semántica)
-- Formulario de contacto funcional (envía email real vía Resend, con honeypot anti-spam y rate limiting)
-- SEO: metadata completa, Open Graph dinámico, `robots.txt` y `sitemap.xml`
-- Totalmente responsivo
+```
+app/
+  page.tsx              # Home: script previo al paint + muro + hero + secciones
+  sobre-mi/             # Consola estilo Kali
+  proyectos/            # Lista y detalle con Expediente ([slug])
+  contacto/             # Formulario
+  api/contact/route.ts  # Envío con Resend
+  layout.tsx            # Fuentes, navbar, footer, accesibilidad
+  opengraph-image.tsx · robots.ts · sitemap.ts
+components/
+  gate/                 # Muro de código (CodeGate + wall en Web Worker)
+  hero/                 # Hero, HeroScene (Three.js), shaders, paletas
+  home/                 # Secciones resumidas, MiniTerminal, Reveal
+  sobre-mi/             # KaliConsole
+  proyectos/            # Expediente, ArchitectureFlow, portadas…
+  Navbar · Footer · AccessibilityWidget · CustomCursor · ContactForm
+lib/                    # Lógica pura con tests: glifos, escaneo, calidad,
+                        # progreso del muro, bus loader↔hero, proyectos…
+docs/superpowers/       # Specs, planes, investigación y mockups del diseño
+```
 
 ## Desarrollo local
 
 ```bash
 npm install
-cp .env.example .env.local   # y completa las variables (ver abajo)
-npm run dev
+cp .env.example .env.local   # completa las variables (ver abajo)
+npm run dev                  # http://localhost:3000
 ```
 
-Abre [http://localhost:3000](http://localhost:3000) en el navegador.
+| Script | Qué hace |
+|---|---|
+| `npm run dev` | Servidor de desarrollo |
+| `npm run build` / `npm start` | Build y servidor de producción |
+| `npm run lint` | ESLint (incluye las reglas de React Compiler) |
+| `npm test` | Tests de `lib/**/*.test.ts` con `node --test` |
 
 ## Variables de entorno
 
-El formulario de contacto necesita una cuenta gratuita en [Resend](https://resend.com) (3000 emails/mes gratis):
-
-1. Crea una cuenta en [resend.com](https://resend.com)
-2. Genera una API key en [resend.com/api-keys](https://resend.com/api-keys)
-3. Copia `.env.example` a `.env.local` y completa:
+El formulario de contacto usa [Resend](https://resend.com) (plan gratuito: 3.000 correos al mes):
 
 ```bash
 RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxx
 CONTACT_TO_EMAIL=tu@email.com
 ```
 
-Sin estas variables, el formulario responde con un error controlado (no rompe el sitio).
+Sin estas variables el formulario responde con un error controlado y el resto del sitio funciona igual.
 
-## Deploy en Vercel
+## Deploy
 
-1. Entra a [vercel.com/new](https://vercel.com/new) con tu cuenta.
-2. Importa el repo `Milan32555/portfolio-milan` desde GitHub.
-3. En **Environment Variables**, agrega `RESEND_API_KEY` y `CONTACT_TO_EMAIL` (las mismas del paso anterior).
-4. Deploy — Vercel detecta Next.js automáticamente, no requiere configuración extra.
-5. Cada push a `main` vuelve a desplegar solo.
+El proyecto está conectado a Vercel con la integración de GitHub: cada PR genera un **preview** y cada merge a `main` va a **producción**. Para un deploy propio, importa el repo en [vercel.com/new](https://vercel.com/new) y agrega `RESEND_API_KEY` y `CONTACT_TO_EMAIL`.
 
-También puedes usar la CLI:
+> La URL del sitio (`https://portfolio-milan-omega.vercel.app`) está en `app/layout.tsx`, `app/robots.ts` y `app/sitemap.ts`. Si conectas un dominio propio, actualiza `siteUrl` en esos archivos.
 
-```bash
-npm i -g vercel
-vercel login
-vercel        # deploy de preview
-vercel --prod # deploy a producción
-```
+---
 
-> Nota: `app/layout.tsx`, `app/robots.ts` y `app/sitemap.ts` usan `https://portfolio-milan-omega.vercel.app` como URL del sitio. Si conectas un dominio custom, actualiza la constante `siteUrl` en esos tres archivos.
+<div align="center">
 
-## Estructura
+Hecho por **Misael** · [GitHub](https://github.com/Milan32555)
 
-```
-app/
-  page.tsx             # Secciones: Hero, Proyectos, About, Contacto
-  layout.tsx           # Metadata, providers, accesibilidad
-  globals.css          # Design tokens y estilos globales
-  opengraph-image.tsx  # Imagen OG generada dinámicamente
-  robots.ts            # robots.txt
-  sitemap.ts           # sitemap.xml
-  api/contact/route.ts # Endpoint del formulario de contacto (Resend)
-components/
-  Navbar.tsx
-  Loader.tsx
-  HeroVideo.tsx
-  CustomCursor.tsx
-  AccessibilityWidget.tsx
-```
-
-## GitHub
-
-[github.com/Milan32555](https://github.com/Milan32555)
+</div>
