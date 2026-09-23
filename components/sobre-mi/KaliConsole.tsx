@@ -115,7 +115,9 @@ export default function KaliConsole() {
   }, []);
 
   useEffect(() => {
-    if (baseDone) return;
+    // Misma condición que el layout effect de arriba: `baseDone` aquí sería el valor del
+    // primer render (true) porque el efecto solo corre al montar, y la consola nunca arrancaría.
+    if (motionReduced(document.documentElement, matchMedia)) return;
     const el = rootRef.current;
     if (!el) return;
     const controller = new AbortController();
