@@ -12,7 +12,6 @@ export interface Section {
 export interface DevLine {
   title: string;
   description: string;
-  stack: string;
 }
 
 export interface Step {
@@ -46,22 +45,18 @@ export const DEV_LINES: readonly DevLine[] = [
   {
     title: "Sitios y landing pages",
     description: "Presencia rápida y bien hecha: carga veloz, accesible y fácil de actualizar.",
-    stack: "Next.js · React",
   },
   {
     title: "Apps web full-stack",
     description: "Paneles, portales y herramientas internas con usuarios, datos y lógica de negocio.",
-    stack: "Next.js · Node.js · Python",
   },
   {
     title: "Apps móviles",
     description: "Android e iOS desde un mismo código, lista para publicarse en las tiendas.",
-    stack: "Flutter",
   },
   {
     title: "Sistemas empresariales",
     description: "Inventarios, kardex y procesos internos hechos a la medida de cómo trabaja tu empresa.",
-    stack: "Vue.js · Node.js",
   },
 ];
 
@@ -128,7 +123,7 @@ export function pageText(): string[] {
   return [
     ...INTRO,
     DEV_INTRO,
-    ...DEV_LINES.flatMap((d) => [d.title, d.description, d.stack]),
+    ...DEV_LINES.flatMap((d) => [d.title, d.description]),
     ...AUDIT,
     ...AUDIT_FIT,
     AUDIT_NOTE,

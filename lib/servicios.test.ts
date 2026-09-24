@@ -20,6 +20,10 @@ describe("contenido de /servicios", () => {
     ]);
   });
 
+  it("los servicios no fijan tecnologías: el stack depende de cada proyecto", () => {
+    DEV_LINES.forEach((d) => assert.ok(!("stack" in d), d.title));
+  });
+
   it("proceso: 6 pasos de desarrollo y 4 de auditoría", () => {
     assert.equal(DEV_STEPS.length, 6);
     assert.equal(AUDIT_STEPS.length, 4);

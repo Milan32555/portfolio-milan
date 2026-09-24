@@ -78,10 +78,9 @@
 }
 .rows h3 { margin: 0; font-family: var(--font-dm-serif), serif; font-weight: 400; font-size: 1.3rem; color: var(--text); }
 .rows p { grid-column: 1; margin: 0; font-size: 0.93rem; line-height: 1.6; }
-.stack { grid-column: 1; font-family: var(--font-mono), monospace; font-size: 0.72rem; color: var(--accent2); }
 .arrow {
   grid-column: 2;
-  grid-row: 1 / span 3;
+  grid-row: 1 / span 2;
   align-self: center;
   color: var(--accent2);
   opacity: 0;
@@ -169,7 +168,6 @@
 
 :global([data-theme="light"]) .num,
 :global([data-theme="light"]) .tocNum,
-:global([data-theme="light"]) .stack,
 :global([data-theme="light"]) .title em { color: var(--accent); }
 
 /* ─── Móvil: el TOC colapsa a "En esta página ▾" ───────── */

@@ -99,7 +99,6 @@ export default function ServiciosPage() {
                     <Link href="/contacto">
                       <h3>{d.title}</h3>
                       <p>{d.description}</p>
-                      <span className={styles.stack}>{d.stack}</span>
                       <span className={styles.arrow} aria-hidden="true">
                         →
                       </span>
