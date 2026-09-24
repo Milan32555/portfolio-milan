@@ -11,6 +11,7 @@ import { sliceParts, totalLength, type TypedPart } from "@/lib/typing";
 import { FINDINGS, auditLine, type AuditView } from "@/lib/hero/scan";
 import { hero3dAllowed, heroStaticMode, motionReduced, themeOf } from "@/lib/a11y";
 import { QUALITY_KEY, parseCachedQuality } from "@/lib/hero/quality";
+import { primaryFamily } from "@/lib/hero/fonts";
 import HeroDiag from "./HeroDiag";
 import { diagError, diagLog, initHeroDiag } from "./diagLog";
 
@@ -117,11 +118,11 @@ export default function Hero() {
           serif: body.getPropertyValue("--font-dm-serif").trim() || "serif",
           mono: body.getPropertyValue("--font-mono").trim() || "monospace",
         };
-        // Una fuente que no carga (red del teléfono, bloqueador, modo ahorro de datos) no
-        // debe tumbar la escena: se dibuja con la de respaldo y se sigue.
+        // Se espera solo a la fuente real (el respaldo local de next/font no existe en
+        // Android). Si aun así una falla, la escena sigue con la de respaldo.
         const loads = await Promise.allSettled([
-          document.fonts.load(`300px ${fonts.serif}`),
-          document.fonts.load(`500 46px ${fonts.mono}`),
+          document.fonts.load(`300px ${primaryFamily(fonts.serif)}`),
+          document.fonts.load(`500 46px ${primaryFamily(fonts.mono, "monospace")}`),
         ]);
         loads.forEach((r, i) => {
           if (r.status === "rejected") diagError(`fuente ${i === 0 ? "serif" : "mono"} (sigue con la de respaldo)`, r.reason);
