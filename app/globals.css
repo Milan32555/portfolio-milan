@@ -234,6 +234,8 @@ body {
   letter-spacing: 0.18em; text-transform: uppercase;
   color: var(--accent2); margin-bottom: 1rem;
 }
+/* accent2 sobre --bg claro no llega a 4.5:1 (WCAG AA) para texto normal */
+[data-theme="light"] .section-label { color: var(--accent); }
 .section-title {
   font-family: var(--font-dm-serif), serif;
   font-size: clamp(2rem, 5vw, 3.2rem);
