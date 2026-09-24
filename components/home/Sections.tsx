@@ -32,9 +32,8 @@ export function ServicesPreview() {
             </div>
           </Reveal>
         </div>
-        {/* Cuando exista /servicios: "Ver servicios y cómo trabajo →" con href="/servicios". */}
-        <Link className={styles.more} href="/contacto">
-          Cuéntame tu proyecto →
+        <Link className={styles.more} href="/servicios">
+          Ver servicios y cómo trabajo →
         </Link>
       </div>
     </section>

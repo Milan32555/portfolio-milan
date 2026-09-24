@@ -412,8 +412,12 @@ body {
 @media (max-width: 420px) {
   .navbar-logo .logo-long { display: none; }
   .navbar { padding: 0.9rem 1rem; }
-  .navbar-links { gap: 0.9rem; }
-  .navbar-links a { font-size: 0.8rem !important; }
+  .navbar-links { gap: 0.7rem; }
+  .navbar-links a { font-size: 0.78rem !important; }
+}
+@media (max-width: 370px) {
+  .navbar { padding: 0.9rem 0.75rem; }
+  .navbar-links { gap: 0.5rem; }
 }
 
 /* ─── CARD FOOTER (projects) ──────────────────────────────── */
