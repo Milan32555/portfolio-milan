@@ -10,6 +10,9 @@ export default function CustomCursor() {
     const dot  = dotRef.current;
     const ring = ringRef.current;
     if (!dot || !ring) return;
+    // En táctil no hay cursor que seguir (el CSS ya oculta los elementos).
+    if (!matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    const motionQuery = matchMedia("(prefers-reduced-motion: reduce)");
 
     let mouseX = 0, mouseY = 0;
     let ringX  = 0, ringY  = 0;
@@ -25,8 +28,10 @@ export default function CustomCursor() {
     // Ring lerps behind — gives the "trailing" feel
     const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
     const tick = () => {
-      ringX = lerp(ringX, mouseX, 0.12);
-      ringY = lerp(ringY, mouseY, 0.12);
+      // Con movimiento reducido (sistema o widget) el anillo va pegado al punto, sin estela.
+      const t = motionQuery.matches || document.documentElement.getAttribute("data-a11y-motion") === "reduced" ? 1 : 0.12;
+      ringX = lerp(ringX, mouseX, t);
+      ringY = lerp(ringY, mouseY, t);
       ring.style.transform = `translate(${ringX}px, ${ringY}px)`;
       raf = requestAnimationFrame(tick);
     };
@@ -56,6 +61,7 @@ export default function CustomCursor() {
       {/* Small sharp dot */}
       <div
         ref={dotRef}
+        className="custom-cursor"
         style={{
           position: "fixed",
           top: 0, left: 0,
@@ -84,7 +90,7 @@ export default function CustomCursor() {
           transform: "translate(-50%, -50%)",
           transition: "width 0.3s ease, height 0.3s ease, border-color 0.3s ease",
         }}
-        className="cursor-ring"
+        className="custom-cursor cursor-ring"
       />
 
       <style>{`

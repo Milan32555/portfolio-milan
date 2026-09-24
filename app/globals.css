@@ -7,8 +7,15 @@ a, a:hover, a:visited, a:active, a:focus {
   text-decoration: none !important;
   color: inherit;
 }
-*, *::before, *::after, a, button, input, textarea {
-  cursor: none !important;
+/* El cursor propio solo existe con mouse: en pantallas táctiles queda el nativo
+   y los elementos del cursor no se muestran. */
+@media (hover: hover) and (pointer: fine) {
+  *, *::before, *::after, a, button, input, textarea {
+    cursor: none !important;
+  }
+}
+@media not ((hover: hover) and (pointer: fine)) {
+  .custom-cursor { display: none !important; }
 }
 html { overflow-anchor: none; }
 

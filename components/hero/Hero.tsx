@@ -74,11 +74,18 @@ export default function Hero() {
       introBus.report({ stage: "ready", label });
     };
 
-    // Si la escena no existe a los 3.2 s (red lenta, CDN caído), el hero queda de texto
-    // para esta visita; se marca "slow" para que una futura visita al home en la misma
-    // sesión (navegación del lado del cliente) vuelva a intentar el 3D.
+    // Si la escena no existe a los 3.2 s (red o teléfono lentos), el hero se muestra como
+    // texto mientras tanto, pero la carga sigue: cuando la escena esté lista, el texto se
+    // desvanece y entra el código (ver `lateUpgrade` abajo). Solo un error real deja el
+    // hero en texto para toda la visita.
+    let lateUpgrade = false;
     const safety = window.setTimeout(() => {
-      if (!scene && !disposed && !gaveUp) fallBackToText("modo texto (carga lenta)", "slow");
+      if (scene || disposed || gaveUp) return;
+      lateUpgrade = true;
+      root.setAttribute("data-hero3d", "off");
+      root.setAttribute("data-hero3d-reason", "slow");
+      showEverything();
+      introBus.report({ stage: "ready", label: "modo texto por ahora (carga lenta)" });
     }, SAFETY_MS);
 
     if (root.getAttribute("data-hero3d") !== "on") {
@@ -93,7 +100,7 @@ export default function Hero() {
       try {
         const { HeroScene } = await import("./HeroScene");
         if (disposed || gaveUp) return;
-        introBus.report({ stage: "three", label: "three.js listo" });
+        if (!lateUpgrade) introBus.report({ stage: "three", label: "three.js listo" });
         const body = getComputedStyle(document.body);
         const fonts = {
           serif: body.getPropertyValue("--font-dm-serif").trim() || "serif",
@@ -132,7 +139,7 @@ export default function Hero() {
           return;
         }
         scene = created;
-        introBus.report({ stage: "scene", label: `escena: ${scene.count.toLocaleString("es-CO")} glifos` });
+        if (!lateUpgrade) introBus.report({ stage: "scene", label: `escena: ${scene.count.toLocaleString("es-CO")} glifos` });
 
         let cached = null;
         try {
@@ -144,15 +151,22 @@ export default function Hero() {
           if (cached !== null || scene.fps !== null) sessionStorage.setItem(QUALITY_KEY, quality);
         } catch {}
         const detail = scene.fps !== null ? ` · ${scene.fps} fps` : cached !== null ? " · guardada" : " · sin medir";
-        introBus.report({ stage: "ready", label: `calidad: ${quality === "low" ? "ligera" : "completa"}${detail}` });
+        if (!lateUpgrade) introBus.report({ stage: "ready", label: `calidad: ${quality === "low" ? "ligera" : "completa"}${detail}` });
 
         scene.setStatic(heroStaticMode(root));
+        if (lateUpgrade) {
+          // Llegó tarde: se vuelve a mostrar el canvas y el <h1> de texto se desvanece
+          // (transición de .name) mientras los glifos vuelan a formar el nombre.
+          root.setAttribute("data-hero3d", "on");
+          root.removeAttribute("data-hero3d-reason");
+        }
         introBus.requestStart((fromDoor) => {
           if (disposed || !scene) return;
           scene.startIntro(fromDoor);
           setIntroStarted(true);
         });
-      } catch {
+      } catch (err) {
+        console.warn("[hero] la escena 3D falló, queda el hero de texto:", err);
         if (!disposed && !gaveUp) {
           scene?.dispose();
           scene = null;
