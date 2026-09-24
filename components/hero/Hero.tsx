@@ -117,8 +117,16 @@ export default function Hero() {
           serif: body.getPropertyValue("--font-dm-serif").trim() || "serif",
           mono: body.getPropertyValue("--font-mono").trim() || "monospace",
         };
-        await Promise.all([document.fonts.load(`300px ${fonts.serif}`), document.fonts.load(`500 46px ${fonts.mono}`)]);
-        diagLog("fuentes cargadas");
+        // Una fuente que no carga (red del teléfono, bloqueador, modo ahorro de datos) no
+        // debe tumbar la escena: se dibuja con la de respaldo y se sigue.
+        const loads = await Promise.allSettled([
+          document.fonts.load(`300px ${fonts.serif}`),
+          document.fonts.load(`500 46px ${fonts.mono}`),
+        ]);
+        loads.forEach((r, i) => {
+          if (r.status === "rejected") diagError(`fuente ${i === 0 ? "serif" : "mono"} (sigue con la de respaldo)`, r.reason);
+        });
+        diagLog("fuentes listas");
         if (disposed || gaveUp || !hostRef.current || !canvasRef.current || !slotRef.current || !nameRef.current) return;
 
         // La construcción cede el hilo entre pasos; si el hero se desmonta o cae a texto
@@ -187,7 +195,7 @@ export default function Hero() {
         if (!disposed && !gaveUp) {
           scene?.dispose();
           scene = null;
-          fallBackToText("modo texto (sin WebGL)");
+          fallBackToText("modo texto (error en la escena)");
         }
       }
     })();
