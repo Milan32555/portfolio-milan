@@ -11,6 +11,8 @@ import { sliceParts, totalLength, type TypedPart } from "@/lib/typing";
 import { FINDINGS, auditLine, type AuditView } from "@/lib/hero/scan";
 import { hero3dAllowed, heroStaticMode, motionReduced, themeOf } from "@/lib/a11y";
 import { QUALITY_KEY, parseCachedQuality } from "@/lib/hero/quality";
+import HeroDiag from "./HeroDiag";
+import { diagError, diagLog, initHeroDiag } from "./diagLog";
 
 const TYPE_MS = 48;
 const TYPE_DELAY_MS = 500;
@@ -40,11 +42,16 @@ export default function Hero() {
   const [contentReady, setContentReady] = useState(false);
   const [audit, setAudit] = useState<AuditView>({ kind: "idle" });
   const [egg, setEgg] = useState(false);
+  const [diag, setDiag] = useState(false);
 
   // Navegación del lado del cliente hacia el home: el script previo al paint no corrió,
   // así que se decide aquí, antes de pintar, si el <h1> de texto debe esperar al 3D.
   useLayoutEffect(() => {
     const root = document.documentElement;
+    if (initHeroDiag()) {
+      setDiag(true);
+      diagLog(`pre-paint data-hero3d=${root.getAttribute("data-hero3d")}`);
+    }
     // Sin atributo (primera visita a este montaje) o marcado "slow" (una visita anterior
     // en la misma sesión cayó a texto por lentitud, no por falta de WebGL): recalcular.
     if (!root.hasAttribute("data-hero3d") || root.getAttribute("data-hero3d-reason") === "slow") {
@@ -67,6 +74,7 @@ export default function Hero() {
     };
     let gaveUp = false;
     const fallBackToText = (label: string, reason?: string) => {
+      diagLog(`fallback a texto: ${label}`);
       gaveUp = true;
       root.setAttribute("data-hero3d", "off");
       if (reason) root.setAttribute("data-hero3d-reason", reason);
@@ -81,6 +89,7 @@ export default function Hero() {
     let lateUpgrade = false;
     const safety = window.setTimeout(() => {
       if (scene || disposed || gaveUp) return;
+      diagLog("3.2 s sin escena: texto por ahora, la carga sigue");
       lateUpgrade = true;
       root.setAttribute("data-hero3d", "off");
       root.setAttribute("data-hero3d-reason", "slow");
@@ -98,7 +107,9 @@ export default function Hero() {
 
     (async () => {
       try {
+        diagLog("importando three.js");
         const { HeroScene } = await import("./HeroScene");
+        diagLog("three.js importado");
         if (disposed || gaveUp) return;
         if (!lateUpgrade) introBus.report({ stage: "three", label: "three.js listo" });
         const body = getComputedStyle(document.body);
@@ -107,6 +118,7 @@ export default function Hero() {
           mono: body.getPropertyValue("--font-mono").trim() || "monospace",
         };
         await Promise.all([document.fonts.load(`300px ${fonts.serif}`), document.fonts.load(`500 46px ${fonts.mono}`)]);
+        diagLog("fuentes cargadas");
         if (disposed || gaveUp || !hostRef.current || !canvasRef.current || !slotRef.current || !nameRef.current) return;
 
         // La construcción cede el hilo entre pasos; si el hero se desmonta o cae a texto
@@ -125,6 +137,7 @@ export default function Hero() {
             onEgg: setEgg,
             onEggNavigate: () => routerRef.current.push("/sobre-mi"),
             onContextLost: () => {
+              diagLog("webglcontextlost");
               if (disposed) return;
               fallBackToText("modo texto (contexto WebGL perdido)");
               scene?.dispose();
@@ -133,6 +146,7 @@ export default function Hero() {
           },
           () => disposed || gaveUp,
         );
+        diagLog(created ? `escena creada: ${created.count} glifos` : "creación cancelada");
         if (!created) return;
         if (disposed || gaveUp) {
           created.dispose();
@@ -146,6 +160,7 @@ export default function Hero() {
           cached = parseCachedQuality(sessionStorage.getItem(QUALITY_KEY));
         } catch {}
         const quality = await scene.prepare(cached);
+        diagLog(`calidad ${quality} · fps ${scene?.fps ?? "-"}`);
         if (disposed || gaveUp || !scene) return;
         try {
           if (cached !== null || scene.fps !== null) sessionStorage.setItem(QUALITY_KEY, quality);
@@ -161,12 +176,14 @@ export default function Hero() {
           root.removeAttribute("data-hero3d-reason");
         }
         introBus.requestStart((fromDoor) => {
+          diagLog(`intro arranca (fromDoor=${fromDoor})`);
           if (disposed || !scene) return;
           scene.startIntro(fromDoor);
           setIntroStarted(true);
         });
       } catch (err) {
         console.warn("[hero] la escena 3D falló, queda el hero de texto:", err);
+        diagError("escena", err);
         if (!disposed && !gaveUp) {
           scene?.dispose();
           scene = null;
@@ -278,6 +295,8 @@ export default function Hero() {
           </span>
         ))}
       </p>
+
+      {diag && <HeroDiag />}
 
       <div aria-hidden="true">
         {FINDINGS.map((f, i) => (
