@@ -234,6 +234,8 @@ body {
   letter-spacing: 0.18em; text-transform: uppercase;
   color: var(--accent2); margin-bottom: 1rem;
 }
+/* accent2 sobre --bg claro no llega a 4.5:1 (WCAG AA) para texto normal */
+[data-theme="light"] .section-label { color: var(--accent); }
 .section-title {
   font-family: var(--font-dm-serif), serif;
   font-size: clamp(2rem, 5vw, 3.2rem);
@@ -412,8 +414,12 @@ body {
 @media (max-width: 420px) {
   .navbar-logo .logo-long { display: none; }
   .navbar { padding: 0.9rem 1rem; }
-  .navbar-links { gap: 0.9rem; }
-  .navbar-links a { font-size: 0.8rem !important; }
+  .navbar-links { gap: 0.7rem; }
+  .navbar-links a { font-size: 0.78rem !important; }
+}
+@media (max-width: 370px) {
+  .navbar { padding: 0.9rem 0.75rem; }
+  .navbar-links { gap: 0.5rem; }
 }
 
 /* ─── CARD FOOTER (projects) ──────────────────────────────── */

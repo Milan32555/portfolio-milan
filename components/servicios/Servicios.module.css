@@ -1,0 +1,209 @@
+/* /servicios — artículo editorial con índice lateral (spec 2026-09-17). */
+
+.layout {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 4rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 9rem 2rem 6rem;
+}
+.article { min-width: 0; max-width: 720px; }
+
+/* ─── Índice (TOC) ─────────────────────────────────────── */
+.toc { position: sticky; top: 7rem; align-self: start; }
+.reading {
+  margin: 0 0 1rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  color: var(--soft);
+}
+.tocToggle { display: none; }
+.tocList { margin: 0; padding: 0; list-style: none; border-left: 1px solid var(--border); }
+.tocList a {
+  display: flex;
+  gap: 0.6rem;
+  margin-left: -1px;
+  padding: 0.35rem 0 0.35rem 1rem;
+  border-left: 1px solid transparent;
+  font-size: 0.85rem;
+  color: var(--soft);
+  transition: color var(--transition), border-color var(--transition);
+}
+.tocList a:hover { color: var(--text); }
+.tocList a[aria-current="location"] { color: var(--text); border-left-color: var(--accent); }
+.tocNum { font-family: var(--font-mono), monospace; font-size: 0.72rem; color: var(--accent2); }
+
+/* ─── Encabezado ───────────────────────────────────────── */
+.title {
+  max-width: 22ch;
+  margin: 0 0 3rem;
+  font-family: var(--font-dm-serif), serif;
+  font-weight: 400;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  text-wrap: balance;
+}
+.title em { font-style: normal; color: var(--accent2); }
+
+/* ─── Secciones ────────────────────────────────────────── */
+.sec { scroll-margin-top: 6.5rem; }
+.h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  margin: 0 0 1.4rem;
+  font-family: var(--font-dm-serif), serif;
+  font-weight: 400;
+  font-size: clamp(1.6rem, 3.6vw, 2.1rem);
+  line-height: 1.15;
+  color: var(--text);
+}
+.num { font-family: var(--font-dm-serif), serif; font-size: 1.35em; line-height: 1; color: var(--accent2); }
+.sec p { max-width: 62ch; margin: 0 0 1.1rem; color: var(--soft); line-height: 1.75; }
+.sec .h3 { margin: 2rem 0 1rem; font-family: var(--font-mono), monospace; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.04em; color: var(--accent2); }
+
+/* Filas de servicio: lift + fondo + flecha. En táctil la flecha siempre se ve. */
+.rows { margin: 1.6rem 0 0; padding: 0; list-style: none; border-top: 1px solid var(--border); }
+.rows li { border-bottom: 1px solid var(--border); }
+.rows a {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.35rem 1.2rem;
+  padding: 1.2rem 0.8rem;
+  border-radius: 8px;
+  transition: transform var(--transition), background-color var(--transition);
+}
+.rows h3 { margin: 0; font-family: var(--font-dm-serif), serif; font-weight: 400; font-size: 1.3rem; color: var(--text); }
+.rows p { grid-column: 1; margin: 0; font-size: 0.93rem; line-height: 1.6; }
+.stack { grid-column: 1; font-family: var(--font-mono), monospace; font-size: 0.72rem; color: var(--accent2); }
+.arrow {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  align-self: center;
+  color: var(--accent2);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity var(--transition), transform var(--transition);
+}
+.rows a:focus-visible { background: rgba(79, 142, 247, 0.07); }
+.rows a:focus-visible .arrow { opacity: 1; transform: none; }
+@media (hover: hover) and (pointer: fine) {
+  .rows a:hover { transform: translateX(2px); background: rgba(79, 142, 247, 0.07); }
+  .rows a:hover .arrow { opacity: 1; transform: none; }
+}
+@media not ((hover: hover) and (pointer: fine)) {
+  .arrow { opacity: 1; transform: none; }
+  .rows a:active { background: rgba(79, 142, 247, 0.07); }
+}
+
+/* Auditoría */
+.fit { margin: 0 0 1.4rem; padding-left: 1.2rem; color: var(--soft); line-height: 1.75; }
+.fit li::marker { color: var(--accent2); }
+.sec .note {
+  margin: 1.4rem 0 0;
+  padding: 0.8rem 1rem;
+  border-left: 2px solid var(--accent);
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
+  font-size: 0.9rem;
+  color: var(--soft);
+}
+
+/* Cómo trabajo: pasos numerados */
+.steps { margin: 0 0 1rem; padding: 0; list-style: none; counter-reset: step; }
+.steps li {
+  position: relative;
+  padding: 0 0 1.1rem 2.6rem;
+  counter-increment: step;
+  color: var(--soft);
+  line-height: 1.65;
+}
+.steps li::before {
+  content: counter(step, decimal-leading-zero);
+  position: absolute;
+  top: 0.1rem;
+  left: 0;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  color: var(--accent2);
+}
+.steps strong { display: block; font-weight: 500; color: var(--text); }
+
+/* FAQ: acordeón con grid-template-rows (sin medir alturas en JS). */
+.faq { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--border); }
+.faq li { border-bottom: 1px solid var(--border); }
+.faq h3 { margin: 0; font-size: 1rem; font-weight: 400; }
+.q {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 0.2rem;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 1rem;
+  text-align: left;
+  color: var(--text);
+}
+.icon { flex: none; font-size: 1.4rem; line-height: 1; color: var(--accent2); transition: transform var(--transition); }
+.q[aria-expanded="true"] .icon { transform: rotate(45deg); }
+.panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--transition); }
+.panel[data-open] { grid-template-rows: 1fr; }
+.panelInner { overflow: hidden; }
+.sec .panelInner p { margin: 0 0 1.2rem; padding: 0 0.2rem; }
+
+/* Divisor en capas: mismo lenguaje del footer, en miniatura. */
+.divider { height: 46px; margin: 3.5rem 0; }
+.divider svg { display: block; width: 100%; height: 100%; }
+.layerBack { fill: color-mix(in srgb, var(--accent) 12%, var(--bg)); }
+.layerFront { fill: color-mix(in srgb, var(--accent) 6%, var(--bg)); }
+
+/* Cierre */
+.cta { margin-top: 4rem; }
+.cta .h2 { display: block; margin-bottom: 0.8rem; }
+.sec.cta p { margin-bottom: 1.6rem; }
+
+:global([data-theme="light"]) .num,
+:global([data-theme="light"]) .tocNum,
+:global([data-theme="light"]) .stack,
+:global([data-theme="light"]) .title em { color: var(--accent); }
+
+/* ─── Móvil: el TOC colapsa a "En esta página ▾" ───────── */
+@media (max-width: 767px) {
+  .layout { grid-template-columns: 1fr; gap: 0; padding: 5.5rem 1rem 4rem; }
+  .toc {
+    top: 3.6rem;
+    z-index: 50;
+    margin: 0 -1rem 2.2rem;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(14px);
+  }
+  .tocToggle {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: 0.85rem;
+    color: var(--text);
+  }
+  .chev { transition: transform var(--transition); }
+  .tocToggle[aria-expanded="true"] .chev { transform: rotate(180deg); }
+  .toc:not([data-open]) .reading,
+  .toc:not([data-open]) .tocList { display: none; }
+  .reading { margin: 0.4rem 0 0.6rem; }
+  .tocList { padding-bottom: 0.5rem; }
+  .tocList a { padding-top: 0.55rem; padding-bottom: 0.55rem; }
+  .divider { margin: 2.5rem 0; }
+  /* Navbar + barra del TOC sticky: el título de la sección no debe quedar debajo. */
+  .sec { scroll-margin-top: 7.5rem; }
+}
