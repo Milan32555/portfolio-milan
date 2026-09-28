@@ -1,6 +1,6 @@
 # Rediseño del portfolio — spec de diseño (EN PROGRESO)
 
-> Sesión de brainstorming iniciada 2026-09-08. **Actualizado 2026-09-22**: `/servicios`, el footer "Cordilleras" y `/proyectos` ya están cerrados **e implementados en producción** (ver puntos 1, 2 y 4 de Pendiente). **Actualizado 2026-09-22 (noche)**: `/sobre-mi` y el home resumido con un hero nuevo en Three.js ya están diseñados y aprobados (specs del 2026-09-22; el Loader pasa a ser un "muro de código" interactivo). Falta implementarlos — y el rediseño grande del sitio (sidebar fijo + paleta navy + cursor "resplandor etéreo") **todavía no se ha implementado**: lo ya construido (footer, `/proyectos`) vive sobre el diseño viejo actual (navbar superior, `--bg:#0c0c0e`, tema claro/oscuro), no sobre la navy nueva. **Actualizado 2026-09-24**: home + hero Three.js + muro de código, `/sobre-mi`, `/contacto` y `/servicios` están **implementados y en producción** (PRs #10 y #12–#16). Lo único grande que falta es el rediseño sidebar + navy + cursor glow (y la decisión del grano). Retomar leyendo este archivo primero.
+> Sesión de brainstorming iniciada 2026-09-08. **Actualizado 2026-09-22**: `/servicios`, el footer "Cordilleras" y `/proyectos` ya están cerrados **e implementados en producción** (ver puntos 1, 2 y 4 de Pendiente). **Actualizado 2026-09-22 (noche)**: `/sobre-mi` y el home resumido con un hero nuevo en Three.js ya están diseñados y aprobados (specs del 2026-09-22; el Loader pasa a ser un "muro de código" interactivo). Falta implementarlos — y el rediseño grande del sitio (sidebar fijo + paleta navy + cursor "resplandor etéreo") **todavía no se ha implementado**: lo ya construido (footer, `/proyectos`) vive sobre el diseño viejo actual (navbar superior, `--bg:#0c0c0e`, tema claro/oscuro), no sobre la navy nueva. **Actualizado 2026-09-24**: home + hero Three.js + muro de código, `/sobre-mi`, `/contacto` y `/servicios` están **implementados y en producción** (PRs #10 y #12–#16). Lo único grande que falta es el rediseño sidebar + navy + cursor glow (y la decisión del grano). Retomar leyendo este archivo primero. **Actualizado 2026-09-28**: el rediseño grande quedó diseñado y aprobado en `docs/superpowers/specs/2026-09-28-navegacion-mixta-y-sistema-visual-design.md` con un cambio importante: **navegación mixta** (barra superior en el home, sidebar solo en las páginas internas) en vez de sidebar en todo el sitio. Ese spec reemplaza lo que aquí dicen §1, §2, §3 y los Pendientes 5 y 7.
 
 ## Referencias que dispararon el rediseño
 
@@ -18,6 +18,8 @@ Visual + estructura. No es solo un refresh de estilos: cambia el layout general 
 ## Decisiones cerradas ✅
 
 ### 1. Layout general
+> **Reemplazado 2026-09-28** por la navegación mixta de `docs/superpowers/specs/2026-09-28-navegacion-mixta-y-sistema-visual-design.md`: sidebar solo en páginas internas (≥1024px), barra en el home. Lo de abajo queda como historia.
+
 **Sidebar fijo estilo Brittany Chiang**, sin línea divisora entre sidebar y contenido (probado con `border-right`, el usuario prefirió separar solo con espacio en blanco).
 
 - Sidebar: mark "Misael." (serif, punto en `--accent2`), rol, nav, iconos sociales abajo.
@@ -25,12 +27,16 @@ Visual + estructura. No es solo un refresh de estilos: cambia el layout general 
 - Contenido a la derecha, scrolleable, sidebar con `position: sticky`.
 
 ### 2. Fondo
+> **Cerrado 2026-09-28** en `docs/superpowers/specs/2026-09-28-navegacion-mixta-y-sistema-visual-design.md` (tokens navy, resplandor, grano sí solo en oscuro).
+
 **Navy profundo `#0B1220` + resplandor (glow) radial sutil**, no negro plano `#0c0c0e` (el usuario lo encontró "muy plano/liso").
 
 - Glow: dos manchas radiales azules muy tenues (`rgba(79,142,247,0.16)` arriba-izquierda, `rgba(126,179,255,0.08)` derecha), `position: fixed` para que no se muevan raro al hacer scroll.
 - Se probó también una versión con grano/ruido SVG (`feTurbulence`) sutil para evitar el efecto "cartel" — el usuario no lo rechazó explícitamente pero tampoco lo pidió al decidir; queda como **mejora opcional de pulido**, no un requisito. Si se incluye, debe ser casi imperceptible (opacity ~0.03-0.05, `mix-blend-mode: overlay`).
 
 ### 3. Cursor personalizado (reemplaza el anillo actual de `CustomCursor.tsx`)
+> **Cerrado 2026-09-28** en `docs/superpowers/specs/2026-09-28-navegacion-mixta-y-sistema-visual-design.md`: se mantiene J3 y se conserva el punto central para apuntar con precisión.
+
 **"Resplandor etéreo" (opción J del proceso, ajustada a J3):**
 - Sin anillo/borde duro alrededor del cursor (el usuario lo rechazó explícitamente en las primeras rondas — variantes A/B/C con anillo, todas descartadas).
 - Un halo de luz difuminado (`radial-gradient` + `blur`), tamaño base ~60px, `filter: blur(6px)`.
@@ -120,11 +126,11 @@ Mockup de referencia completo: `.superpowers/brainstorm/1444-1788908977/content/
 
 4. ~~Home resumido~~ — **DISEÑADO Y APROBADO 2026-09-22** junto con un hero nuevo, ver `docs/superpowers/specs/2026-09-22-home-y-hero-design.md`: hero con "Misael." hecho de código en Three.js (escaneo de auditoría con hallazgos, easter egg `whoami`) + 4 secciones resumidas (qué hago, 3 proyectos, avance de la consola, CTA de contacto). **Implementado y en producción 2026-09-23** (PR #10). En Android real el 3D caía a texto: la causa fue `document.fonts.load` con el respaldo `local()` de next/font (no existe en Android); corregido en PRs #15/#16. Queda un modo de diagnóstico `?diag` en el hero para depurar en teléfonos reales.
 
-5. **Grano/textura de fondo** — decidir sí/no definitivamente (ver nota en sección Fondo).
+5. ~~Grano/textura de fondo~~ — **DECIDIDO 2026-09-28: sí**, casi imperceptible (`opacity .045`, overlay), solo en tema oscuro y detrás del contenido. Ver `docs/superpowers/specs/2026-09-28-navegacion-mixta-y-sistema-visual-design.md`.
 
-6. Tras cerrar todo lo anterior: **presentar el diseño consolidado, obtener aprobación explícita del usuario**, pasar el spec por el self-review (placeholders, contradicciones, alcance, ambigüedad), y **solo entonces invocar `writing-plans`** para el plan de implementación. Todavía no se ha hecho ningún cambio de código de producción para este rediseño — todo lo anterior son mockups desechables en `.superpowers/brainstorm/`.
+6. ~~Diseño consolidado~~ — **APROBADO 2026-09-28** (`docs/superpowers/specs/2026-09-28-navegacion-mixta-y-sistema-visual-design.md`); lo siguiente es su plan de implementación. Texto original: **presentar el diseño consolidado, obtener aprobación explícita del usuario**, pasar el spec por el self-review (placeholders, contradicciones, alcance, ambigüedad), y **solo entonces invocar `writing-plans`** para el plan de implementación. Todavía no se ha hecho ningún cambio de código de producción para este rediseño — todo lo anterior son mockups desechables en `.superpowers/brainstorm/`.
 
-7. **Correcciones sitewide encontradas investigando `/servicios`** (no estaban contempladas el 2026-09-08, deben entrar al plan de implementación general, detalle en `docs/superpowers/specs/2026-09-17-pagina-servicios-design.md`):
+7. **Correcciones sitewide** — **incorporadas al spec del 2026-09-28** (`docs/superpowers/specs/2026-09-28-navegacion-mixta-y-sistema-visual-design.md`, §2 y §3). Texto original: **Correcciones sitewide encontradas investigando `/servicios`** (no estaban contempladas el 2026-09-08, deben entrar al plan de implementación general, detalle en `docs/superpowers/specs/2026-09-17-pagina-servicios-design.md`):
    - `--muted` (`#6b6b78`) falla contraste AA contra el nuevo fondo navy `#0B1220` (3.57:1, necesita 4.5:1) — subir a ~`#8a8a96` al implementar `--bg: #0B1220`.
    - El nuevo cursor "resplandor etéreo" (sección 3) debe gatear (el cursor ACTUAL ya lo hace desde el PR #12: solo con mouse fino y sin estela con movimiento reducido; el nuevo debe conservarlo) por `(hover: hover) and (pointer: fine)` y respetar `prefers-reduced-motion` explícitamente en su loop de `requestAnimationFrame` — el `prefers-reduced-motion` CSS del proyecto no cubre animación JS pura.
    - El sidebar fijo (sección 1) necesita patrón de colapso a mobile sin definir todavía: panel off-canvas + hamburguesa + backdrop bajo ~768px (`Navbar.tsx` actual no sirve de base).
