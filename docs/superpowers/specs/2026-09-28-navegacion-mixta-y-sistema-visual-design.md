@@ -104,7 +104,7 @@ Reescritura de `CustomCursor.tsx` (el anillo desaparece por completo):
 
 ### Foco visible
 
-`:focus-visible { outline: 2px solid var(--accent2); outline-offset: 3px; border-radius: 6px; }` en `globals.css`, para todo el sitio. Con el cursor oculto, el teclado necesita su propio indicador. Los componentes que ya definen un foco propio lo conservan.
+`:focus-visible { outline: 2px solid var(--accent2); outline-offset: 3px; }` en `globals.css`, para todo el sitio (en claro, `--accent`). Con el cursor oculto, el teclado necesita su propio indicador. Sin `border-radius`: el contorno ya sigue la forma de cada elemento y forzarlo cambiaría la forma de los botones redondos al enfocarlos. Los componentes que ya definen un foco propio lo conservan.
 
 ## 3. Arreglos incluidos
 
