@@ -6,6 +6,7 @@ import CustomCursor from "@/components/CustomCursor";
 import Footer from "@/components/Footer";
 import AccessibilityWidget from "@/components/AccessibilityWidget";
 import SiteBackdrop from "@/components/SiteBackdrop";
+import { THEME_PRE_PAINT_SCRIPT } from "@/lib/theme";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -78,9 +79,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     // WCAG 3.1.1 — lang="es" permite a los lectores de pantalla
     // usar la pronunciación y gramática correcta del idioma
-    // suppressHydrationWarning: el script previo al primer paint del home escribe
-    // data-landing / data-gate / data-hero3d en <html> antes de hidratar.
+    // suppressHydrationWarning: los scripts previos al primer paint escriben data-theme
+    // (todas las páginas) y data-landing / data-gate / data-hero3d (home) en <html> antes de hidratar.
     <html lang="es" className="h-full" suppressHydrationWarning>
+      <head>
+        {/* Aplica el tema guardado antes del primer pintado (sin parpadeo). Ver lib/theme.ts. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_PRE_PAINT_SCRIPT }} />
+      </head>
       <body className={`${dmSans.className} ${dmSans.variable} ${dmSerifDisplay.variable} ${jetbrainsMono.variable} antialiased h-full`}>
         <>
 
