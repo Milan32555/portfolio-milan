@@ -17,7 +17,7 @@
 - **Commits:** agrega rutas explícitas (`git add <rutas>`), nunca `git add -A`. **Nunca** agregues trailers `Co-Authored-By` ni menciones de IA en commits o PRs (decisión de Misael para sus repos personales).
 - **Chequeo rápido** después de cada tarea con código: `npx tsc --noEmit && npm run lint && npm test`. Los tres deben terminar sin errores.
 - **Servidor para capturas:** en segundo plano (Bash con `run_in_background: true`): `npx next dev -p 3100`. Espera a que `curl -s -o /dev/null -w "%{http_code}" http://localhost:3100/` devuelva `200`. Para detenerlo (PowerShell): `Get-NetTCPConnection -LocalPort 3100 -State Listen -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }`. **Nunca** lo corras en primer plano: bloquea la sesión.
-- **Capturas:** `python .superpowers/shot.py <rutas> --widths 1440,390 --out <nombre>` (lo crea la Tarea 0) guarda PNG en `.superpowers/shots/nav/`. Míralas con la herramienta Read antes de dar una tarea visual por terminada.
+- **Capturas:** `MSYS_NO_PATHCONV=1 python .superpowers/shot.py <rutas> --widths 1440,390 --out <nombre>` (lo crea la Tarea 0) guarda PNG en `.superpowers/shots/nav/`. Míralas con la herramienta Read antes de dar una tarea visual por terminada. En Git Bash, `MSYS_NO_PATHCONV=1` evita que `/ruta` se convierta en una ruta de Windows.
 - `.superpowers/` está en `.gitignore`: los scripts de verificación no se commitean.
 - `npm run build` a veces falla una vez por un error pasajero de Google Fonts ("next/font/google queries…"). Reintenta una vez antes de tratarlo como un fallo real.
 
@@ -115,7 +115,7 @@ with sync_playwright() as p:
         errors = []
         pg.on("pageerror", lambda e: errors.append(str(e)))
         for path in paths or ["/"]:
-            pg.goto(BASE + path, wait_until="networkidle")
+            pg.goto(BASE + path, wait_until="load", timeout=120000)
             pg.evaluate("document.querySelectorAll('.fade-in-section').forEach(e => e.classList.add('visible'))")
             pg.wait_for_timeout(1500)
             name = f"{tag}-{w}-{(path.strip('/') or 'home').replace('/', '_')}.png"
