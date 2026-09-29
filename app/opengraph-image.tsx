@@ -16,8 +16,8 @@ export default async function OpengraphImage() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(160deg, #0c0c0e 0%, #111114 60%, #16161a 100%)",
-          color: "#f0f0f2",
+          background: "linear-gradient(160deg, #0b1220 0%, #0e1628 60%, #111a2e 100%)",
+          color: "#eef1f6",
           fontFamily: "sans-serif",
         }}
       >
@@ -40,7 +40,7 @@ export default async function OpengraphImage() {
           style={{
             display: "flex",
             fontSize: 32,
-            color: "#6b6b78",
+            color: "#8792a8",
             marginTop: 32,
           }}
         >
@@ -56,7 +56,7 @@ export default async function OpengraphImage() {
             borderRadius: 999,
             border: "2px solid #4f8ef7",
             fontSize: 28,
-            color: "#f0f0f2",
+            color: "#eef1f6",
           }}
         >
           Ver portfolio

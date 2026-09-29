@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import CustomCursor from "@/components/CustomCursor";
 import Footer from "@/components/Footer";
 import AccessibilityWidget from "@/components/AccessibilityWidget";
+import SiteBackdrop from "@/components/SiteBackdrop";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -106,6 +107,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             id="a11y-announcer"
           />
 
+          <SiteBackdrop />
           <CustomCursor />
           <Navbar />
           {children}
