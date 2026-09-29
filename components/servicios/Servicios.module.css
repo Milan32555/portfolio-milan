@@ -170,6 +170,18 @@
 :global([data-theme="light"]) .tocNum,
 :global([data-theme="light"]) .title em { color: var(--accent); }
 
+/* ─── Escritorio con sidebar: el índice vive en el sidebar (spec 2026-09-28) ─── */
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    max-width: none;
+    margin: 0;
+    padding: var(--page-top, 9rem) 0 6rem;
+  }
+  .toc { display: none; }
+}
+
 /* ─── Móvil: el TOC colapsa a "En esta página ▾" ───────── */
 @media (max-width: 767px) {
   .layout { grid-template-columns: 1fr; gap: 0; padding: 5.5rem 1rem 4rem; }
