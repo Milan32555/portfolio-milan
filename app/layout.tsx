@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, DM_Serif_Display, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
+import TopBar from "@/components/nav/TopBar";
 import CustomCursor from "@/components/CustomCursor";
 import Footer from "@/components/Footer";
 import AccessibilityWidget from "@/components/AccessibilityWidget";
@@ -92,7 +92,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {/*
             WCAG 2.4.1 — Skip to content
             Oculto visualmente pero accesible por teclado (Tab).
-            Salta la navbar y lleva al usuario directo al contenido.
+            Salta la barra de navegación y lleva al usuario directo al contenido.
             Se hace visible al recibir foco (:focus en .skip-link).
           */}
           <a href="#main-content" className="skip-link">
@@ -114,7 +114,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           <SiteBackdrop />
           <CustomCursor />
-          <Navbar />
+          <TopBar />
           {children}
           <Footer />
           <AccessibilityWidget />

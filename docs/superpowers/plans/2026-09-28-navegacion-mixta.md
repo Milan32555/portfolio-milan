@@ -1270,7 +1270,8 @@ Crea `components/nav/MobileMenu.module.css`:
   z-index: 200; /* sobre la barra (100), bajo el AccessibilityWidget (9989+) */
   display: flex;
   flex-direction: column;
-  padding: 0.7rem 1rem 2rem;
+  /* Abajo deja libre el engranaje de accesibilidad (52px a 1.75rem del borde) para que no tape el tema. */
+  padding: 0.7rem 1rem calc(1.75rem + 52px + 1rem);
   background: color-mix(in srgb, var(--bg) 96%, transparent);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
@@ -1285,7 +1286,9 @@ Crea `components/nav/MobileMenu.module.css`:
   pointer-events: none;
   background: radial-gradient(600px 420px at 0% 0%, var(--glow-a), transparent 65%);
 }
-.menu[data-open] { opacity: 1; visibility: visible; }
+/* Al abrir, visible al instante (si no, el primer instante sigue oculto y no se puede enfocar
+   "cerrar"); al cerrar, la regla base mantiene la visibilidad durante el fundido. */
+.menu[data-open] { opacity: 1; visibility: visible; transition: opacity 0.3s ease, visibility 0s; }
 
 .head { position: relative; display: flex; align-items: center; justify-content: space-between; }
 .close {
@@ -1299,7 +1302,9 @@ Crea `components/nav/MobileMenu.module.css`:
 }
 .close:hover { color: var(--text); }
 
-.list { position: relative; margin: auto 0; padding: 0; list-style: none; }
+/* El <nav> es el hijo flex del menú: su margen automático centra la lista en el alto libre. */
+.nav { position: relative; margin: auto 0; }
+.list { margin: 0; padding: 0; list-style: none; }
 /* Cascada de 60ms (el CSS de movimiento reducido del sitio y del widget la anula). */
 .list li { opacity: 0; transform: translateY(10px); transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
 .menu[data-open] .list li { opacity: 1; transform: none; }
@@ -1429,7 +1434,7 @@ export default function MobileMenu({ id, open, onClose, onNavigate }: Props) {
           cerrar ✕
         </button>
       </div>
-      <nav aria-label="Principal">
+      <nav className={styles.nav} aria-label="Principal">
         <ol className={styles.list}>
           {NAV_LINKS.map(({ href, label }, i) => (
             <li key={href}>
@@ -1685,7 +1690,7 @@ Expected: sin errores.
 `python .superpowers/shot.py / /proyectos/medi-ia --widths 1440,1000,390 --out barra`
 Expected:
 - 1440 `/`: "Misael." a la izquierda, 4 enlaces + tema a la derecha, sin ruta.
-- 1440 `/proyectos/medi-ia`: todavía se ve la barra (el sidebar llega en la Tarea 11), con `~/proyectos/medi-ia` y "Proyectos" subrayado.
+- 1440 `/proyectos/medi-ia`: sin barra (desde 1024px las internas la ocultan; el sidebar llega en la Tarea 11). Es un estado intermedio esperado.
 - 1000: igual que 1440.
 - 390: marca + ruta + botón "menú"; sin enlaces en línea.
 

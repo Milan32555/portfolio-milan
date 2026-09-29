@@ -130,7 +130,7 @@ html[data-a11y-motion="reduced"] *::after {
 }
 
 /* Resaltar enlaces */
-html[data-a11y-links="highlight"] a:not(.btn-primary):not(.btn-ghost):not(.project-card):not(.navbar-logo) {
+html[data-a11y-links="highlight"] a:not(.btn-primary):not(.btn-ghost):not(.project-card):not(.site-mark) {
   text-decoration: underline !important;
   text-underline-offset: 3px;
   color: var(--accent) !important;
@@ -225,47 +225,6 @@ html[data-a11y-contrast="high"] .site-backdrop-grain { display: none; }
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
-
-/* ─── NAVBAR ──────────────────────────────────────────────── */
-.navbar {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; z-index: 100;
-  padding: 1.1rem 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.navbar-logo {
-  font-family: var(--font-dm-serif), serif;
-  font-size: 1.25rem;
-  letter-spacing: -0.02em;
-  color: var(--text);
-}
-.navbar-links {
-  display: flex;
-  align-items: center;
-  gap: 2.2rem;
-}
-.navbar-links a {
-  font-size: 0.85rem;
-  font-weight: 400;
-  color: var(--muted);
-  transition: color var(--transition);
-  letter-spacing: 0.01em;
-}
-.navbar-links a:hover { color: var(--text); }
-.theme-toggle {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: transparent;
-  display: flex; align-items: center; justify-content: center;
-  color: var(--muted);
-  transition: all var(--transition);
-  flex-shrink: 0;
-}
-.theme-toggle:hover { color: var(--text); border-color: var(--accent); }
 
 /* ─── BUTTONS ─────────────────────────────────────────────── */
 .btn-primary {
@@ -483,19 +442,7 @@ html[data-a11y-contrast="high"] .site-backdrop-grain { display: none; }
 
 /* ─── RESPONSIVE ──────────────────────────────────────────── */
 @media (max-width: 600px) {
-  .navbar { padding: 1rem 1.2rem; }
-  .navbar-links { gap: 1.2rem; }
   .section { padding: 4rem 1rem; }
-}
-@media (max-width: 420px) {
-  .navbar-logo .logo-long { display: none; }
-  .navbar { padding: 0.9rem 1rem; }
-  .navbar-links { gap: 0.7rem; }
-  .navbar-links a { font-size: 0.78rem !important; }
-}
-@media (max-width: 370px) {
-  .navbar { padding: 0.9rem 0.75rem; }
-  .navbar-links { gap: 0.5rem; }
 }
 
 /* ─── CARD FOOTER (projects) ──────────────────────────────── */
