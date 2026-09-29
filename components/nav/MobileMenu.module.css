@@ -1,0 +1,86 @@
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: 200; /* sobre la barra (100), bajo el AccessibilityWidget (9989+) */
+  display: flex;
+  flex-direction: column;
+  /* Abajo deja libre el engranaje de accesibilidad (52px a 1.75rem del borde) para que no tape el tema. */
+  padding: 0.7rem 1rem calc(1.75rem + 52px + 1rem);
+  background: color-mix(in srgb, var(--bg) 96%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s;
+}
+.menu::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(600px 420px at 0% 0%, var(--glow-a), transparent 65%);
+}
+/* Al abrir, visible al instante (si no, el primer instante sigue oculto y no se puede enfocar
+   "cerrar"); al cerrar, la regla base mantiene la visibilidad durante el fundido. */
+.menu[data-open] { opacity: 1; visibility: visible; transition: opacity 0.3s ease, visibility 0s; }
+
+.head { position: relative; display: flex; align-items: center; justify-content: space-between; }
+.close {
+  min-height: 44px;
+  padding: 0 0.25rem;
+  border: 0;
+  background: none;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.78rem;
+  color: var(--soft);
+}
+.close:hover { color: var(--text); }
+
+/* El <nav> es el hijo flex del menú: su margen automático centra la lista en el alto libre. */
+.nav { position: relative; margin: auto 0; }
+.list { margin: 0; padding: 0; list-style: none; }
+/* Cascada de 60ms (el CSS de movimiento reducido del sitio y del widget la anula). */
+.list li { opacity: 0; transform: translateY(10px); transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+.menu[data-open] .list li { opacity: 1; transform: none; }
+.menu[data-open] .list li:nth-child(2) { transition-delay: 60ms; }
+.menu[data-open] .list li:nth-child(3) { transition-delay: 120ms; }
+.menu[data-open] .list li:nth-child(4) { transition-delay: 180ms; }
+/* Con movimiento reducido el CSS del sitio acorta las transiciones, pero no los retrasos: sin cascada. */
+@media (prefers-reduced-motion: reduce) {
+  .menu[data-open] .list li { transition-delay: 0s !important; }
+}
+:global(html[data-a11y-motion="reduced"]) .menu[data-open] .list li { transition-delay: 0s !important; }
+.link {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-dm-serif), serif;
+  font-size: 2.4rem;
+  line-height: 1.1;
+  color: var(--text);
+}
+.num { font-family: var(--font-mono), monospace; font-size: 0.72rem; color: var(--accent2); }
+.link[aria-current="page"]::after {
+  content: "";
+  align-self: center;
+  width: 7px;
+  height: 7px;
+  margin-left: auto;
+  border-radius: 50%;
+  background: var(--accent2);
+}
+:global([data-theme="light"]) .num { color: var(--accent); }
+:global([data-theme="light"]) .link[aria-current="page"]::after { background: var(--accent); }
+
+.foot { position: relative; display: flex; align-items: center; justify-content: space-between; }
+.gh {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.gh:hover { color: var(--text); }

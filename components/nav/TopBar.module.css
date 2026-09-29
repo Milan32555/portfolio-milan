@@ -1,0 +1,84 @@
+.bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.7rem clamp(1rem, 3vw, 2.25rem);
+  border-bottom: 1px solid transparent;
+  transition: background-color 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease;
+}
+.bar[data-scrolled] {
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom-color: var(--border);
+}
+
+.links { display: flex; flex-shrink: 0; align-items: center; gap: 2rem; margin-left: auto; }
+.link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 0.86rem;
+  color: var(--soft);
+  transition: color var(--transition);
+}
+.link:hover,
+.link[aria-current="page"] { color: var(--text); }
+.link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.55rem;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.link:hover::after { transform: scaleX(0.35); }
+.link[aria-current="page"]::after { transform: scaleX(1); }
+
+.menuBtn {
+  display: none;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 44px;
+  margin-left: auto;
+  padding: 0 0.25rem;
+  border: 0;
+  background: none;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.78rem;
+  color: var(--soft);
+}
+.menuBtn:hover { color: var(--text); }
+.bars { position: relative; width: 18px; height: 10px; }
+.bars::before,
+.bars::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  border-radius: 2px;
+  background: currentColor;
+}
+.bars::before { top: 0; }
+.bars::after { bottom: 0; left: 6px; }
+
+@media (max-width: 767px) {
+  .links { display: none; }
+  .menuBtn { display: inline-flex; }
+}
+/* Desde 1024px las páginas internas usan el sidebar. */
+@media (min-width: 1024px) {
+  .bar[data-inner] { display: none; }
+}

@@ -4,6 +4,8 @@
 
 ## Layout: TOC reemplaza al sidebar (no conviven)
 
+> **Reemplazado 2026-09-28** (`docs/superpowers/specs/2026-09-28-navegacion-mixta-y-sistema-visual-design.md`): en escritorio el índice se despliega dentro del sidebar, bajo el ítem "Servicios", y el menú general nunca desaparece. Lo de abajo queda como historia.
+
 En `/servicios`, el sidebar de navegación general (mark + nav + sociales) **desaparece por completo** mientras se lee el artículo. En su lugar, la misma columna izquierda muestra un **TOC puro**: solo el índice de secciones, sin mark ni link de "volver". La salida de la página es natural, no un breadcrumb: al llegar al final del artículo aparece el footer del sitio (con el CTA "Hablemos →" a `/contacto`), o el usuario usa el botón atrás del navegador.
 
 Decisión explícita (se evaluaron variantes con mark clickeable y sin él): **sin ninguna marca**, TOC 100% limpio.

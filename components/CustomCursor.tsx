@@ -1,106 +1,75 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { motionReduced } from "@/lib/a11y";
+import { INTERACTIVE_SELECTOR, approach, followFactor, glowScale } from "@/lib/cursor";
 
+/**
+ * Cursor propio: un punto pegado al mouse y un resplandor que lo sigue (lerp 0.22) y crece
+ * sobre lo interactivo. Solo con mouse fino. Los interactivos se detectan por delegación en
+ * cada movimiento, así funciona en cualquier página después de navegar.
+ */
 export default function CustomCursor() {
-  const dotRef  = useRef<HTMLDivElement>(null);
-  const ringRef = useRef<HTMLDivElement>(null);
+  const dotRef = useRef<HTMLDivElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const dot  = dotRef.current;
-    const ring = ringRef.current;
-    if (!dot || !ring) return;
-    // En táctil no hay cursor que seguir (el CSS ya oculta los elementos).
+    const dot = dotRef.current;
+    const glow = glowRef.current;
+    if (!dot || !glow) return;
     if (!matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-    const motionQuery = matchMedia("(prefers-reduced-motion: reduce)");
+    const root = document.documentElement;
 
-    let mouseX = 0, mouseY = 0;
-    let ringX  = 0, ringY  = 0;
-    let raf: number;
+    let mx = 0;
+    let my = 0;
+    let gx = 0;
+    let gy = 0;
+    let scale = 1;
+    let hovering = false;
+    let seen = false;
+    let raf = 0;
 
-    const onMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      // Dot follows instantly
-      dot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
-    };
-
-    // Ring lerps behind — gives the "trailing" feel
-    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
     const tick = () => {
-      // Con movimiento reducido (sistema o widget) el anillo va pegado al punto, sin estela.
-      const t = motionQuery.matches || document.documentElement.getAttribute("data-a11y-motion") === "reduced" ? 1 : 0.12;
-      ringX = lerp(ringX, mouseX, t);
-      ringY = lerp(ringY, mouseY, t);
-      ring.style.transform = `translate(${ringX}px, ${ringY}px)`;
+      const factor = followFactor(motionReduced(root, matchMedia));
+      gx = approach(gx, mx, factor);
+      gy = approach(gy, my, factor);
+      scale = approach(scale, glowScale(hovering), factor === 1 ? 1 : 0.2);
+      glow.style.transform = `translate(${gx}px, ${gy}px) scale(${scale})`;
       raf = requestAnimationFrame(tick);
     };
-    raf = requestAnimationFrame(tick);
 
-    // Grow ring on hoverable elements
-    const onEnter = () => ring.classList.add("cursor-hover");
-    const onLeave = () => ring.classList.remove("cursor-hover");
-
-    const addHover = () => {
-      document.querySelectorAll("a, button, [data-cursor]").forEach(el => {
-        el.addEventListener("mouseenter", onEnter);
-        el.addEventListener("mouseleave", onLeave);
-      });
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") return;
+      mx = e.clientX;
+      my = e.clientY;
+      if (!seen) {
+        // Primer movimiento: el resplandor arranca donde está el mouse, no en (0,0).
+        seen = true;
+        gx = mx;
+        gy = my;
+      }
+      root.setAttribute("data-pointer", "in");
+      dot.style.transform = `translate(${mx}px, ${my}px)`;
+      hovering = e.target instanceof Element && e.target.closest(INTERACTIVE_SELECTOR) !== null;
     };
-    addHover();
+    const onLeave = () => root.setAttribute("data-pointer", "out");
 
-    window.addEventListener("mousemove", onMove);
+    window.addEventListener("pointermove", onMove, { passive: true });
+    root.addEventListener("pointerleave", onLeave);
+    window.addEventListener("blur", onLeave);
+    raf = requestAnimationFrame(tick);
     return () => {
-      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("pointermove", onMove);
+      root.removeEventListener("pointerleave", onLeave);
+      window.removeEventListener("blur", onLeave);
       cancelAnimationFrame(raf);
     };
   }, []);
 
   return (
     <>
-      {/* Small sharp dot */}
-      <div
-        ref={dotRef}
-        className="custom-cursor"
-        style={{
-          position: "fixed",
-          top: 0, left: 0,
-          width: "5px", height: "5px",
-          borderRadius: "50%",
-          background: "#4f8ef7",
-          pointerEvents: "none",
-          zIndex: 99999,
-          transform: "translate(-50%, -50%)",
-          transition: "opacity 0.2s ease",
-          mixBlendMode: "normal",
-        }}
-      />
-
-      {/* Trailing ring */}
-      <div
-        ref={ringRef}
-        style={{
-          position: "fixed",
-          top: 0, left: 0,
-          width: "32px", height: "32px",
-          borderRadius: "50%",
-          border: "1px solid rgba(79,142,247,0.5)",
-          pointerEvents: "none",
-          zIndex: 99998,
-          transform: "translate(-50%, -50%)",
-          transition: "width 0.3s ease, height 0.3s ease, border-color 0.3s ease",
-        }}
-        className="custom-cursor cursor-ring"
-      />
-
-      <style>{`
-        .cursor-ring.cursor-hover {
-          width: 48px !important;
-          height: 48px !important;
-          border-color: rgba(79,142,247,0.8) !important;
-          background: rgba(79,142,247,0.06);
-        }
-      `}</style>
+      <div ref={glowRef} className="cursor-glow" aria-hidden="true" />
+      <div ref={dotRef} className="cursor-dot" aria-hidden="true" />
     </>
   );
 }

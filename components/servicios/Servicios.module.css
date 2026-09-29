@@ -170,6 +170,18 @@
 :global([data-theme="light"]) .tocNum,
 :global([data-theme="light"]) .title em { color: var(--accent); }
 
+/* ─── Escritorio con sidebar: el índice vive en el sidebar (spec 2026-09-28) ─── */
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    max-width: none;
+    margin: 0;
+    padding: var(--page-top, 9rem) 0 6rem;
+  }
+  .toc { display: none; }
+}
+
 /* ─── Móvil: el TOC colapsa a "En esta página ▾" ───────── */
 @media (max-width: 767px) {
   .layout { grid-template-columns: 1fr; gap: 0; padding: 5.5rem 1rem 4rem; }
@@ -202,6 +214,6 @@
   .tocList { padding-bottom: 0.5rem; }
   .tocList a { padding-top: 0.55rem; padding-bottom: 0.55rem; }
   .divider { margin: 2.5rem 0; }
-  /* Navbar + barra del TOC sticky: el título de la sección no debe quedar debajo. */
+  /* Barra superior + barra del TOC sticky: el título de la sección no debe quedar debajo. */
   .sec { scroll-margin-top: 7.5rem; }
 }

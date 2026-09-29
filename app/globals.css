@@ -15,20 +15,57 @@ a, a:hover, a:visited, a:active, a:focus {
   }
 }
 @media not ((hover: hover) and (pointer: fine)) {
-  .custom-cursor { display: none !important; }
+  .cursor-dot, .cursor-glow { display: none !important; }
 }
+
+/* ─── CURSOR: PUNTO + RESPLANDOR ETÉREO (J3) ──────────────── */
+/* Invisibles hasta el primer movimiento del mouse (data-pointer lo pone CustomCursor). */
+.cursor-dot, .cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+html[data-pointer="in"] .cursor-dot,
+html[data-pointer="in"] .cursor-glow { opacity: 1; }
+.cursor-dot {
+  z-index: 99999;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%;
+  background: var(--accent2);
+}
+.cursor-glow {
+  z-index: 99998;
+  width: 60px;
+  height: 60px;
+  margin: -30px 0 0 -30px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent2) 42%, transparent) 0%, color-mix(in srgb, var(--accent) 16%, transparent) 45%, transparent 70%);
+  filter: blur(6px);
+}
+[data-theme="light"] .cursor-glow {
+  background: radial-gradient(circle, rgba(26,93,245,0.22) 0%, rgba(26,93,245,0.08) 45%, transparent 70%);
+}
+/* Con el cursor grande del widget queda solo ese (antes se veían los dos). */
+html[data-a11y-cursor="large"] .cursor-dot,
+html[data-a11y-cursor="large"] .cursor-glow { display: none; }
 html { overflow-anchor: none; }
 
 /* ─── TOKENS ─────────────────────────────────────────────── */
 :root {
-  --bg:        #0c0c0e;
-  --bg2:       #111114;
-  --surface:   #16161a;
-  --border:    rgba(255,255,255,0.07);
+  /* Navy (spec 2026-09-28). --muted: 5.98:1 sobre --bg (el anterior, 3.57:1, no pasaba AA). */
+  --bg:        #0b1220;
+  --bg2:       #0e1628;
+  --surface:   #111a2e;
+  --border:    rgba(148,170,210,0.10);
   --accent:    #4f8ef7;
   --accent2:   #7eb3ff;
-  --text:      #f0f0f2;
-  --muted:     #6b6b78;
+  --text:      #eef1f6;
+  --muted:     #8792a8;
   --soft:      color-mix(in srgb, var(--text) 74%, var(--bg));
   --line:      color-mix(in srgb, var(--accent2) 16%, var(--border));
   --line-strong: color-mix(in srgb, var(--accent2) 30%, var(--border));
@@ -36,6 +73,8 @@ html { overflow-anchor: none; }
   --mono:      ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --radius:    1.25rem;
   --transition: 300ms cubic-bezier(0.4,0,0.2,1);
+  --glow-a:    rgba(79,142,247,0.16);
+  --glow-b:    rgba(126,179,255,0.08);
 }
 
 [data-theme="light"] {
@@ -46,8 +85,10 @@ html { overflow-anchor: none; }
   --accent:    #1a5df5;
   --accent2:   #3a7bff;
   --text:      #0d0d10;
-  --muted:     #7a7a88;
+  --muted:     #62626f; /* 5.52:1 sobre #f5f5f7 (el anterior, 3.88:1, no pasaba AA) */
   --live:      #15803d;
+  --glow-a:    rgba(26,93,245,0.07);
+  --glow-b:    rgba(58,123,255,0.04);
 }
 
 /* ─── ACCESSIBILITY WIDGET OVERRIDES ─────────────────────── */
@@ -89,7 +130,7 @@ html[data-a11y-motion="reduced"] *::after {
 }
 
 /* Resaltar enlaces */
-html[data-a11y-links="highlight"] a:not(.btn-primary):not(.btn-ghost):not(.project-card):not(.navbar-logo) {
+html[data-a11y-links="highlight"] a:not(.btn-primary):not(.btn-ghost):not(.project-card):not(.site-mark) {
   text-decoration: underline !important;
   text-underline-offset: 3px;
   color: var(--accent) !important;
@@ -151,52 +192,39 @@ body {
   }
 }
 
+/* ─── FONDO: RESPLANDOR + GRANO (spec 2026-09-28) ────────── */
+/* Capa fija detrás de todo el contenido. Lleva su propio --bg para que el grano
+   (overlay) se mezcle con el fondo dentro de la capa y nunca toque el texto. */
+.site-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--bg);
+  transition: background-color var(--transition);
+}
+.site-backdrop-glow,
+.site-backdrop-grain { position: absolute; inset: 0; }
+.site-backdrop-glow {
+  background:
+    radial-gradient(900px 620px at 10% 6%, var(--glow-a), transparent 62%),
+    radial-gradient(720px 520px at 94% 42%, var(--glow-b), transparent 62%);
+}
+/* Grano casi imperceptible: disimula las bandas de los degradados. Solo en oscuro. */
+.site-backdrop-grain {
+  opacity: 0.045;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+[data-theme="light"] .site-backdrop-grain { display: none; }
+html[data-a11y-contrast="high"] .site-backdrop-glow,
+html[data-a11y-contrast="high"] .site-backdrop-grain { display: none; }
+
 /* ─── SELECTION & SCROLLBAR ───────────────────────────────── */
 ::selection { background: var(--accent); color: #fff; }
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
-
-/* ─── NAVBAR ──────────────────────────────────────────────── */
-.navbar {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; z-index: 100;
-  padding: 1.1rem 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.navbar-logo {
-  font-family: var(--font-dm-serif), serif;
-  font-size: 1.25rem;
-  letter-spacing: -0.02em;
-  color: var(--text);
-}
-.navbar-links {
-  display: flex;
-  align-items: center;
-  gap: 2.2rem;
-}
-.navbar-links a {
-  font-size: 0.85rem;
-  font-weight: 400;
-  color: var(--muted);
-  transition: color var(--transition);
-  letter-spacing: 0.01em;
-}
-.navbar-links a:hover { color: var(--text); }
-.theme-toggle {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: transparent;
-  display: flex; align-items: center; justify-content: center;
-  color: var(--muted);
-  transition: all var(--transition);
-  flex-shrink: 0;
-}
-.theme-toggle:hover { color: var(--text); border-color: var(--accent); }
 
 /* ─── BUTTONS ─────────────────────────────────────────────── */
 .btn-primary {
@@ -414,19 +442,7 @@ body {
 
 /* ─── RESPONSIVE ──────────────────────────────────────────── */
 @media (max-width: 600px) {
-  .navbar { padding: 1rem 1.2rem; }
-  .navbar-links { gap: 1.2rem; }
   .section { padding: 4rem 1rem; }
-}
-@media (max-width: 420px) {
-  .navbar-logo .logo-long { display: none; }
-  .navbar { padding: 0.9rem 1rem; }
-  .navbar-links { gap: 0.7rem; }
-  .navbar-links a { font-size: 0.78rem !important; }
-}
-@media (max-width: 370px) {
-  .navbar { padding: 0.9rem 0.75rem; }
-  .navbar-links { gap: 0.5rem; }
 }
 
 /* ─── CARD FOOTER (projects) ──────────────────────────────── */
@@ -501,3 +517,26 @@ html[data-landing="home"]:not([data-gate="skip"]) .code-gate { display: block; }
   transform: translateY(-200%);
 }
 .skip-link:focus { transform: none; }
+
+/* ─── FOCO VISIBLE ────────────────────────────────────────── */
+/* Con el cursor propio, el teclado necesita su propio indicador. Sin border-radius:
+   el contorno ya sigue la forma de cada elemento (forzarlo deformaría los botones redondos). */
+:focus-visible {
+  outline: 2px solid var(--accent2);
+  outline-offset: 3px;
+}
+[data-theme="light"] :focus-visible { outline-color: var(--accent); }
+
+/* ─── TRANSICIÓN DEL NOMBRE (View Transitions) ────────────── */
+::view-transition-group(site-mark) {
+  animation-duration: 0.45s;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) { animation: none !important; }
+}
+html[data-a11y-motion="reduced"]::view-transition-group(*),
+html[data-a11y-motion="reduced"]::view-transition-old(*),
+html[data-a11y-motion="reduced"]::view-transition-new(*) { animation: none !important; }

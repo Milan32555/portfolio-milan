@@ -5,7 +5,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg);
+  /* Transparente: detrás se ve el resplandor del sitio (SiteBackdrop). */
+  background: transparent;
 }
 .hero::after {
   content: "";
@@ -176,6 +177,7 @@
 :global([data-theme="light"]) .finding[data-state="fixed"] { color: #146c43; background: #e3f3ea; border-color: rgba(20, 108, 67, 0.45); }
 
 @media (max-width: 600px) {
-  .audit { left: 16px; right: 16px; bottom: 48px; transform: none; white-space: normal; text-align: center; font-size: 0.64rem; }
+  /* Deja libres los 80px del engranaje de accesibilidad (52px + 28px de margen) más 8px de aire. */
+  .audit { left: 16px; right: 88px; bottom: 48px; transform: none; white-space: normal; text-align: left; font-size: 0.64rem; }
   .finding { font-size: 0.58rem; }
 }

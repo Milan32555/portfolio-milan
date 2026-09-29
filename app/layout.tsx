@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { DM_Sans, DM_Serif_Display, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
+import TopBar from "@/components/nav/TopBar";
 import CustomCursor from "@/components/CustomCursor";
 import Footer from "@/components/Footer";
 import AccessibilityWidget from "@/components/AccessibilityWidget";
+import SiteBackdrop from "@/components/SiteBackdrop";
+import { THEME_PRE_PAINT_SCRIPT } from "@/lib/theme";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -77,16 +79,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     // WCAG 3.1.1 — lang="es" permite a los lectores de pantalla
     // usar la pronunciación y gramática correcta del idioma
-    // suppressHydrationWarning: el script previo al primer paint del home escribe
-    // data-landing / data-gate / data-hero3d en <html> antes de hidratar.
+    // suppressHydrationWarning: los scripts previos al primer paint escriben data-theme
+    // (todas las páginas) y data-landing / data-gate / data-hero3d (home) en <html> antes de hidratar.
     <html lang="es" className="h-full" suppressHydrationWarning>
+      <head>
+        {/* Aplica el tema guardado antes del primer pintado (sin parpadeo). Ver lib/theme.ts. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_PRE_PAINT_SCRIPT }} />
+      </head>
       <body className={`${dmSans.className} ${dmSans.variable} ${dmSerifDisplay.variable} ${jetbrainsMono.variable} antialiased h-full`}>
         <>
 
           {/*
             WCAG 2.4.1 — Skip to content
             Oculto visualmente pero accesible por teclado (Tab).
-            Salta la navbar y lleva al usuario directo al contenido.
+            Salta la barra de navegación y lleva al usuario directo al contenido.
             Se hace visible al recibir foco (:focus en .skip-link).
           */}
           <a href="#main-content" className="skip-link">
@@ -106,8 +112,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             id="a11y-announcer"
           />
 
+          <SiteBackdrop />
           <CustomCursor />
-          <Navbar />
+          <TopBar />
           {children}
           <Footer />
           <AccessibilityWidget />

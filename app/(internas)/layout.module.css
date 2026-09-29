@@ -1,0 +1,21 @@
+/* Desde 1024px: sidebar de 280px + contenido. Debajo, solo el contenido (manda la barra superior). */
+@media (min-width: 1024px) {
+  .shell {
+    --page-top: 5.5rem; /* alineado con la marca del sidebar */
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 3rem;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  /* .section trae padding lateral y centrado pensados para la barra superior:
+     dentro de la columna, el aire lo da la rejilla y el contenido se alinea a la izquierda. */
+  .content :global(.section) {
+    margin-left: 0;
+    padding: var(--page-top) 0 6rem;
+  }
+}
+@media (min-width: 1280px) {
+  .shell { gap: 4.5rem; padding: 0 3rem; }
+}

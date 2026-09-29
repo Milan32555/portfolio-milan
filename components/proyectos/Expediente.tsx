@@ -44,40 +44,42 @@ export default function Expediente({ carpetas, label }: { carpetas: Carpeta[]; l
   };
 
   return (
-    <div className={styles.stack} role="group" aria-label={label}>
-      {carpetas.map((c, i) => {
-        const isOpen = open === i;
-        return (
-          <section key={c.id} className={styles.folder} style={{ "--i": i } as CSSProperties} data-open={isOpen}>
-            <h3 className={styles.heading}>
-              <button
-                type="button"
-                id={`${c.id}-tab`}
-                className={styles.chip}
-                aria-expanded={isOpen}
-                aria-controls={`${c.id}-panel`}
-                onClick={() => {
-                  cancel();
-                  setOpen(i);
-                }}
-                onPointerMove={(e) => scheduleOpen(i, e)}
-                onPointerLeave={cancel}
-              >
-                <span className={styles.num}>{String(i + 1).padStart(2, "0")}</span>
-                <span>{c.titulo}</span>
-              </button>
-            </h3>
+    <div className={styles.frame}>
+      <div className={styles.stack} role="group" aria-label={label}>
+        {carpetas.map((c, i) => {
+          const isOpen = open === i;
+          return (
+            <section key={c.id} className={styles.folder} style={{ "--i": i } as CSSProperties} data-open={isOpen}>
+              <h3 className={styles.heading}>
+                <button
+                  type="button"
+                  id={`${c.id}-tab`}
+                  className={styles.chip}
+                  aria-expanded={isOpen}
+                  aria-controls={`${c.id}-panel`}
+                  onClick={() => {
+                    cancel();
+                    setOpen(i);
+                  }}
+                  onPointerMove={(e) => scheduleOpen(i, e)}
+                  onPointerLeave={cancel}
+                >
+                  <span className={styles.num}>{String(i + 1).padStart(2, "0")}</span>
+                  <span>{c.titulo}</span>
+                </button>
+              </h3>
 
-            <div className={styles.strip} aria-hidden="true" onPointerMove={(e) => scheduleOpen(i, e)} onPointerLeave={cancel} />
+              <div className={styles.strip} aria-hidden="true" onPointerMove={(e) => scheduleOpen(i, e)} onPointerLeave={cancel} />
 
-            <div id={`${c.id}-panel`} role="region" aria-labelledby={`${c.id}-tab`} className={styles.panel} inert={hydrated && !isOpen}>
-              <div>
-                <div className={styles.inner}>{c.contenido}</div>
+              <div id={`${c.id}-panel`} role="region" aria-labelledby={`${c.id}-tab`} className={styles.panel} inert={hydrated && !isOpen}>
+                <div>
+                  <div className={styles.inner}>{c.contenido}</div>
+                </div>
               </div>
-            </div>
-          </section>
-        );
-      })}
+            </section>
+          );
+        })}
+      </div>
     </div>
   );
 }
