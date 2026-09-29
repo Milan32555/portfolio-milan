@@ -526,3 +526,17 @@ html[data-landing="home"]:not([data-gate="skip"]) .code-gate { display: block; }
   outline-offset: 3px;
 }
 [data-theme="light"] :focus-visible { outline-color: var(--accent); }
+
+/* ─── TRANSICIÓN DEL NOMBRE (View Transitions) ────────────── */
+::view-transition-group(site-mark) {
+  animation-duration: 0.45s;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) { animation: none !important; }
+}
+html[data-a11y-motion="reduced"]::view-transition-group(*),
+html[data-a11y-motion="reduced"]::view-transition-old(*),
+html[data-a11y-motion="reduced"]::view-transition-new(*) { animation: none !important; }

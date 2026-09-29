@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.join(__dirname),
   },
+  // <ViewTransition> de React: "Misael." viaja entre la barra y el sidebar (spec 2026-09-28).
+  experimental: {
+    viewTransition: true,
+  },
 };
 
 export default nextConfig;

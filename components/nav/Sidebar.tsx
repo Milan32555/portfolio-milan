@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { NAV_LINKS, isActive } from "@/lib/nav";
 import { GitHubIcon } from "./icons";
 import iconStyles from "./IconButton.module.css";
+import MarkTransition from "./MarkTransition";
 import SidebarIndex from "./SidebarIndex";
 import SiteMark from "./SiteMark";
 import ThemeToggle from "./ThemeToggle";
@@ -18,7 +19,9 @@ export default function Sidebar() {
   return (
     <div className={styles.sidebar} data-sidebar="">
       <div>
-        <SiteMark size="lg" />
+        <MarkTransition>
+          <SiteMark size="lg" />
+        </MarkTransition>
         <p className={styles.role}>{"// dev freelance · auditor de código"}</p>
         {!onServicios && (
           <p className={styles.tagline}>Construyo interfaces y reviso código ajeno buscando qué se rompe antes de que lo haga otro.</p>

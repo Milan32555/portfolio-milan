@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV_LINKS, isActive, isHome } from "@/lib/nav";
+import MarkTransition from "./MarkTransition";
 import MobileMenu from "./MobileMenu";
 import SiteMark from "./SiteMark";
 import TerminalPath from "./TerminalPath";
@@ -41,7 +42,13 @@ export default function TopBar() {
   return (
     <>
       <header className={styles.bar} data-topbar="" data-scrolled={scrolled ? "" : undefined} data-inner={home ? undefined : ""}>
-        <SiteMark />
+        {home ? (
+          <MarkTransition>
+            <SiteMark />
+          </MarkTransition>
+        ) : (
+          <SiteMark />
+        )}
         <TerminalPath />
         <nav className={styles.links} aria-label="Principal">
           {NAV_LINKS.map(({ href, label }) => (
