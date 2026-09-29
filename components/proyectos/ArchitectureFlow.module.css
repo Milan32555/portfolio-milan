@@ -1,4 +1,4 @@
-.arch { margin-top: 4rem; }
+.arch { margin-top: 4rem; container-type: inline-size; }
 .eyebrow {
   font-family: var(--mono);
   font-size: 0.74rem;
@@ -52,7 +52,7 @@
 .name { font-family: var(--font-dm-serif), serif; font-weight: 400; font-size: 1.2rem; margin: 6px 0; }
 .desc { color: var(--soft); font-size: 0.88rem; line-height: 1.5; }
 
-@media (max-width: 900px) {
+@container (max-width: 836px) {
   .layers { grid-template-columns: 1fr; gap: 26px; }
   .layer:not(:last-child)::after {
     right: auto; left: 30px; top: auto; bottom: -22px; width: 1px; height: 16px;

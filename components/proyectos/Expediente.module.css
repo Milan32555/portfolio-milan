@@ -1,3 +1,6 @@
+/* Contenedor: las pestañas escalonadas necesitan ~800px de columna, no de ventana. */
+.frame { container-type: inline-size; }
+
 .stack {
   display: flex;
   flex-direction: column;
@@ -67,7 +70,7 @@
 }
 
 /* Mobile: las pestañas escalonadas pasan a cabeceras de acordeón a ancho completo */
-@media (max-width: 860px) {
+@container (max-width: 796px) {
   .chip {
     position: static;
     width: 100%;

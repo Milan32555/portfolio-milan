@@ -1,4 +1,5 @@
-.rows { margin-top: 3.5rem; list-style: none; padding: 0; }
+/* Contenedor: la lista se adapta al ancho de su columna (con sidebar es más angosta que la ventana). */
+.rows { margin-top: 3.5rem; list-style: none; padding: 0; container-type: inline-size; }
 
 .row {
   position: relative;
@@ -142,7 +143,7 @@
   .row, .row::before, .arrow { transition: none; }
 }
 
-@media (max-width: 700px) {
+@container (max-width: 636px) {
   .row { grid-template-columns: 1fr; gap: 16px; padding: 30px 0 28px; }
   .tab { left: 0; }
 }
