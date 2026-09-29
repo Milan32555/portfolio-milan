@@ -2653,7 +2653,7 @@ sys.exit(1 if fails else 0)
 - [ ] **Step 3: Correr la verificación**
 
 Run: `python .superpowers/verify-navegacion.py`
-Expected: todas las líneas en `OK` y `0 fallos`. Si algo falla, corrige en la tarea correspondiente, vuelve a construir y repite.
+Expected: todas las líneas en `OK` y `0 fallos`. Si algo falla, corrige en la tarea correspondiente, vuelve a construir y repite. Ojo: si axe marca `color-contrast` en `/sobre-mi`, es la consola a mitad del tipeo (líneas en pleno fundido de opacidad); espera ~9 s en esa ruta antes de correr axe.
 
 - [ ] **Step 4: Otras verificaciones**
 
