@@ -1,0 +1,33 @@
+/* Decorativa: si no cabe, se corta con puntos suspensivos y nunca empuja a los enlaces. */
+.path {
+  display: block;
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  padding-left: 0.9rem;
+  border-left: 1px solid var(--border);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.74rem;
+  line-height: 1.4;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--muted);
+}
+.path b { font-weight: 400; color: var(--accent2); }
+.caret {
+  display: inline-block;
+  width: 0.5em;
+  height: 1em;
+  margin-left: 1px;
+  vertical-align: -2px;
+  background: var(--accent2);
+  opacity: 0.8;
+  animation: pathCaret 1s steps(1) infinite;
+}
+@keyframes pathCaret { 50% { opacity: 0; } }
+:global([data-theme="light"]) .path b { color: var(--accent); }
+:global([data-theme="light"]) .caret { background: var(--accent); }
+
+@media (max-width: 767px) {
+  .path { padding-left: 0.7rem; font-size: 0.7rem; }
+}
