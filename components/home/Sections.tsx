@@ -18,7 +18,6 @@ export function ServicesPreview() {
           <Reveal className={styles.card}>
             <h3>Desarrollo</h3>
             <p>Sitios y landing pages, apps web full-stack, apps móviles y sistemas a medida para negocios.</p>
-            <div className={styles.mini}>React · Next.js · Vue · Node.js · Flutter</div>
           </Reveal>
           <Reveal className={styles.card} delay={80}>
             <h3>Auditoría de código</h3>
