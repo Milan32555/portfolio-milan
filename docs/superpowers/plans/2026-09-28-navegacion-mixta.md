@@ -2,6 +2,8 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+> **Estado: EJECUTADO el 2026-09-28** en la misma sesión (inline, tareas 0–15, incluida la 14 opcional). Resultado: PR #18. Las correcciones que surgieron al ejecutarlo ya están incorporadas en este documento (foco de "cerrar" en el menú móvil, `<nav>` centrado, pie del menú libre del engranaje, esperas de los scripts).
+
 **Goal:** Implementar el spec `docs/superpowers/specs/2026-09-28-navegacion-mixta-y-sistema-visual-design.md`: barra superior en el home, sidebar en las páginas internas desde 1024px, menú móvil a pantalla completa, tokens navy con contraste AA, resplandor + grano, cursor nuevo, foco visible y tema recordado.
 
 **Architecture:** La lógica pura (enlaces, ruta tipo terminal, tema, cursor) vive en `lib/` con pruebas `node --test`. Los componentes de navegación viven en `components/nav/` con un CSS Module cada uno. Las páginas internas se mueven a un grupo de rutas `app/(internas)/` cuyo layout agrega la rejilla con el sidebar; la barra superior vive en el layout raíz y se oculta sola desde 1024px fuera del home.

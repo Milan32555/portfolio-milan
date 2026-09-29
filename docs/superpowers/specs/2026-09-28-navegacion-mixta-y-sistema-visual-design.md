@@ -2,6 +2,8 @@
 
 > Cierra lo que faltaba del spec maestro `2026-09-08-portfolio-redesign-design.md`: §1 Layout, §2 Fondo, §3 Cursor, Pendiente 5 (grano) y Pendiente 7 (correcciones sitewide). Aprobado por Misael el 2026-09-28 sobre el mockup `docs/superpowers/mockups/2026-09-28-navegacion-mixta.html`. La comparación de opciones que llevó a la decisión está en `docs/superpowers/mockups/2026-09-28-navegacion-opciones-abc.html`.
 >
+> **Estado (2026-09-28, noche): IMPLEMENTADO** en el PR #18 (`feat/navegacion-mixta`), incluida la transición opcional del nombre. Verificación: `verify-navegacion` 0 fallos, axe 0, Lighthouse accesibilidad 100 en las 5 rutas. Pendiente: prueba de Misael en la preview y fusión.
+>
 > **Reemplaza la decisión del 8-sep de "sidebar fijo en todo el sitio"** y la del spec de `/servicios` (17-sep) de que "el TOC reemplaza al sidebar".
 
 ## Por qué cambió la decisión del 8-sep
